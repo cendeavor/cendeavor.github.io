@@ -1669,7 +1669,7 @@ pre .javascript .function {
 }
 #totop {
   position: fixed;
-  /*display: none;*/ /* 到底是什么自动修改了这个？？ */
+  display: none;
   z-index: 9999;
   bottom: 3em;
   right: 1em;
