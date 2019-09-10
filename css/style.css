@@ -1670,6 +1670,10 @@ pre .javascript .function {
 #totop {
   position: fixed;
 /*display: none*/
+/*remove by cyc*/
+  opacity: 0 /*add by cyc*/;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)" /*add by cyc*/;
+  filter: alpha(opacity=0) /*add by cyc*/;
   z-index: 9999;
   bottom: 3em;
   right: 1em;
