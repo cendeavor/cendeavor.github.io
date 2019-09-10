@@ -1669,7 +1669,7 @@ pre .javascript .function {
 }
 #totop {
   position: fixed;
-  display: none;
+/*display: none*/
   z-index: 9999;
   bottom: 3em;
   right: 1em;
