@@ -1692,9 +1692,9 @@ pre .javascript .function {
   height: 50px;
   line-height: 50px;
   color: #444;
-  opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: alpha(opacity=0);
+  opacity: 0.8;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  filter: alpha(opacity=80);
 }
 #totop a:before {
   content: '\f139';
