@@ -1,0 +1,314 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>C union的使用 | 沉浮之道</title>
+  <meta name="author" content="cendeavor">
+  
+  <meta name="description" content="在网络的数据结构中，union频频出现，以前见到过union方便实现网络地址和IP字符串的转换的代码，今天又在TCP/IP详解卷二中见到了它，学习一下。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="C union的使用">
+  <meta property="og:site_name" content="沉浮之道">
+
+  
+    <meta property="og:image" content>
+  
+
+  <link rel="alternate" href="/atom.xml" title="沉浮之道" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+</html>
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/avatar.png">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">沉浮之道</a></h1>
+		    <h2><a href="/"></a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/node"><i class="fa fa-book"></i>Node.js</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		      <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-09-17T14:42:20.467Z"><a href="/2019/09/17/0xZ-C union的使用/">2019-09-17</a></time>
+        
+  
+    <h1 class="title">C union的使用</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#总结："><span class="toc-text">总结：</span></a></li></ol>
+    </div>
+
+        <p>在网络的数据结构中，union频频出现，以前见到过union方便实现网络地址和IP字符串的转换的代码，今天又在TCP/IP详解卷二中见到了它，学习一下。</p>
+<a id="more"></a>
+<hr>
+<p>首先说说TCP/IP详解中mbuf结构的实现</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">mbuf</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">m_hdr</span> <span class="title">m_hdr</span>;</span></span><br><span class="line">    <span class="keyword">union</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">        &#123;</span></span><br><span class="line">            <span class="class"><span class="keyword">struct</span> <span class="title">pkthdr</span> <span class="title">MH_pkthdr</span>;</span>    <span class="comment">/* M_PKTHDR set */</span></span><br><span class="line">            <span class="keyword">union</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="class"><span class="keyword">struct</span> <span class="title">m_ext</span> <span class="title">MH_ext</span>;</span>    <span class="comment">/* M_EXT set */</span></span><br><span class="line">                <span class="keyword">char</span> MH_databuf[MHLEN];</span><br><span class="line">            &#125; MH_dat;</span><br><span class="line">        &#125; MH;</span><br><span class="line">        <span class="keyword">char</span> M_databuf[MLEN];   <span class="comment">/* !M_PKTHDR, !M_EXT */</span></span><br><span class="line">    &#125; M_dat;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对应下面这幅图来理解，就是同一块128字节的内存空间，根据标志变量的不同取值，有不同的功用。快速实现的方法就是记住：<code>可出现可不出现的变量就一定在union中</code><br><img src="/pic/0xZ-C%20union%E7%9A%84%E4%BD%BF%E7%94%A8/2019-09-17-23-11-30.png" alt></p>
+<div class="htmledit_views" id="content_views">
+                                            <p>相信学过C语言的程序员对C语言的各种数据类型都非常熟悉，像数组、结构体、结构体数组、结构体指针这些数据类型大家都会信手捏来。然而，有些数据类型被我们不经意的边缘化了。它们没有数组、结构体这些数据类型用的广泛，但是却不容忽视，例如，枚举、联合等。</p>
+
+<p>　　今天我们就讨论一下union（联合）这个数据类型。C语言的发明者为什么要弄一个这种不常用甚至几乎不用的数据类型呢。下面给你答案。首先，看一下union的定义。</p>
+
+<pre class="has" name="code"><code class="hljs objectivec"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-keyword">union</span> Data {</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-keyword">int</span> i;<span class="hljs-number">3</span>    <span class="hljs-keyword">char</span> str[<span class="hljs-number">4</span>];</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">} data; </div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre>
+
+<p>这段代码定义了一个名为data的union变量。它有什么属性呢？</p>
+
+<ol><li>这个变量在内存中占用4个字节的空间而不是8个；</li>
+    <li>有两个数据成员：int类型变量的i和char类型的数组str；</li>
+    <li><strong>虽然有两个数据成员，但是这两个成员的存储空间是一样的</strong>。</li>
+</ol><p>上面三点是union变量的最基本也是最重要的属性。详细说一下第三点。因为union不论包含多少个多少种数据类型，它实例化为变量后，这个变量的长度是这个union中最长的数据类型的长度。下面的代码定义了一个union变量。它的长度是16个字节。</p>
+
+<pre class="has" name="code"><code class="hljs objectivec"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> <span class="hljs-keyword">union</span> DEMO{ </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">     <span class="hljs-keyword">char</span> status;</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">     <span class="hljs-keyword">int</span> a; </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">     <span class="hljs-keyword">int</span> serial[<span class="hljs-number">4</span>]; </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">}demo；</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre>
+
+<p>　　　　　MSB &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;　　　　　　　　　　　　　　　　　　　　&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LSB</p>
+
+<div class="table-box"><table align="center" border="0"><tbody><tr><td>0</td>
+            <td>f</td>
+            <td>e</td>
+            <td>d</td>
+            <td>c</td>
+            <td>b</td>
+            <td>a</td>
+            <td>9</td>
+            <td>8</td>
+            <td>7</td>
+            <td>6</td>
+            <td>5</td>
+            <td>4</td>
+            <td>3</td>
+            <td>2</td>
+            <td>1</td>
+        </tr></tbody></table></div><p>上面这个表格代表内存中的数据，demo.status 的值为0x1；demo.a的值为，0x4321。以此类推demo.serial的值就出来了。这个属性是union特有的，C语言的发明者为什么要弄这么个数据类型呢？现在知道了吧。因为这个union特有的属性可以帮助我们节省好多行代码。而且还不用各种基础数据类型转换。</p>
+
+<p>　　union的应用</p>
+
+<p>　　设想用C语言实现这样一个功能。我需要用单片机读取一个监控温度的i2c slave的寄存器数据。这个寄存器是12位有效位寄存器。读出来之后我们要通过数据手册给定的公式计算成实际温度（设想这个公式为 temp = reg_val *10）。我们怎么实现呢？要知道，i2c的数据传输是按照byte传送的，也就是说，你只能用char类型结束数据，说白了，每个时序你只能接收8个bit的数据。所以12个bit需要读两次，用两个char类型变量或一个char类型数据接收。</p>
+
+<ol><li>读出寄存器数据（这个不在这篇文章的讨论范围内）</li>
+    <li>将读出的数据转换成可计算的数据类型（两个char类型转换成一个short或int或float类型）</li>
+    <li>根据公式计算</li>
+</ol><p>下面看一下不用union实现的函数</p>
+
+<pre class="has" name="code"><code class="hljs kotlin"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">int <span class="hljs-function"><span class="hljs-title">fun</span><span class="hljs-params">( void )</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    int tmp_value = <span class="hljs-number">0</span>; </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    char reg_val[<span class="hljs-number">2</span>] = {<span class="hljs-number">0</span>,<span class="hljs-number">0</span>}; </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">     .... </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    i2c.read(addr&lt;&lt;<span class="hljs-number">1</span>, reg_val, <span class="hljs-number">2</span>); </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    tmp_value = (reg_val[<span class="hljs-number">1</span>]&lt;&lt;<span class="hljs-number">8</span> | reg_val[<span class="hljs-number">0</span>]); </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-keyword">return</span> tmp_value*<span class="hljs-number">10</span>; </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">}</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre>
+
+<p>用union的</p>
+
+<pre class="has" name="code"><code class="hljs cs"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">union REG_VAL { </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-keyword">int</span> <span class="hljs-keyword">value</span>; </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-keyword">char</span> buf[<span class="hljs-number">2</span>]; </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">}reg_val; </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">fun</span>(<span class="hljs-params"> <span class="hljs-keyword">void</span> </span>)</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">{ </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-keyword">int</span> tmp_value = <span class="hljs-number">0</span>; </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-keyword">char</span> reg_val[<span class="hljs-number">2</span>] = {<span class="hljs-number">0</span>,<span class="hljs-number">0</span>}; </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    .... </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="11"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    i2c.read(addr&lt;&lt;<span class="hljs-number">1</span>, reg_val.buf, <span class="hljs-number">2</span>);</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="12"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="13"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-keyword">return</span> reg_val.<span class="hljs-keyword">value</span>*<span class="hljs-number">10</span>; </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="14"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">}</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre>
+
+<p>不用union的函数也可以用sprintf实现，那就更麻烦了。</p>
+
+<p>　　可以看到虽然在这里用union的代码比不用union的多了几行，但是i2c sensor如果多的话，那就会少很多，而且i2c sensor的寄存器有效位数不是一样的，这个用两个char类型就解决了，但是其他的可能需要用三个，所以用最上面定义的union变量可以很好的实现，不需要考虑各种转换问题。</p>
+
+<p>　　union还是很有用处的，所以不要忽视它了。</p>
+</div>
+
+<hr>
+<p><strong>试题一：编写一段程序判断系统中的CPU是Little endian还是Big endian模式？</strong><br>分析：<br>union的成员本身就被存放在相同的内存空间（共享内存，正是union发挥作用、做贡献的去处），因此，我们可以将一个CHAR/BYTE数据和一个整型数据同时作为一个union的成员，得出如下答案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">checkCPU</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">union</span> w</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> a;</span><br><span class="line">            <span class="keyword">char</span> b;</span><br><span class="line">　　    &#125; c;</span><br><span class="line">　　    c.a = <span class="number">1</span>;</span><br><span class="line">　　    <span class="keyword">return</span> (c.b == <span class="number">1</span>);</span><br><span class="line">　  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现同样的功能，我们来看看Linux操作系统中相关的源代码是怎么做的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">union</span> &#123; <span class="keyword">char</span> c[<span class="number">4</span>]; <span class="keyword">unsigned</span> <span class="keyword">long</span> l; &#125; endian_test = &#123; &#123; <span class="string">'l'</span>, <span class="string">'?'</span>, <span class="string">'?'</span>, <span class="string">'b'</span> &#125; &#125;;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ENDIANNESS ((char)endian_test.l)</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>试题二：假设网络节点A和网络节点B中的通信协议涉及四类报文，报文格式为“报文类型字段+报文内容的结构体”，四个报文内容的结构体类型分别为STRUCTTYPE1~ STRUCTTYPE4，请编写程序以最简单的方式组织一个统一的报文数据结构。</strong><br>分析：<br>报文的格式为“报文类型+报文内容的结构体”，在真实的通信中，每次只能发四类报文中的一种，我们可以将四类报文的结构体组织为一个union（共享一段内存，但每次有效的只是一种），然后和报文类型字段统一组织成一个报文数据结构。<br>解答：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> BYTE;</span><br><span class="line"></span><br><span class="line"><span class="comment">//报文内容联合体</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> tagPacketContent</span><br><span class="line">&#123;</span><br><span class="line">    STRUCTTYPE1 pkt1;</span><br><span class="line">    STRUCTTYPE2 pkt2;</span><br><span class="line">    STRUCTTYPE3 pkt1;</span><br><span class="line">    STRUCTTYPE4 pkt2;</span><br><span class="line">&#125;PacketContent;</span><br><span class="line"></span><br><span class="line"><span class="comment">//统一的报文数据结构</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tagPacket</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    BYTE pktType;</span><br><span class="line">    PacketContent pktContent;</span><br><span class="line">&#125;Packet;</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ol>
+<li>当多个基本数据类型或复合数据结构要占用同一片内存时，我们要使用联合体（试题一是这样的例证）</li>
+<li>当多种类型，多个对象，多个事物只取其一时（我们姑且通俗地称其为“n选1”），我们也可以使用联合体来发挥其长处</li>
+</ol>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/C/">C</a>
+  </div>
+
+        
+  <div class="tags">
+    <a href="/tags/show/">show</a>
+  </div>
+
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div></div></div>
+      <aside id="sidebar" class="alignright">
+        
+          
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ML/">ML</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/">PWN</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/stack/">stack</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
+</div>
+ 
+
+        
+          <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/qrcode.jpg" alt="欢迎关注个人公众账号" style= "width: 100%">
+    </ul>
+</div>
+        
+          <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">友情链接</h3>
+      <ul class="entry">
+        
+          <li class='link'><a href='http://xiaoyun.farbox.com'>晓晓博客</a></li>
+        
+          <li class='link'><a href='http://www.ituring.com.cn/users/136808'>图灵社区</a></li>
+        
+      </ul>
+  </div>
+
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">30</span></li></ul>
+  </div>
+
+        
+      </aside>
+      <div class="clearfix"></div>
+    </div>
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2019 cendeavor
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+
+  <div>
+    Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a>
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="/js/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 百度统计 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>
