@@ -1,0 +1,333 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>进程等待wait与waitpid | 沉浮之道</title>
+  <meta name="author" content="cendeavor">
+  
+  <meta name="description" content="https://blog.csdn.net/Z_Dream_ST/article/details/78636531">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="进程等待wait与waitpid">
+  <meta property="og:site_name" content="沉浮之道">
+
+  
+    <meta property="og:image" content>
+  
+
+  <link rel="alternate" href="/atom.xml" title="沉浮之道" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+</html>
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/avatar.png">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">沉浮之道</a></h1>
+		    <h2><a href="/"></a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/node"><i class="fa fa-book"></i>Node.js</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		      <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-09-25T13:40:15.559Z"><a href="/2019/09/25/0xZ-Linux C wait与waitpid/">2019-09-25</a></time>
+        
+  
+    <h1 class="title">进程等待wait与waitpid</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p><a href="https://blog.csdn.net/Z_Dream_ST/article/details/78636531" target="_blank" rel="noopener">https://blog.csdn.net/Z_Dream_ST/article/details/78636531</a></p>
+<a id="more"></a>
+<div class="htmledit_views" id="content_views">
+
+<p><span style="color:#ff0000;"><span style="font-family:'宋体';">为什么要使用</span>wait<span style="font-family:'宋体';">或</span><span style="font-family:Calibri;">waitpid</span><span style="font-family:'宋体';">函数：</span></span></p>
+<p><span style="font-family:'宋体';">编程过程中，有时需要让一个进程等待另一个进程，最常见的是父进程等待自己的子进程，或者父进程回收自己的子进程资源包括僵尸进程</span>。</p>
+<p><br></p>
+<p>1. <span style="font-family:'宋体';">孤儿进程：父</span><span style="font-family:'宋体';">进程</span><span style="font-family:'宋体';">先于子进程结束，则子进程成为孤儿进程，子进程的父进程变为</span>init<span style="font-family:'宋体';">进程 。</span></p>
+<p>2. <span style="font-family:'宋体';">僵尸进程：子进程终止了，父进程尚未回收子进程，子进程残留资源（</span><span style="font-family:Calibri;">PCB</span><span style="font-family:'宋体';">）存放于内核中，子进程变成僵尸（</span><span style="font-family:Calibri;">Zombie</span><span style="font-family:'宋体';">）进程。</span><span style="font-family:Calibri;">&nbsp;</span></p>
+<p><span style="font-family:'宋体';">问：那为什么子进程要把</span>PCB<span style="font-family:'宋体';">残留在内核里呢？</span><span style="font-family:Calibri;">&nbsp;</span></p>
+<p><span style="font-family:'宋体';">答：因为子进程终止后，它会把终止信号等退出状态</span>(<span style="font-family:'宋体';">不管正常终止还是异常终止都对应一个信号</span><span style="font-family:Calibri;">)</span><span style="font-family:'宋体';">保存在内核的</span><span style="font-family:Calibri;">PCB</span><span style="font-family:'宋体';">里面，只有这个子进程的父亲节调用</span><span style="font-family:Calibri;">wait</span><span style="font-family:'宋体';">或者</span><span style="font-family:Calibri;">waitpid</span><span style="font-family:'宋体';">获取这些退出状态，然后才会彻底清除掉这个子进程。如果父进程不调用</span><span style="font-family:Calibri;">wait</span><span style="font-family:'宋体';">或者</span><span style="font-family:Calibri;">waitpid</span><span style="font-family:'宋体';">，那么这个子进程就会成为僵尸进程。</span></p>
+<p><span style="font-family:'宋体';">问：什么方法可以清除掉一个僵尸进程。</span>(<span style="font-family:'宋体';">附：</span><span style="font-family:Calibri;">kill</span><span style="font-family:'宋体';">命令清除不了僵尸进程的，因为</span><span style="font-family:Calibri;">kill</span><span style="font-family:'宋体';">命令只是用来终止进程的，而僵尸进程已经是终止的了</span><span style="font-family:Calibri;">)&nbsp;</span></p>
+<p><span style="font-family:'宋体';">答：</span>kill<span style="font-family:'宋体';">确实是直接清除不掉僵尸进程，但是我们可以</span><span style="font-family:Calibri;">kill</span><span style="font-family:'宋体';">掉僵尸进程的父进程，这样僵尸进程的父进程就变为</span><span style="font-family:Calibri;">init</span><span style="font-family:'宋体';">进程，</span><span style="font-family:Calibri;">init</span><span style="font-family:'宋体';">进程自然会调用</span><span style="font-family:Calibri;">wait</span><span style="font-family:'宋体';">或者</span><span style="font-family:Calibri;">waitpid</span><span style="font-family:'宋体';">清除这个僵尸进程。</span><span style="font-family:Calibri;">&nbsp;</span></p>
+<p>&nbsp;</p>
+<p><span style="font-family:'宋体';">这里简单介绍一下系统调用函数：</span>wait()</p>
+<p><span style="font-family:'宋体';">函数原型是</span></p>
+<p><br></p>
+<p>#include &lt;sys/types.h&gt;/* <span style="font-family:'宋体';">提供类型</span><span style="font-family:Calibri;">pid_t</span><span style="font-family:'宋体';">的定义</span><span style="font-family:Calibri;">*/</span></p>
+<p>#include &lt;wait.h&gt;</p>
+<p>int wait(int *status)</p>
+<p><span style="font-family:'宋体';">函数功能是：</span><span style="font-family:'宋体';">父进程一旦调用了</span>wait<span style="font-family:'宋体';">就立即阻塞自己，由</span><span style="font-family:Calibri;">wait</span><span style="font-family:'宋体';">自动分析是否当前进程的某个子进程已经退出，如果让它找到了这样一个已经变成僵尸的子进程，</span><span style="font-family:Calibri;">wait</span><span style="font-family:'宋体';">就会收集这个子进程的信息，并把它彻底销毁后返回；如果没有找到这样一个子进程，</span><span style="font-family:Calibri;">wait</span><span style="font-family:'宋体';">就会一直阻塞在这里，直到有一个出现为止。</span></p>
+<p><span style="font-family:'宋体';"><span style="color:#ff0000;">注：</span></span></p>
+<p><span style="color:#ff0000;"><span style="font-family:'宋体';">1 当父进程忘了用</span>wait()<span style="font-family:'宋体';">函数等待已终止的子进程时</span><span style="font-family:Calibri;">,</span><span style="font-family:'宋体';">子进程就会进入一种无父进程的状态</span><span style="font-family:Calibri;">,</span><span style="font-family:'宋体';">此时子进程就是僵尸进程</span><span style="font-family:Calibri;">.</span></span></p>
+<p><span style="color:#ff0000;">2 wait()<span style="font-family:'宋体';">要与</span><span style="font-family:Calibri;">fork()</span><span style="font-family:'宋体';">配套出现</span><span style="font-family:Calibri;">,</span><span style="font-family:'宋体';">如果在使用</span><span style="font-family:Calibri;">fork()</span><span style="font-family:'宋体';">之前调用</span><span style="font-family:Calibri;">wait(),wait()</span><span style="font-family:'宋体';">的返回值则为</span><span style="font-family:Calibri;">-1,</span><span style="font-family:'宋体';">正常情况下</span><span style="font-family:Calibri;">wait()</span><span style="font-family:'宋体';">的返回值为子进程的</span><span style="font-family:Calibri;">PID.</span></span></p>
+<p><span style="color:#ff0000;"><span style="font-family:'宋体';">3 如果先终止父进程</span>,<span style="font-family:'宋体';">子进程将继续正常进行，只是它将由</span><span style="font-family:Calibri;">init</span><span style="font-family:'宋体';">进程</span><span style="font-family:Calibri;">(PID 1)</span><span style="font-family:'宋体';">继承</span><span style="font-family:Calibri;">,</span><span style="font-family:'宋体';">当子进程终止时</span><span style="font-family:Calibri;">,init</span><span style="font-family:'宋体';">进程捕获这个状态</span><span style="font-family:Calibri;">.</span></span></p>
+<p><span style="color:#ff0000;"><span style="font-family:'宋体';">4 参数</span>status<span style="font-family:'宋体';">用来保存被收集进程退出时的一些状态，它是一个指向</span><span style="font-family:Calibri;">int</span><span style="font-family:'宋体';">类型的指针。但如果我们对这个子进程是如何死掉毫不在意，只想把这个僵尸进程消灭掉，（事实上绝大多数情况下，我们都会这样想），我们就可以设定这个参数为</span><span style="font-family:Calibri;">NULL</span><span style="font-family:'宋体';">，就像下面这样：</span></span></p>
+<p><span style="color:#ff0000;">pid = wait(NULL);</span></p>
+<p><span style="color:#ff0000;"><span style="font-family:'宋体';">如果成功，</span>wait<span style="font-family:'宋体';">会返回被收集的子进程的进程</span><span style="font-family:Calibri;">ID</span><span style="font-family:'宋体';">，如果调用进程没有子进程，调用就会失败，此时</span><span style="font-family:Calibri;">wait</span><span style="font-family:'宋体';">返回</span><span style="font-family:Calibri;">-1</span><span style="font-family:'宋体';">，同时</span><span style="font-family:Calibri;">errno</span><span style="font-family:'宋体';">被置为</span><span style="font-family:Calibri;">ECHILD</span><span style="font-family:'宋体';">。</span></span></p>
+<p><span style="font-family:'宋体';">如果参数</span>status<span style="font-family:'宋体';">的值不是</span><span style="font-family:Calibri;">NULL</span><span style="font-family:'宋体';">，</span><span style="font-family:Calibri;">wait</span><span style="font-family:'宋体';">就会把子进程退出时的状态取出并存入其中，
+ 这是一个整数值（</span><span style="font-family:Calibri;">int</span><span style="font-family:'宋体';">），指出了子进程是正常退出还是被非正常结束的，以及正常结束时的返回值，或被哪一个信号结束的等信息。由于这些信息 被存放在一个整数的不同二进制位中，所以用常规的方法读取会非常麻烦，人们就设计了一套专门的宏（</span><span style="font-family:Calibri;">macro</span><span style="font-family:'宋体';">）来完成这项工作，下面我们来学习一下其中最常用的两个：</span></p>
+<p>&nbsp;</p>
+<p>1<span style="font-family:'宋体';">，</span><span style="font-family:Calibri;">WIFEXITED(status)</span><span style="font-family:'宋体';">这个宏用来指出子进程是否为正常退出的，如果是，它会返回一个非零值。</span></p>
+<p><span style="font-family:'宋体';">（请注意，虽然名字一样，这里的参数</span>status<span style="font-family:'宋体';">并不同于</span><span style="font-family:Calibri;">wait</span><span style="font-family:'宋体';">唯一的参数</span><span style="font-family:Calibri;">–</span><span style="font-family:'宋体';">指向整数的指针</span><span style="font-family:Calibri;">status</span><span style="font-family:'宋体';">，而是那个指针所指向的整数，切记不要搞混了。）</span></p>
+<p>2<span style="font-family:'宋体';">， </span><span style="font-family:Calibri;">WEXITSTATUS(status)</span><span style="font-family:'宋体';">当</span><span style="font-family:Calibri;">WIFEXITED</span><span style="font-family:'宋体';">返回非零值时，我们可以用这个宏来提取子进程的返回值，如果子进程调用</span><span style="font-family:Calibri;">exit(5)</span><span style="font-family:'宋体';">退出，</span><span style="font-family:Calibri;">WEXITSTATUS(status)</span><span style="font-family:'宋体';">就会返回</span><span style="font-family:Calibri;">5</span><span style="font-family:'宋体';">；如果子进程调用</span><span style="font-family:Calibri;">exit(7)</span><span style="font-family:'宋体';">，</span><span style="font-family:Calibri;">WEXITSTATUS(status)</span><span style="font-family:'宋体';">就会返回</span><span style="font-family:Calibri;">7</span><span style="font-family:'宋体';">。请注意，如果进程不是正常退出的，也就是说，</span><span style="font-family:Calibri;">WIFEXITED</span><span style="font-family:'宋体';">返回</span><span style="font-family:Calibri;">0</span><span style="font-family:'宋体';">，这个值就毫无意义。</span></p>
+<p><span style="font-family:'宋体';"><br></span></p>
+<p>&nbsp;</p>
+<p>waitpid<span style="font-family:'宋体';">系统调用在</span><span style="font-family:Calibri;">Linux</span><span style="font-family:'宋体';">函数库中的原型是：</span></p>
+<p><span style="font-family:'宋体';"></span></p>
+<pre><code class="hljs cpp"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;sys/types.h&gt; /* 提供类型pid_t的定义 */</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;sys/wait.h&gt;</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-keyword">pid_t</span> waitpid(<span class="hljs-keyword">pid_t</span> pid,<span class="hljs-keyword">int</span> *status,<span class="hljs-keyword">int</span> options)</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">            </div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><br><br><p></p>
+<p>pid<span style="font-family:'宋体';">从本质上讲，系统调用</span>waitpid<span style="font-family:'宋体';">和</span><span style="font-family:Calibri;">wait</span><span style="font-family:'宋体';">的作用是完全相同的，但</span><span style="font-family:Calibri;">waitpid</span><span style="font-family:'宋体';">多出了两个可由用户控制的参数</span><span style="font-family:Calibri;">pid</span><span style="font-family:'宋体';">和</span><span style="font-family:Calibri;">options</span><span style="font-family:'宋体';">，从而为我们编程提供了另一种更灵活的方式。下面我们就来详细介绍一下这两个参数：</span></p>
+<p><span style="font-family:'宋体';">从参数的名字</span>pid<span style="font-family:'宋体';">和类型</span><span style="font-family:Calibri;">pid_t</span><span style="font-family:'宋体';">中就可以看出，这里需要的是一个进程</span><span style="font-family:Calibri;">ID</span><span style="font-family:'宋体';">。但当</span><span style="font-family:Calibri;">pid</span><span style="font-family:'宋体';">取不同的值时，在这里有不同的意义。</span></p>
+<p><span style="color:#ff0000;"><span style="font-family:'宋体';">下面对</span>pid<span style="font-family:'宋体';">的不同取值情况的说明：</span></span></p>
+<p><span style="color:#ff0000;">&gt;0 &nbsp;<span style="font-family:'宋体';">表示回收指定</span><span style="font-family:Calibri;">ID</span><span style="font-family:'宋体';">的子进程</span></span></p>
+<p><span style="color:#ff0000;">-1 &nbsp; <span style="font-family:'宋体';">表示回收任意子进程（相当于</span><span style="font-family:Calibri;">wait</span><span style="font-family:'宋体';">）</span></span></p>
+<p><span style="color:#ff0000;">0 &nbsp; &nbsp;<span style="font-family:'宋体';">表示回收和当前调用</span><span style="font-family:Calibri;">waitpid</span><span style="font-family:'宋体';">一个组的所有子进程</span></span></p>
+<p><span style="color:#ff0000;">&lt;-1 <span style="font-family:'宋体';">表示回收指定进程组内的任意子进程，比如</span><span style="font-family:Calibri;">-6610</span><span style="font-family:'宋体';">表示回收进程组</span><span style="font-family:Calibri;">id</span><span style="font-family:'宋体';">为</span><span style="font-family:Calibri;">6610</span><span style="font-family:'宋体';">的任意子进程</span></span></p>
+<p><span style="color:#ff0000;"><span style="font-family:'宋体';">附：一次</span>wait<span style="font-family:'宋体';">或</span><span style="font-family:Calibri;">waitpid</span><span style="font-family:'宋体';">调用只能清理掉一个子进程，清理多个子进程应该使用循环调用多次 。</span></span></p>
+<p>&nbsp;</p>
+<p><span style="color:#ff0000;">Options</span></p>
+<p><span style="color:#ff0000;"><span style="font-family:'宋体';">参数</span>options<span style="font-family:'宋体';">提供了一些额外的选项来控制</span><span style="font-family:Calibri;">waitpid</span><span style="font-family:'宋体';">，参数</span><span style="font-family:Calibri;">option</span><span style="font-family:'宋体';">可以为</span><span style="font-family:Calibri;">0</span><span style="font-family:'宋体';">或可以用</span><span style="font-family:Calibri;">"|"</span><span style="font-family:'宋体';">运算符把它们连接起来使用，比如：</span><br>
+ret=waitpid(-1,NULL,WNOHANG | WUNTRACED);<br><span style="font-family:'宋体';">如果我们不想使用它们，也可以把</span>options<span style="font-family:'宋体';">设为</span><span style="font-family:Calibri;">0</span><span style="font-family:'宋体';">，如：</span><br>
+ret=waitpid(-1,NULL,0);<br>
+WNOHANG <span style="font-family:'宋体';">若</span><span style="font-family:Calibri;">pid</span><span style="font-family:'宋体';">指定的子进程没有结束，则</span><span style="font-family:Calibri;">waitpid()</span><span style="font-family:'宋体';">函数返回</span><span style="font-family:Calibri;">0</span><span style="font-family:'宋体';">，不予以等待。若结束，则返回该子进程的</span><span style="font-family:Calibri;">ID</span><span style="font-family:'宋体';">。</span><br>
+WUNTRACED <span style="font-family:'宋体';">若子进程进入暂停状态，则马上返回，但子进程的结束状态不予以理会。</span><span style="font-family:Calibri;">WIFSTOPPED(status)</span><span style="font-family:'宋体';">宏确定返回值是否对应与一个暂停子进程。</span></span></p>
+<p>&nbsp;<span style="font-family:'宋体';">返回值和错误</span></p>
+<p>waitpid<span style="font-family:'宋体';">的返回值比</span><span style="font-family:Calibri;">wait</span><span style="font-family:'宋体';">稍微复杂一些，一共有</span><span style="font-family:Calibri;">3</span><span style="font-family:'宋体';">种情况：</span></p>
+<p><span style="font-family:'宋体';">当正常返回的时候，</span>waitpid<span style="font-family:'宋体';">返回收集到的子进程的进程</span><span style="font-family:Calibri;">ID</span><span style="font-family:'宋体';">；</span></p>
+<p><span style="font-family:'宋体';">如果设置了选项</span>WNOHANG<span style="font-family:'宋体';">，而调用中</span><span style="font-family:Calibri;">waitpid</span><span style="font-family:'宋体';">发现没有已退出的子进程可收集，则返回</span><span style="font-family:Calibri;">0</span><span style="font-family:'宋体';">；</span></p>
+<p><span style="font-family:'宋体';">如果调用中出错，则返回</span>-1<span style="font-family:'宋体';">，这时</span><span style="font-family:Calibri;">errno</span><span style="font-family:'宋体';">会被设置成相应的值以指示错误所在；</span></p>
+<p><span style="font-family:'宋体';">当</span>pid<span style="font-family:'宋体';">所指示的子进程不存在，或此进程存在，但不是调用进程的子进程，</span><span style="font-family:Calibri;">waitpid</span><span style="font-family:'宋体';">就会出错返回，这时</span><span style="font-family:Calibri;">errno</span><span style="font-family:'宋体';">被设置为</span><span style="font-family:Calibri;">ECHILD</span><span style="font-family:'宋体';">；</span></p>
+<p><br></p>
+<p></p>
+<pre><code class="hljs cpp"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;sys/types.h&gt;</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;sys/wait.h&gt;</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;unistd.h&gt;</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">main()</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-keyword">pid_t</span> pc, pr;</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">     </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    pc=fork();</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-keyword">if</span>(pc&lt;<span class="hljs-number">0</span>)  <span class="hljs-comment">/* 如果fork出错 */</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"Error occured on forking.\n"</span>);</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="11"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(pc==<span class="hljs-number">0</span>)</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="12"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    {  <span class="hljs-comment">/* 如果是子进程 */</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="13"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">        sleep(<span class="hljs-number">4</span>); <span class="hljs-comment">/* 睡眠4秒 */</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="14"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">        <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="15"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    }</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="16"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-comment">/* 如果是父进程 */</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="17"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-keyword">do</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="18"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    {</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="19"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">        pr=waitpid(pc, <span class="hljs-literal">NULL</span>, WNOHANG); <span class="hljs-comment">/* 使用了WNOHANG参数，waitpid不会在这里等待 */</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="20"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">         <span class="hljs-keyword">if</span>(pr==<span class="hljs-number">0</span>)</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="21"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">         {   <span class="hljs-comment">/* 如果没有收集到子进程 */</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="22"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">              <span class="hljs-built_in">printf</span>(<span class="hljs-string">"No child exited\n"</span>);</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="23"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">              sleep(<span class="hljs-number">1</span>);</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="24"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">         }</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="25"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    }<span class="hljs-keyword">while</span>(pr==<span class="hljs-number">0</span>);    <span class="hljs-comment">/* 没有收集到子进程，就回去继续尝试 */</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="26"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="27"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-keyword">if</span>(pr==pc)</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="28"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">         <span class="hljs-built_in">printf</span>(<span class="hljs-string">"successfully release child %d\n"</span>, pr);</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="29"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-keyword">else</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="30"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"some error occured\n"</span>);</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="31"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">}</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><br><p></p>
+<br><p><span style="font-family:'宋体';">编译并运行：</span></p>
+<p><span style="font-family:'宋体';"></span></p>
+<p>$ ./waitpid</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No child exited</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No child exited</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No child exited</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No child exited</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;successfully release child 1426</p>
+<br><p><span style="font-family:'宋体';">父进程经过</span>4<span style="font-family:'宋体';">次失败的尝试之后，终于收集到了退出的子进程。</span></p>
+<p><span style="font-family:'宋体';">因为这只是一个例子程序，不便写得太复杂，所以我们就让父进程和子进程分别睡眠了</span>4<span style="font-family:'宋体';">秒钟和</span><span style="font-family:Calibri;">1</span><span style="font-family:'宋体';">秒钟，代表它们分别作了</span><span style="font-family:Calibri;">4</span><span style="font-family:'宋体';">秒钟和</span><span style="font-family:Calibri;">1</span><span style="font-family:'宋体';">秒钟的工作。父子进程都有工作要做，父进程利用工作的简短间歇察看子进程的是否退出，如退出就收集它</span><span style="font-family:Calibri;">.</span><span style="font-family:'宋体';">这样的话</span><span style="font-family:Calibri;">,</span><span style="font-family:'宋体';">既不影响父进程的工作</span><span style="font-family:Calibri;">,</span><span style="font-family:'宋体';">也可以消除僵尸进程</span><span style="font-family:Calibri;">.</span><br></p>
+<p>&nbsp;</p>
+<p>&nbsp;<span style="color:#ff0000;"><span style="font-family:'宋体';">不管是</span> wait <span style="font-family:'宋体';">
+还是</span><span style="font-family:Calibri;">waitpid</span><span style="font-family:'宋体';">函数都有个参数来反映子进程的结束状态</span><span style="font-family:Calibri;">,</span><span style="font-family:'宋体';">底下有几个宏可判别结束情况</span><span style="font-family:Calibri;">,</span><span style="font-family:'宋体';">参数当然是指针指向的那个：</span></span></p>
+<p><span style="color:#ff0000;">WIFEXITED<span style="font-family:'宋体';">（</span><span style="font-family:Calibri;">status</span><span style="font-family:'宋体';">）如果子进程正常结束则为非</span><span style="font-family:Calibri;">0</span><span style="font-family:'宋体';">值。</span></span></p>
+<p><span style="color:#ff0000;">WEXITSTATUS<span style="font-family:'宋体';">（</span><span style="font-family:Calibri;">status</span><span style="font-family:'宋体';">）取得子进程</span><span style="font-family:Calibri;">exit</span><span style="font-family:'宋体';">（）返回的结束代码，一 般会先用</span><span style="font-family:Calibri;">WIFEXITED</span><span style="font-family:'宋体';">来判断是否正常结束才能使用此宏。</span></span></p>
+<p><span style="color:#ff0000;">&nbsp;</span></p>
+<p><span style="color:#ff0000;">WIFSIGNALED<span style="font-family:'宋体';">（</span><span style="font-family:Calibri;">status</span><span style="font-family:'宋体';">）如果子进程是因为信号而结束则此宏值为 真</span></span></p>
+<p><span style="color:#ff0000;"><span style="font-family:Calibri;">WTERMSIG</span><span style="font-family:'宋体';">（</span><span style="font-family:Calibri;">status</span><span style="font-family:'宋体';">） 取得子进程因信号而中止的信号代码，一般 会先用</span><span style="font-family:Calibri;">WIFSIGNALED</span><span style="font-family:'宋体';">来判断后才使用此宏。</span></span></p>
+<p><span style="color:#ff0000;"><span style="font-family:'宋体';"><br></span></span></p>
+<p><span style="color:#ff0000;">WIFSTOPPED<span style="font-family:'宋体';">（</span><span style="font-family:Calibri;">status</span><span style="font-family:'宋体';">） 如果子进程处于暂停执行情况则此宏值为 真。一般只有使用</span><span style="font-family:Calibri;">WUNTRACED</span><span style="font-family:'宋体';">时才会有此情况。</span></span></p>
+<p><span style="color:#ff0000;">WSTOPSIG<span style="font-family:'宋体';">（</span><span style="font-family:Calibri;">status</span><span style="font-family:'宋体';">） 取得引发子进程暂停的信号代码，一般会先 用</span><span style="font-family:Calibri;">WIFSTOPPED</span><span style="font-family:'宋体';">来判断后才使用此宏。
+ 返回值 如果执行成功则返回子进程识别码（</span><span style="font-family:Calibri;">PID</span><span style="font-family:'宋体';">），如果有错误发生则返回</span><span style="font-family:Calibri;">-1</span><span style="font-family:'宋体';">。失败原因存于</span><span style="font-family:Calibri;">errno</span><span style="font-family:'宋体';">中。</span></span></p>
+<p>用法：</p>
+<p>status<span style="font-family:'宋体';">传出参数保存着子进程的退出状态，下面对其说明如下： </span></p>
+<p></p><pre><code class="hljs cpp"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-keyword">if</span>(WIFEXITED(status))</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">     <span class="hljs-comment">//IFEXITED非0，进程正常退出</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">     <span class="hljs-built_in">printf</span>(<span class="hljs-string">"exited, status=%d\n"</span>, WEXITSTATUS(status));</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">}</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(WIFSIGNALED(status))</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-comment">//IFSIGNALED非0，进程被某个信号异常终止</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"killed by signal %d\n"</span>, WTERMSIG(status));</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">}</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="11"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(WIFSTOPPED(status))</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="12"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">{ </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="13"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-comment">//IFSTOPPED非0，进程收到某个信号而暂停</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="14"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-built_in">printf</span>(<span class="hljs-string">"stopped by signal %d\n"</span>, WSTOPSIG(status));</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="15"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">} </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="16"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(WIFCONTINUED(status)) </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="17"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">{ </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="18"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-comment">//IFCONTINUED非0，进程从暂停状态变为继续运行状态</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="19"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"continued\n"</span>);</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="20"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">} </div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><br><br>                                    </div>
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/Linux-C/">Linux C</a>
+  </div>
+
+        
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div></div></div>
+      <aside id="sidebar" class="alignright">
+        
+           <div class="search">
+  <form action="/search/index.html" method="get" accept-charset="utf-8">
+<!--     <input type="search" name="wd"results="0" placeholder="搜索">
+    <input type="hidden" name="wd" value="site:yoursite.com"> -->
+     <input type="text" id="search" class="st-default-search-input" placeholder="搜索" style="height: 100%" />
+  </form>
+</div> 
+        
+          
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ML/">ML</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/">PWN</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/stack/">stack</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
+</div>
+ 
+
+        
+          <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/qrcode.jpg" alt="欢迎关注个人公众账号" style= "width: 100%">
+    </ul>
+</div>
+        
+          <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">友情链接</h3>
+      <ul class="entry">
+        
+          <li class='link'><a href='https://hpasserby.me/'>一个bin菜鸡</a></li>
+        
+      </ul>
+  </div>
+
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">39</span></li></ul>
+  </div>
+
+        
+      </aside>
+      <div class="clearfix"></div>
+    </div>
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2019 cendeavor
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+
+  <div>
+    Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a>
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="/js/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 百度统计 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','HcqxzAQHLZzGwtjJSqw3','2.0.0');
+</script>
+</body>
+</html>

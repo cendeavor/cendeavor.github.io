@@ -1,0 +1,288 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>守护进程是个啥？ | 沉浮之道</title>
+  <meta name="author" content="cendeavor">
+  
+  <meta name="description" content="久仰守护进程的大名，一直不知道是个啥，今天学习samba的概念时又出现了这个词，来学习一哈。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="守护进程是个啥？">
+  <meta property="og:site_name" content="沉浮之道">
+
+  
+    <meta property="og:image" content>
+  
+
+  <link rel="alternate" href="/atom.xml" title="沉浮之道" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+</html>
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/avatar.png">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">沉浮之道</a></h1>
+		    <h2><a href="/"></a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/node"><i class="fa fa-book"></i>Node.js</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		      <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-09-16T13:04:22.454Z"><a href="/2019/09/16/0xZ-Linux C 守护进程/">2019-09-16</a></time>
+        
+  
+    <h1 class="title">守护进程是个啥？</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、概念"><span class="toc-text">一、概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、特征"><span class="toc-text">二、特征</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、编程"><span class="toc-text">三、编程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-创建子进程，父进程退出"><span class="toc-text">1. 创建子进程，父进程退出</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-在子进程中创建新会话"><span class="toc-text">2. 在子进程中创建新会话</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-子进程创建一个子子进程，并让子进程退出"><span class="toc-text">3. 子进程创建一个子子进程，并让子进程退出</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-改变当前目录为根目录"><span class="toc-text">4. 改变当前目录为根目录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-重设文件权限掩码"><span class="toc-text">5. 重设文件权限掩码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-关闭文件描述符"><span class="toc-text">6. 关闭文件描述符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-守护进程退出处理"><span class="toc-text">7. 守护进程退出处理</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、惯例"><span class="toc-text">四、惯例</span></a></li></ol>
+    </div>
+
+        <p>久仰守护进程的大名，一直不知道是个啥，今天学习samba的概念时又出现了这个词，来学习一哈。</p>
+<a id="more"></a>
+
+<h2 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;守护进程就是通常说的daemon进程，是<code>linux后台</code>执行的一种进程，他的特点就是，生存周期长，<code>独立于控制终端</code>并且周期性的执行某种任务，不会随着终端的关闭而停止运行，直到接收到停止信息才会结束运行。一般的网络服务都是以守护进程的方式运行。</p>
+<h2 id="二、特征"><a href="#二、特征" class="headerlink" title="二、特征"></a>二、特征</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;大多数守护进程都是以超级用户特权运行的。没有一个守护进程有控制终端，其<code>终端名为？</code>，<code>进程组ID为-1</code>。所有用户层守护进程都是进程组的组长进程和首进程，而且是这些进程组和会话中的唯一进程。<code>大多数守护进程的父进程是init进程</code>。</p>
+<h2 id="三、编程"><a href="#三、编程" class="headerlink" title="三、编程"></a>三、编程</h2><p><img src="/pic/0xZ-%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/2019-09-16-22-54-37.png" alt></p>
+<h4 id="1-创建子进程，父进程退出"><a href="#1-创建子进程，父进程退出" class="headerlink" title="1. 创建子进程，父进程退出"></a>1. 创建子进程，父进程退出</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (fork())&#123;</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>先解释这个语句的意思：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* fork()函数：</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* 三种返回值：</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* 0：子进程中返回0</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* &gt; 0：在父进程中返回子进程ID</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* -1  : 出错返回-1</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* 所以通过判断是不是0，就能判断是不是子进程，不是子进程的全部退出。</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>为什么做这一步？</strong><br>&nbsp;&nbsp;&nbsp;&nbsp;由于守护进程是脱离终端而存在的，所以先给终端一种<code>假死的状态</code>，之后的工作都在子进程中进行。<br>&nbsp;&nbsp;&nbsp;&nbsp;父进程退出后，子进程没有父进程变成了一个<code>孤儿进程</code>，Linux中，每当系统发现一个孤儿进程，就会自动由1号进程（也就是init进程：内核启动的一号进程）收养它，这样子进程就变成了<code>init进程</code>的子进程。</p>
+<h4 id="2-在子进程中创建新会话"><a href="#2-在子进程中创建新会话" class="headerlink" title="2. 在子进程中创建新会话"></a>2. 在子进程中创建新会话</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setsid()</span><br></pre></td></tr></table></figure>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;这个步骤是创建守护进程最重要的一步，虽然实现非常简单，但意义却非常重大。在这里使用的是系统函数setsid()，在具体介绍setsid()之前，读者首先要了解两个概念：<code>进程组和会话期</code>。</p>
+<p><strong>进程组</strong> 进程组是一个或多个进程的集合。进程组由进程组ID来唯一标识。除了进程号（PID）之外，进程组ID也是一个进程的必备属性。每个进程组都有一个<code>组长进程</code>，其组长进程的进程号等于进程组ID，且该进程ID不会因组长进程的退出而受到影响。</p>
+<p><strong>会话期</strong> 会话组是一个或多个进程组的集合。通常，<code>一个会话开始于用户登录</code>，终止于用户退出，在此期间该用户运行的所有进程都属于这个会话期。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;接下来就可以具体介绍setsid()的相关内容。<br>&nbsp;&nbsp;&nbsp;&nbsp;<code>setsid()函数</code>用于创建一个新的会话组，并担任该会话组的组长。调用setsid()有以下3个作用：</p>
+<ol>
+<li>让进程摆脱原会话的控制。</li>
+<li>让进程摆脱原进程组的控制。</li>
+<li>让进程摆脱原控制终端的控制。</li>
+</ol>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;那么，在创建守护进程时为什么要调用setsid()函数呢？读者可以回忆一下创建守护进程的第一步， 在那里调用了fork()函数来创建子进程再令父进程退出。由于在调用fork()函数时，子进程全盘复制了父进程的会话期、进程组和控制终端等，虽然父进程退出了，但原先的会话期、进程组和控制终端等并没有改变，因此，还不是真正意义上的独立。而setsid()函数能够使进程完全独立出来，从而脱离所 有其他进程的控制。</p>
+<h4 id="3-子进程创建一个子子进程，并让子进程退出"><a href="#3-子进程创建一个子子进程，并让子进程退出" class="headerlink" title="3. 子进程创建一个子子进程，并让子进程退出"></a>3. 子进程创建一个子子进程，并让子进程退出</h4><p>&nbsp;&nbsp;&nbsp;&nbsp;现在，子进程已经成为无终端的会话组长，但它可以重新申请打开一个控制终端，调用fork再创建子进程。子进程终止，子子进程继续执行，由于子子进程不再是会话组长，从而禁止进程重新打开控制终端。</p>
+<h4 id="4-改变当前目录为根目录"><a href="#4-改变当前目录为根目录" class="headerlink" title="4. 改变当前目录为根目录"></a>4. 改变当前目录为根目录</h4><p>&nbsp;&nbsp;&nbsp;&nbsp;这一步也是必要的步骤。使用fork()创建的子进程继承了父进程的当前工作目录。由于在进程运行过程中，<em>当前目录所在的文件系统（如“/mnt/usb”等）是不能卸载的，这对以后的使用会造成诸多的麻烦</em> {这里有点没懂。。}（如系统由于某种原因要进入单用户模式）。因此，通常的 做法是让“/”作为守护进程的当前工作目录，这样就可以避免上述问题。当然，如有特殊需要，也可以把当前工作目录换成其他的路径，如/tmp。改变工作目 录的常见函数是chdir()。</p>
+<h4 id="5-重设文件权限掩码"><a href="#5-重设文件权限掩码" class="headerlink" title="5. 重设文件权限掩码"></a>5. 重设文件权限掩码</h4><p>&nbsp;&nbsp;&nbsp;&nbsp;文件<code>权限掩码</code>是指<code>屏蔽</code>掉文件权限中的对应位。例如，有一个文件权限掩码是050，它就屏蔽了文件组拥有者的可读与 可执行权限。由于使用fork()函数新建的子进程继承了父进程的文件权限掩码，这就给该子进程使用文件带来了诸多的麻烦。因此，把文件权限掩码设置为 0，可以大大<code>增强该守护进程的灵活性</code>。设置文件权限掩码的函数是umask()。在这里，通常的使用方法为umask(0)。</p>
+<h4 id="6-关闭文件描述符"><a href="#6-关闭文件描述符" class="headerlink" title="6. 关闭文件描述符"></a>6. 关闭文件描述符</h4><p>&nbsp;&nbsp;&nbsp;&nbsp;同文件权限掩码一样，用fork()函数新建的子进程会从父进程那里继承一些已经打开的文件。这些被打开的文件可能永远不会被守护进程读或写，但它们一样消耗系统资源，而且可能导致所在的文件系统无法被卸载。<br>&nbsp;&nbsp;&nbsp;&nbsp;然后，打开一个空设备，并复制到标准输出和标准错误上。 避免调用的一些库函数依然向屏幕输出信息。</p>
+<h4 id="7-守护进程退出处理"><a href="#7-守护进程退出处理" class="headerlink" title="7. 守护进程退出处理"></a>7. 守护进程退出处理</h4><p>&nbsp;&nbsp;&nbsp;&nbsp;当用户需要外部停止守护进程运行时，往往会使用 kill 命令停止该守护进程。所以，守护进程中需要编码来实现 kill 发出的signal信号处理，达到进程的正常退出。</p>
+<p><strong>完整代码如下：</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">create_daemon</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">pid_t</span> pid;</span><br><span class="line">    <span class="comment">/* 调用fork创建子进程 */</span></span><br><span class="line">    pid = fork();   </span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(pid == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        syslog(LOG_ERR,<span class="string">"fork error\n"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(pid)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">/* 父进程终止，让子进程在后台继续执行 */</span></span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);    </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* 子进程调用setsid产生新会话期并失去控制终端 */</span></span><br><span class="line">    <span class="keyword">if</span>(setsid() == <span class="number">-1</span>)  </span><br><span class="line">    &#123;</span><br><span class="line">        syslog(LOG_ERR,<span class="string">"setsid error\n"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    pid = fork();</span><br><span class="line">    <span class="keyword">if</span>(pid == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        syslog(LOG_ERR,<span class="string">"fork error\n"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(pid)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    chdir(<span class="string">"/"</span>);</span><br><span class="line">    close(<span class="number">0</span>);</span><br><span class="line">    close(<span class="number">1</span>);</span><br><span class="line">    close(<span class="number">2</span>);</span><br><span class="line">    umask(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * https://blog.csdn.net/a511244213/article/details/79625801</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="四、惯例"><a href="#四、惯例" class="headerlink" title="四、惯例"></a>四、惯例</h2><ol>
+<li>若守护进程使用锁文件，那么该文件通常存放在/var/run/目录中，锁的名字为：守护进程名/服务名.pid</li>
+<li>若守护进程支持配置选项，那么配置文件通常放在/etc目录中。配置文件的名字为：守护进程名/服务名.conf。</li>
+<li>守护进程可由命令行启动，通常是由系统初始化脚本（/etc/rc* 或者 /etc/init.d/*）启动的。</li>
+<li>守护进程捕捉SIGHUP信号，当它们接收到该信号时，重读配置文件。</li>
+</ol>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/Linux-C/">Linux C</a>
+  </div>
+
+        
+  <div class="tags">
+    <a href="/tags/show/">show</a>
+  </div>
+
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div></div></div>
+      <aside id="sidebar" class="alignright">
+        
+           <div class="search">
+  <form action="/search/index.html" method="get" accept-charset="utf-8">
+<!--     <input type="search" name="wd"results="0" placeholder="搜索">
+    <input type="hidden" name="wd" value="site:yoursite.com"> -->
+     <input type="text" id="search" class="st-default-search-input" placeholder="搜索" style="height: 100%" />
+  </form>
+</div> 
+        
+          
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ML/">ML</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/">PWN</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/stack/">stack</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
+</div>
+ 
+
+        
+          <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/qrcode.jpg" alt="欢迎关注个人公众账号" style= "width: 100%">
+    </ul>
+</div>
+        
+          <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">友情链接</h3>
+      <ul class="entry">
+        
+          <li class='link'><a href='https://hpasserby.me/'>一个bin菜鸡</a></li>
+        
+      </ul>
+  </div>
+
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">39</span></li></ul>
+  </div>
+
+        
+      </aside>
+      <div class="clearfix"></div>
+    </div>
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2019 cendeavor
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+
+  <div>
+    Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a>
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="/js/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 百度统计 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','HcqxzAQHLZzGwtjJSqw3','2.0.0');
+</script>
+</body>
+</html>
