@@ -1,124 +1,101 @@
-
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta charset="utf-8">
   
   <title>C clock()函数踩坑记录 | 沉浮之道</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="author" content="cendeavor">
+  
   <meta name="description" content="今天写了一个tcp扫描程序，用计时函数clock()对其扫描时间进行计时，以验证TCP Connect方式扫描的耗时久。结果。。">
-<meta name="keywords" content="show">
-<meta property="og:type" content="article">
-<meta property="og:title" content="C clock()函数踩坑记录">
-<meta property="og:url" content="http://yoursite.com/2019/09/16/0xK-C clock()函数踩坑记录/index.html">
-<meta property="og:site_name" content="沉浮之道">
-<meta property="og:description" content="今天写了一个tcp扫描程序，用计时函数clock()对其扫描时间进行计时，以验证TCP Connect方式扫描的耗时久。结果。。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://yoursite.com/pic/0xK-C%20clock()%E5%87%BD%E6%95%B0%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/2019-09-16-20-03-24.png">
-<meta property="og:image" content="http://yoursite.com/pic/0xK-C%20clock()%E5%87%BD%E6%95%B0%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/2019-09-16-20-47-01.png">
-<meta property="og:image" content="http://yoursite.com/pic/0xK-C%20clock()%E5%87%BD%E6%95%B0%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/2019-09-16-20-47-17.png">
-<meta property="og:updated_time" content="2019-09-17T14:47:06.171Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="C clock()函数踩坑记录">
-<meta name="twitter:description" content="今天写了一个tcp扫描程序，用计时函数clock()对其扫描时间进行计时，以验证TCP Connect方式扫描的耗时久。结果。。">
-<meta name="twitter:image" content="http://yoursite.com/pic/0xK-C%20clock()%E5%87%BD%E6%95%B0%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/2019-09-16-20-03-24.png">
-  
-    <link rel="alternative" href="/atom.xml" title="沉浮之道" type="application/atom+xml">
   
   
-  <link rel="stylesheet" href="/css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="C clock()函数踩坑记录">
+  <meta property="og:site_name" content="沉浮之道">
+
   
-    <link href="//fonts.useso.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+    <meta property="og:image" content>
   
-  <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
-  
-  
+
+  <link rel="alternate" href="/atom.xml" title="沉浮之道" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
 
 </head>
 </html>
 <body>
-<div id="container">
-  <div id="wrap">
-    <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <nav id="upper-nav" class="inner">
-      <a id="main-nav-toggle" class="nav-icon"></a>
-      <div class="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        
-          <a id="nav-github" class="nav-icon" href="https://github.com/cendeavor"></a>
-        
-      </div>
-    </nav>
-    <div id="header-title">
-      
-        <h1 id="blog-title-wrap">
-          <a href="/" id="blog-title">cendeavor</a>
-        </h1>
-      
-    </div>
-    <div id="contenedor">
-      <ul class="cube">
-        <li class="cara">NEW</li>
-        <li class="cara"></li>
-        <li class="cara"></li>
-        <li class="cara"></li>
-        <li class="cara"></li>
-        <li class="cara"></li>
-      </ul>
-    </div>
-    <nav id="main-nav">
-      
-        <a class="main-nav-link" href="/">Home</a>
-      
-        <a class="main-nav-link" href="/archives">Archives</a>
-      
-        <a class="main-nav-link" href="/about">About</a>
-      
-      <a class="main-nav-link st-search-show-outputs">搜索</a>
-    </nav>
-  </div>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/avatar.png">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">沉浮之道</a></h1>
+		    <h2><a href="/"></a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/node"><i class="fa fa-book"></i>Node.js</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		      <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
 </header>
-
-    <div class="outer">
-      <section id="main"><article id="post-0xK-C clock()函数踩坑记录" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <h3 href="/2019/09/16/0xK-C clock()函数踩坑记录/" class="article-date">
-  <time datetime="2019-09-16T12:01:24.970Z" itemprop="datePublished">2019-09-16</time>
-</h3>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/C/">C</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-  <div class="curve-down">
-  <div class="fill-content">
-    
-    
-      <header class="article-header">
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-09-16T12:01:24.970Z"><a href="/2019/09/16/0xK-C clock()函数踩坑记录/">2019-09-16</a></time>
         
   
-    <h1 class="article-title" itemprop="name">
-      C clock()函数踩坑记录
-    </h1>
+    <h1 class="title">C clock()函数踩坑记录</h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
+    </header>
+
+    <div class="entry">
       
         
-          <div id="toc" class="toc-article">
-            <strong class="toc-title">文章目录</strong>
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#C程序计时方法总结"><span class="toc-text">C程序计时方法总结</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#content_views"><span class="toc-text">方法一：使用clock()函数</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#content_views"><span class="toc-text">方法二：使用time()和difftime()函数</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#content_views"><span class="toc-text">方法三：gettimeofday()函数</span></a></li></ol></li></ol></li></ol></li></ol></li></ol>
-          </div>
-        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#C程序计时方法总结"><span class="toc-text">C程序计时方法总结</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#content_views"><span class="toc-text">方法一：使用clock()函数</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#content_views"><span class="toc-text">方法二：使用time()和difftime()函数</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#content_views"><span class="toc-text">方法三：gettimeofday()函数</span></a></li></ol></li></ol></li></ol></li></ol></li></ol>
+    </div>
+
         <p>今天写了一个tcp扫描程序，用计时函数clock()对其扫描时间进行计时，以验证TCP Connect方式扫描的耗时久。结果。。</p>
 <a id="more"></a>
 
@@ -130,165 +107,137 @@
                                             <div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;"><h5><strong>方法一：使用clock()函数</strong></h5></div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp;<strong> 头文件：</strong>time.h<br></div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp;<strong> 函数原型：</strong>clock_t clock(void)<br></div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp;&nbsp;<strong>说明：</strong><span style="line-height:1.6;">&nbsp;</span><span style="font-family:'Times New Roman';line-height:1.6;">其中clock函数返回从开始这个程序到调用的clock()函数之间的CPU时钟计时单元（click tick）数。</span><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-style:normal;font-weight:normal;text-indent:0px;"><span>&nbsp; &nbsp;&nbsp;</span><span><span style="font-family:'Times New Roman';color:#000000;font-style:normal;font-weight:normal;text-indent:0px;"><span style="font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;color:#000000;font-style:normal;font-weight:normal;text-indent:0px;">返回值类型是clock_t。其中CLOCKS_PER_SEC是一个常数，表示一秒钟有多少个时钟计时单元。</span></span></span></div></div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp;<strong> 精确值：</strong>精确到毫秒，适合一般的场合</div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp;<strong>&nbsp;实例：</strong></div><pre><code class="hljs cpp"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> <span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string">&lt;time.h&gt;</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword">clock_t</span> start, end; </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> &nbsp;&nbsp;&nbsp;&nbsp;start = clock();</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment">/*...需要计时的代码...*/</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">&nbsp;&nbsp;&nbsp;&nbsp; end = clock();</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-built_in">printf</span>(<span class="hljs-string">"time=%f\n"</span>, (<span class="hljs-keyword">double</span>)(end - start) / CLOCKS_PER_SEC);</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">}</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;"><h5><span style="color:inherit;line-height:1.6;"><span style="font-family:'Times New Roman';color:#000000;font-style:normal;text-indent:0px;"><span style="font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;color:#000000;font-style:normal;text-indent:0px;">方法二：</span></span></span>使用time()和difftime()函数<span style="color:inherit;line-height:1.6;"><span style="font-family:'Times New Roman';color:#000000;font-style:normal;font-weight:normal;text-indent:0px;"><span style="font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;color:#000000;font-style:normal;font-weight:normal;text-indent:0px;"><br></span></span></span></h5></div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp;<strong> 头文件：</strong>time.h<br></div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp;<strong>&nbsp;函数原型：</strong>time_t time(time_t, * timer)</div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; double difftime(time_t, time_t)<br></div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp; <strong>功能：</strong>返回自1970年1月1日00：00:00到现在经过的秒数<br></div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp; <strong>说明：</strong><span style="font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;color:#000000;font-style:normal;font-weight:normal;text-indent:0px;"><span>&nbsp;</span>其中difftime(t2-t1)要比t2-t1更准确。diffime会根据机器进行转换</span><br></div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp;<strong> 精确值：</strong>精确到秒<br></div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp;<strong> &nbsp; 实例：</strong><br><pre><code class="hljs cpp"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string">&lt;time.h&gt;</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword">time_t</span> start,end;</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    start = time(<span class="hljs-literal">NULL</span>);</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-comment">/*...需要计时的代码...*/</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    end = time(<span class="hljs-literal">NULL</span>);</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"time = %d秒\n"</span>, difftime(end, start));</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">&nbsp;&nbsp;&nbsp; <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">}</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre></div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;"><h5><strong>方法三：gettimeofday()函数</strong><span style="color:inherit;line-height:1.6;"><br></span></h5></div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp;<strong> 头文件：</strong>sys/time.h<br></div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp; <strong>函数原型：</strong>int gettimeofday(struct timeval *tv, struct timezone *tz)</div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp;<strong> 说明：</strong>1.这个函数是linux系统专属函数，可以精确到微秒；</div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 2.其中参数tv是保存获取时间的结果类型，参数tz用于保存时区结果（若不使用可以传入NULL） &nbsp;。&nbsp;</div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp; &nbsp;<strong> 精确值：</strong>精确到微秒</div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;">&nbsp;<strong> &nbsp; 实例：</strong><br><pre><code class="hljs cpp"><ol class="hljs-ln" style="width:773px"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string">&lt;time.h&gt;</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">mian</span><span class="hljs-params">()</span></span>{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">timeval</span> <span class="hljs-title">start</span>,<span class="hljs-title">end</span>;</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    gettimeofday(&amp;start, <span class="hljs-literal">NULL</span>);</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">     <span class="hljs-comment">/*...需要计时的代码...*/</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    gettimeofday(&amp;end, <span class="hljs-literal">NULL</span>);</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-keyword">long</span> timeuse = <span class="hljs-number">1000000</span>*(end.tv_sec - start.tv_sec) + end.tv_usec-start.tv_usec;</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"time =%f 秒\n"</span>, timeuse/<span class="hljs-number">1000000</span>)</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">&nbsp;&nbsp;&nbsp; <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">}</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre>总结：如果是linux下最好使用第三种方法，如果是其它系统最好使用第一种方法。第二种方法统计的时间精确到秒。针对的是运行时间较长，或者有明显的时间差的程序。第二种方法可移植性好，性能稳定，但是精度低只能精确到秒。<br></div><div style="margin:0px;color:rgb(0,0,0);font-family:Helvetica, 'Hiragino Sans GB', '微软雅黑', 'Microsoft YaHei UI', SimSun, SimHei, arial, sans-serif;font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:25.6px;text-indent:0px;text-transform:none;white-space:normal;word-spacing:0px;"><br></div><p>当然还存在其它多种方法的。想了解更多方法可以参考链接https://blog.csdn.net/fz_ywj/article/details/8109368。写完本文章之后，发现这篇博文总结的很详细。</p><p><br></p>                                    </div>
       
     </div>
-    <footer class="article-footer">
-      <div class="article-footer-content">
+    <footer>
+      
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/show/">show</a></li></ul>
+  
+  <div class="categories">
+    <a href="/categories/C/">C</a>
+  </div>
 
-        <a data-url="http://yoursite.com/2019/09/16/0xK-C clock()函数踩坑记录/" data-id="ck0ylcz4g002lhcuy4luuwd4b" class="article-share-link">分享到</a>
         
-      </div>
+  <div class="tags">
+    <a href="/tags/show/">show</a>
+  </div>
+
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
     </footer>
   </div>
-  </div>
-  </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2019/09/16/0xZ-守护进程/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">下一篇</strong>
-      <div class="article-nav-title">
-        
-          守护进程是个啥？
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2019/09/15/0xB-SomethingInteresting/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">上一篇</strong>
-      <div class="article-nav-title">Something Interesting</div>
-    </a>
-  
-</nav>
-
-  
 </article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div></div></div>
+      <aside id="sidebar" class="alignright">
+        
+          
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ML/">ML</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/">PWN</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/stack/">stack</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
+</div>
+ 
 
+        
+          <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/qrcode.jpg" alt="欢迎关注个人公众账号" style= "width: 100%">
+    </ul>
+</div>
+        
+          <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
 
-</section>
-      
-      <aside id="sidebar">
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">近期文章</h3>
-    <div class="widget">
-      <ul>
         
-          <li>
-            <a href="/2019/09/24/0xZ-C 日志函数/">C 日志函数</a>
-          </li>
+          
+  <div class="widget tag">
+    <h3 class="title">友情链接</h3>
+      <ul class="entry">
         
-          <li>
-            <a href="/2019/09/23/0xZ-Linux C send和recv函数详解/">send函数和recv函数详解</a>
-          </li>
+          <li class='link'><a href='http://xiaoyun.farbox.com'>晓晓博客</a></li>
         
-          <li>
-            <a href="/2019/09/23/0xZ-Linux C select实现并发服务器/">Linux C select函数实现并发服务器</a>
-          </li>
-        
-          <li>
-            <a href="/2019/09/23/0x00-Mininet源码分析/">Mininet源码分析</a>
-          </li>
-        
-          <li>
-            <a href="/2019/09/21/0xB-安装配置/">安装配置</a>
-          </li>
+          <li class='link'><a href='http://www.ituring.com.cn/users/136808'>图灵社区</a></li>
         
       </ul>
-    </div>
   </div>
 
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">34</span></li></ul>
+  </div>
+
+        
+      </aside>
+      <div class="clearfix"></div>
+    </div>
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
   
+    &copy; 2019 cendeavor
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">分类</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ML/">ML</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/">PWN</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/stack/">stack</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul>
-    </div>
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
   </div>
 
+  <div>
+    Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a>
+  </div>
   
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="/js/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">标签</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AAA/">AAA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/StackOverflow/">StackOverflow</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/link/">link</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/manual/">manual</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/show/">show</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tool/">tool</a><span class="tag-list-count">1</span></li></ul>
-    </div>
-  </div>
-
-  
+      $('#calendar').aCalendar('zh-CN',{single:, root:'calendar'});
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">归档</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">34</span></li></ul>
-    </div>
-  </div>
+    });
+  </script>
 
-  
-</aside>
-      
-    </div>
-    <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2019 cendeavor<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-      .
-      Theme by <a href="https://github.com/sun11/hexo-theme-paperbox" target="_blank">Paperbox</a>
-    </div>
-  </div>
-</footer>
-  </div>
-  <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-    <a href="/about" class="mobile-nav-link">About</a>
-  
-  <a href="#search" class="mobile-nav-link st-search-show-outputs">搜索</a>
-</nav>
 
-  
+<!-- 百度统计 -->
 
-<!-- totop start -->
-<div id="totop">
-	<a title="返回顶部"></a>
-</div>
-<!-- totop end -->
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
 
-<!-- swiftype search start -->
 
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
-  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
-  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
-  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
-  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
-
-  _st('install','G7KYNHRd9_81_MBK9uM8','2.0.0');
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
 </script>
 
-<!-- swiftype search end -->
 
-
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/lrsjng.jquery-qrcode/0.12.0/jquery.qrcode.min.js"></script>
-
-
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
-
-
-<script src="/js/script.js"></script>
-
-</div>
 </body>
 </html>
