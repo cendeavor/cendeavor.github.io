@@ -106,7 +106,7 @@
 <div id="decryptionError" style="display: none;">Incorrect Password!</div>
 <div id="noContentError" style="display: none;">No content to display!</div>
 <div id="encrypt-blog" style="display:none">
-U2FsdGVkX1+O6r3lPUXzw/s7K4aylzYiEoMw9X0vcCGRpaT2o57+CN4hjGB0R/7Frjf3qg9/q5ag3SB+JiuaHNNtJ3yMZA/jV1apofnFrmd4KF+O4ZeVa7KEEkWnM3mRkQUHSrbgW9zTGISIic5u8xmo4HZ5sass1hT62gWUo266a9prSOMet/M44fMPFPsiAc8ud9KlaVed2r+N+TLGjhr7XOksvRB+HN0gRldLVOOom/pHJ5ETDE6lUJacSgMIksQqY/zfbbo1QGOL/vm5hjnu2VSofp4haHtbgqJsglXOr/n7aOuFFXBDtl5I/7FqKKKSm17h3eSbjl2rxAuE8rIAzAkn0YQEccgQQ27GCZsYxYUJD83WSWUgtyxeN4s0HP91pihH5V2yENIbW45tYA7fAC0M04H8XUpfIEotgcYPabHTavgGLBCOE8YNhq7As0AQXD5gRQ/cdo+5qGOZGC6oCNtWwJdjod7yaAP4ysGF08H4H7n9fX92xiBwvnJqnQESpF7BONLh+gcuC+UbU06C8aCMaJ0v/VP18GO6+A4/7rC16tiWc6XP/GOH/UpPW0fkv5VhEUFMv2g69PXtnRBLhP/n25jRO5zaGhp2cdLtBiWSYRa3GAOT2s4D0Vm/CJQMks5kYeuadkp2Xv2jBlO6RRQOD8jewFC9UqtSjJYLcoTp3Y/8oH9qdiZlcvpQs+2l7ZMuXCRc+DFrdoYAUKnXSd1bM99ycF8AmxdMnBvPiKC/5JjQ8bLaSEYjVuIk5yX+ixgtfUKE06QrTJidkWvxIXFOu85N7OlcGram26EvfENs93WrjPcuEIpIdZ5p
+U2FsdGVkX19Oj9FsaZdZ9UpbbofRRJDyuchtw70SVVsrZW0YeeyOifJsr4/rcOX7kknYGpcEt1QOhErNStkEuCbH96KiAnR3e8ikNLkdsjjey98YAUbtVvDeepfHJKkoMqUDekQPIQyHVTrFjX6G8/pR/1nYJx2VLB4HewlXSrTh3DzvklM0+dlZ6MaiQSCUqpiBAdDzltZ79COrU4Hqz8YkR0VwA1CNcEtu5NbNgxCEbJTgjfr0/3kGvUnvBBqD16274F4pmEF+Dp8RwYUv6smzy1n6yCcN+zor0yieXmIN3e7phOT7NgJbNLO0dyndZ5Yag898hYfcLmfYFSJ6NTGqN6xeKt0gBsnEqXfxKCJ1oyHX6wMUzY1PZ98mKeBSvRLPk7l5wu9yo/PcpNdomoyNPujPqvkjVQXdIg6p80FC5wje/dbsxoBCxqs6TySb3YpJd7R7MXFVb1wnOgY+yVa5B7DV595/dhmKBzPmv0bR9EhqSSLLiSKNFlmp5Ii9FaD1rVk1998Tp/a8jksxU2Y1hLCFenACYyFYSwploktmCpkLjHW4rrokYnFp8+4jsUq7PMao5Mcp0tRfOH3MjrCsQPG2f9uPOra6Zpi3Ci/NOwQJYLNDCivj9YmtlfneCnD0Si711AiJozlPc6/QFOSlkaVRYtHWdql7hI3zX0W9/ZuvW5MikRZ2PCjc3L5KwgF6TzHXHbpUvamfV7WPb0NKyk4WbxHwFxKs297hydl+/r03HNpZmHrJ0kQtsAWETP0Rxsr3VVP7mHSj7Xp6AV80zbzwSLNe150krmt2GmN55PYU7bmkCzm3OWw6SZgq
 </div>
 <script src="/lib/crypto-js.js"></script><script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">
       
@@ -140,6 +140,14 @@ U2FsdGVkX1+O6r3lPUXzw/s7K4aylzYiEoMw9X0vcCGRpaT2o57+CN4hjGB0R/7Frjf3qg9/q5ag3SB+
 </div></div></div>
       <aside id="sidebar" class="alignright">
         
+           <div class="search">
+  <form action="/search/index.html" method="get" accept-charset="utf-8">
+<!--     <input type="search" name="wd"results="0" placeholder="搜索">
+    <input type="hidden" name="wd" value="site:yoursite.com"> -->
+     <input type="text" id="search" class="st-default-search-input" placeholder="搜索" style="height: 100%" />
+  </form>
+</div> 
+        
           
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
@@ -166,9 +174,7 @@ U2FsdGVkX1+O6r3lPUXzw/s7K4aylzYiEoMw9X0vcCGRpaT2o57+CN4hjGB0R/7Frjf3qg9/q5ag3SB+
     <h3 class="title">友情链接</h3>
       <ul class="entry">
         
-          <li class='link'><a href='http://xiaoyun.farbox.com'>晓晓博客</a></li>
-        
-          <li class='link'><a href='http://www.ituring.com.cn/users/136808'>图灵社区</a></li>
+          <li class='link'><a href='https://hpasserby.me/'>一个bin菜鸡</a></li>
         
       </ul>
   </div>
