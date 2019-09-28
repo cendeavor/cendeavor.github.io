@@ -107,7 +107,8 @@
 <li>如果buffer是满的</li>
 <li>条件变量阻塞线程，并释放锁；事件发生（另一个线程执行cond_put.notify_one()），条件变量重新获得锁。</li>
 <li>操作共享内存</li>
-<li>释放锁，并通知另一个线程</li>
+<li><code>释放锁</code>（离开了作用域，unique_lock有点类似scoped_lock，离开作用域就相当于执行了unlock(mu)）</li>
+<li>通知另一个线程 (<code>注意！notify_one只是发出信号，并不具有释放锁的操作</code>)</li>
 </ol>
 <p>可以看到， <code>条件变量并不自带条件</code>，这个条件需要程序员自己来给出；<code>wait本质上是一个回调函数</code>，它会捕捉特定的信号（由notify_XX()发出），然后调用对应的处理函数(handler)处理。</p>
 <p><code>注意：回调函数的参数不一定必须为函数指针，也可以是一些需要用到的变量。</code></p>
@@ -227,7 +228,7 @@
           
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">48</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">50</span></li></ul>
   </div>
 
         
