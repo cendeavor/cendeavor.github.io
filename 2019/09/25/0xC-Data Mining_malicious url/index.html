@@ -6,8 +6,8 @@
   <title>恶意域名检测 | 沉浮之道</title>
   <meta name="author" content="cendeavor">
   
-  <meta name="description" content="特征提取与处理预处理特征选择训练算法基于sklearn实现随机森林
-调参随机森林sklearn FandomForest，及其调参">
+  <meta name="description" content="本文仅采用URL链接本身来获取特征（数据集是这样），其他方法可以参照下面文章
+机器学习与恶意网址检测">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -97,10 +97,14 @@
         <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#特征提取与处理"><span class="toc-text">特征提取与处理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#预处理"><span class="toc-text">预处理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#特征选择"><span class="toc-text">特征选择</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#训练算法"><span class="toc-text">训练算法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#调参"><span class="toc-text">调参</span></a></li></ol>
     </div>
 
-        <blockquote>
+        <p>本文仅采用URL链接本身来获取特征（<a href="D:\BLOG\hexo\source\download\data.csv.zip" target="_blank" rel="noopener">数据集</a>是这样），其他方法可以参照下面文章</p>
+<p><a href="https://zhuanlan.zhihu.com/p/38470202" target="_blank" rel="noopener">机器学习与恶意网址检测</a></p>
+<a id="more"></a>
+<blockquote>
 <p><a href="https://www.cnblogs.com/xiaoyh/p/11321780.html" target="_blank" rel="noopener"></a></p>
 </blockquote>
-<h1 id="特征提取与处理"><a href="#特征提取与处理" class="headerlink" title="特征提取与处理"></a><a href="https://cloud.tencent.com/developer/article/1030408" target="_blank" rel="noopener">特征提取与处理</a></h1><h1 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a><a href="https://www.cnblogs.com/gczr/p/6761613.html" target="_blank" rel="noopener">预处理</a></h1><h1 id="特征选择"><a href="#特征选择" class="headerlink" title="特征选择"></a><a href="https://www.cnblogs.com/gczr/p/6802948.html" target="_blank" rel="noopener">特征选择</a></h1><h1 id="训练算法"><a href="#训练算法" class="headerlink" title="训练算法"></a>训练算法</h1><p><a href="https://blog.csdn.net/littlle_yan/article/details/82663279" target="_blank" rel="noopener">基于sklearn实现随机森林</a></p>
+<h1 id="特征提取与处理"><a href="#特征提取与处理" class="headerlink" title="特征提取与处理"></a><a href="https://cloud.tencent.com/developer/article/1030408" target="_blank" rel="noopener">特征提取与处理</a></h1><p>提取url特征：<a href="https://my.oschina.net/u/4088088/blog/3016327（诸多错误）" target="_blank" rel="noopener">https://my.oschina.net/u/4088088/blog/3016327（诸多错误）</a><br><img src="/pic/0xC-Data%20Mining_malicious%20url/2019-10-04-19-33-13.png" alt="现有库不好用，需要自己写方法处理"></p>
+<h1 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a><a href="https://www.cnblogs.com/gczr/p/6761613.html" target="_blank" rel="noopener">预处理</a></h1><h1 id="特征选择"><a href="#特征选择" class="headerlink" title="特征选择"></a><a href="https://www.cnblogs.com/gczr/p/6802948.html" target="_blank" rel="noopener">特征选择</a></h1><h1 id="训练算法"><a href="#训练算法" class="headerlink" title="训练算法"></a>训练算法</h1><p><a href="https://blog.csdn.net/littlle_yan/article/details/82663279" target="_blank" rel="noopener">基于sklearn实现随机森林</a></p>
 <h1 id="调参"><a href="#调参" class="headerlink" title="调参"></a>调参</h1><p><a href="https://blog.csdn.net/geduo_feng/article/details/79558572" target="_blank" rel="noopener">随机森林sklearn FandomForest，及其调参</a></p>
 
       

@@ -118,6 +118,10 @@
 <p>  当收到足够的数据包后pcap_loop会调用callback回调函数，同时将pcap_loop()的user参数传递给它的第一个参数。</p>
 <p>  <code>注：当cnt==-1时，表示无限循环</code></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">callback</span><span class="params">(  u_char *userarg,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">const</span> struct pcap_pkthdr * pkthdr,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">const</span> u_char * packet )</span></span></span><br><span class="line"><span class="function"><span class="comment">// packet是收到的数据包数据</span></span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><a href="http://www.voidcn.com/article/p-yrbetoqt-xz.html" target="_blank" rel="noopener">pcap_next_ex</a></li>
+</ol>
 </li>
 </ol>
 </li>
