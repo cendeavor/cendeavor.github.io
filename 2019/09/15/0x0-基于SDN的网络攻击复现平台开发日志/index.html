@@ -162,20 +162,20 @@
 </ol>
 </li>
 </ol>
-<h1 id="2019-6-5-C-C-与Python混合编程"><a href="#2019-6-5-C-C-与Python混合编程" class="headerlink" title="2019/6/5 (C/C++与Python混合编程)"></a>2019/6/5 (<a href="https://blog.csdn.net/laojiu_/article/details/70544108" target="_blank" rel="noopener">C/C++与Python混合编程</a>)</h1><p>   <a href="http://www.voidcn.com/article/p-ywvzpyqr-v.html" target="_blank" rel="noopener">C/C++与python互相调用</a></p>
-<p>   考虑到在python中直接写外部管理程序，那么我前面写的那么好的解析模块都浪费了，而且还得重新学一遍scapy或者是dpkt，忍受他们的低效率和不灵活（数据包过大，则会出现内存空间不足的情况，而这些模块的函数都是写死了的，一下子加载整个pcap包进内存）。</p>
-<p>   于是，不信邪，既然fk说C++/Python混合编程麻烦，那么总有一种绕过的办法，比如==IPC==嘿嘿，毕竟我是学了一个星期的pwn的人，pwntools有的，python也有嘛。查一下，果不其然：</p>
+<h1 id="2019-6-5-C-C-与Python混合编程"><a href="#2019-6-5-C-C-与Python混合编程" class="headerlink" title="2019/6/5 (C/C++与Python混合编程)"></a>2019/6/5 (<a href="https://blog.csdn.net/laojiu_/article/details/70544108" target="_blank" rel="noopener">C/C++与Python混合编程</a>)</h1><p><a href="http://www.voidcn.com/article/p-ywvzpyqr-v.html" target="_blank" rel="noopener">C/C++与python互相调用</a></p>
+<p>考虑到在python中直接写外部管理程序，那么我前面写的那么好的解析模块都浪费了，而且还得重新学一遍scapy或者是dpkt，忍受他们的低效率和不灵活（数据包过大，则会出现内存空间不足的情况，而这些模块的函数都是写死了的，一下子加载整个pcap包进内存）。</p>
+<p>于是，不信邪，既然fk说C++/Python混合编程麻烦，那么总有一种绕过的办法，比如==IPC==嘿嘿，毕竟我是学了一个星期的pwn的人，pwntools有的，python也有嘛。查一下，果不其然：</p>
 <p><img src="/pic/0x0-%E5%9F%BA%E4%BA%8ESDN%E7%9A%84%E7%BD%91%E7%BB%9C%E6%94%BB%E5%87%BB%E5%A4%8D%E7%8E%B0%E5%B9%B3%E5%8F%B0%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2019-09-22-23-20-38.png" alt></p>
-<p>   <a href="https://www.cnblogs.com/nufangrensheng/p/3561190.html" target="_blank" rel="noopener">进程间通信之popen和pclose函数</a></p>
-<p>   有了这个函数，我只要将自己想要得到的结果一个个在C++程序里面输出完事，调用一下下f.readlines()，就能得到输出结果的列表，然后就是解析，怎么使用的事情了，岂不美哉。</p>
+<p><a href="https://www.cnblogs.com/nufangrensheng/p/3561190.html" target="_blank" rel="noopener">进程间通信之popen和pclose函数</a></p>
+<p>有了这个函数，我只要将自己想要得到的结果一个个在C++程序里面输出完事，调用一下下f.readlines()，就能得到输出结果的列表，然后就是解析，怎么使用的事情了，岂不美哉。</p>
 <p><img src="/pic/0x0-%E5%9F%BA%E4%BA%8ESDN%E7%9A%84%E7%BD%91%E7%BB%9C%E6%94%BB%E5%87%BB%E5%A4%8D%E7%8E%B0%E5%B9%B3%E5%8F%B0%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2019-09-22-23-21-05.png" alt></p>
-<p>   言归正传，既然有了IPC的方法，根据6/3号对于外部管理程序的构想，我们需要通过外部管理程序得到每个pcap文件的第一个包的时间戳到所有pcap文件最早时间戳的“距离”（时间差），然后将结果以<code>“pcap文件名：timediff”</code>的形式打印出来，注意timediff的单位是us，因为在replayer程序里面调用usleep。</p>
-<p>   还需要打印的是系统当前的时间戳，我们采用的方案是只打印出<code>timeval.tv._sec+10</code>，即留约10s给所有虚拟主机启动对准时钟，绰绰有余了。</p>
-<p>   在replayer程序里，只需将重放开始前系统时间减去传入的时间，即能得到<code>对准睡眠时间</code>。</p>
-<pre><code>注：使用if(sleeptime != 0) usleep(sleeptime)来避免usleep(0)的情况！</code></pre><p>   <a href="https://blog.csdn.net/sunzixun/article/details/84215796" target="_blank" rel="noopener">plz do not use usleep(0)!</a></p>
-<p>   还有，为了保险起见，usleep(timediff)的逻辑还是写在if(srcIP == loIP)里面吧，这样接收方能确保在发送方发包之前就开启，就不会出现意外，导致程序崩溃。</p>
+<p>言归正传，既然有了IPC的方法，根据6/3号对于外部管理程序的构想，我们需要通过外部管理程序得到每个pcap文件的第一个包的时间戳到所有pcap文件最早时间戳的“距离”（时间差），然后将结果以<code>“pcap文件名：timediff”</code>的形式打印出来，注意timediff的单位是us，因为在replayer程序里面调用usleep。</p>
+<p>还需要打印的是系统当前的时间戳，我们采用的方案是只打印出<code>timeval.tv._sec+10</code>，即留约10s给所有虚拟主机启动对准时钟，绰绰有余了。</p>
+<p>在replayer程序里，只需将重放开始前系统时间减去传入的时间，即能得到<code>对准睡眠时间</code>。</p>
+<pre><code>注：使用if(sleeptime != 0) usleep(sleeptime)来避免usleep(0)的情况！</code></pre><p><a href="https://blog.csdn.net/sunzixun/article/details/84215796" target="_blank" rel="noopener">plz do not use usleep(0)!</a></p>
+<p>还有，为了保险起见，usleep(timediff)的逻辑还是写在if(srcIP == loIP)里面吧，这样接收方能确保在发送方发包之前就开启，就不会出现意外，导致程序崩溃。</p>
 <p><img src="/pic/0x0-%E5%9F%BA%E4%BA%8ESDN%E7%9A%84%E7%BD%91%E7%BB%9C%E6%94%BB%E5%87%BB%E5%A4%8D%E7%8E%B0%E5%B9%B3%E5%8F%B0%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2019-09-22-23-22-22.png" alt></p>
-<p>   这样，就可以用最少的代码量和最精简的逻辑实现完美同步。</p>
+<p>这样，就可以用最少的代码量和最精简的逻辑实现完美同步。</p>
 <h2 id="总结：-1"><a href="#总结：-1" class="headerlink" title="总结："></a><strong>总结：</strong></h2><ol>
 <li>编写replay_controller程序，完成外部管理程序功能</li>
 <li>在python里面用popen打开进程，接收进程的输出，并将输出解析，传相应的参数（2个）入replay程序</li>
