@@ -1,0 +1,489 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>numpy.cov()和numpy.var()的用法 | 沉浮之道</title>
+  <meta name="author" content="cendeavor">
+  
+  <meta name="description" content="在PCA中涉及到了方差var和协方差cov，这里简单总结下。 
+首先：均值，样本方差，样本协方差的公式为
+
+均值：X¯=1N∑Ni=1XiX¯=1N∑i=1NXi\bar{X}=\frac{1}{N} \sum_{i=1}^{N}X_i
+
+方差：var=1N∑Ni=1(Xi−X¯)2var=1N∑i">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="numpy.cov()和numpy.var()的用法">
+  <meta property="og:site_name" content="沉浮之道">
+
+  
+    <meta property="og:image" content>
+  
+
+  <link rel="alternate" href="/atom.xml" title="沉浮之道" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+</html>
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/avatar.png">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">沉浮之道</a></h1>
+		    <h2><a href="/"></a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/node"><i class="fa fa-book"></i>Node.js</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		      <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-10T01:22:38.247Z"><a href="/2019/10/10/0xMP-numpy.cov()和numpy.var()/">2019-10-10</a></time>
+        
+  
+    <h1 class="title">numpy.cov()和numpy.var()的用法</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-求协方差"><span class="toc-text">1. 求协方差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2由协方差矩阵求其相关的矩阵"><span class="toc-text">2.由协方差矩阵求其相关的矩阵：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-计算矩阵的方差"><span class="toc-text">3. 计算矩阵的方差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-在matlab中的使用"><span class="toc-text">4. 在matlab中的使用</span></a></li></ol>
+    </div>
+
+        <div id="content_views" class="markdown_views">
+                    <!-- flowchart 箭头图标 勿删 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"/>
+                    </svg>
+                                            <p>在PCA中涉及到了方差var和协方差cov，这里简单总结下。 <br>
+首先：均值，样本方差，样本协方差的公式为</p>
+
+<p>均值：<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-261-Frame" tabindex="0" style="position: relative;" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mover><mi>X</mi><mo stretchy=&quot;false&quot;>&amp;#x00AF;</mo></mover></mrow><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><munderover><mo>&amp;#x2211;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>N</mi></mrow></munderover><msub><mi>X</mi><mi>i</mi></msub></math>" role="presentation"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-1" style="width: 8.703em; display: inline-block;"><span style="display: inline-block; position: relative; width: 6.953em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.203em, 1006.95em, 2.853em, -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-2"><span class="texatom" id="MathJax-Span-3"><span class="mrow" id="MathJax-Span-4"><span class="munderover" id="MathJax-Span-5"><span style="display: inline-block; position: relative; width: 0.853em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-6" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.252em, 1000.45em, 3.603em, -999.998em); top: -4.248em; left: 0.302em;"><span class="mo" id="MathJax-Span-7" style="font-family: MathJax_Main;">¯</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span></span><span class="mo" id="MathJax-Span-8" style="font-family: MathJax_Main; padding-left: 0.302em;">=</span><span class="mfrac" id="MathJax-Span-9" style="padding-left: 0.302em;"><span style="display: inline-block; position: relative; width: 0.753em; height: 0px; margin-right: 0.102em; margin-left: 0.102em;"><span style="position: absolute; clip: rect(3.402em, 1000.3em, 4.152em, -999.998em); top: -4.397em; left: 50%; margin-left: -0.198em;"><span class="mn" id="MathJax-Span-10" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1000.65em, 4.152em, -999.998em); top: -3.598em; left: 50%; margin-left: -0.297em;"><span class="mi" id="MathJax-Span-11" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(0.853em, 1000.75em, 1.203em, -999.998em); top: -1.248em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 0.753em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.052em;"></span></span></span></span><span class="munderover" id="MathJax-Span-12" style="padding-left: 0.152em;"><span style="display: inline-block; position: relative; width: 2.302em; height: 0px;"><span style="position: absolute; clip: rect(3.103em, 1001em, 4.402em, -999.998em); top: -3.998em; left: 0em;"><span class="mo" id="MathJax-Span-13" style="font-family: MathJax_Size1; vertical-align: 0em;">∑</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1000.7em, 4.152em, -999.998em); top: -4.498em; left: 1.052em;"><span class="texatom" id="MathJax-Span-14"><span class="mrow" id="MathJax-Span-15"><span class="mi" id="MathJax-Span-16" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.402em, 1001.2em, 4.152em, -999.998em); top: -3.698em; left: 1.052em;"><span class="texatom" id="MathJax-Span-17"><span class="mrow" id="MathJax-Span-18"><span class="mi" id="MathJax-Span-19" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span class="mo" id="MathJax-Span-20" style="font-size: 70.7%; font-family: MathJax_Main;">=</span><span class="mn" id="MathJax-Span-21" style="font-size: 70.7%; font-family: MathJax_Main;">1</span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="msubsup" id="MathJax-Span-22" style="padding-left: 0.152em;"><span style="display: inline-block; position: relative; width: 1.153em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-23" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.848em; left: 0.853em;"><span class="mi" id="MathJax-Span-24" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.559em; border-left: 0px solid; width: 0px; height: 1.816em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mrow class="MJX-TeXAtom-ORD"><mover><mi>X</mi><mo stretchy="false">¯</mo></mover></mrow><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><munderover><mo>∑</mo><mrow class="MJX-TeXAtom-ORD"><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class="MJX-TeXAtom-ORD"><mi>N</mi></mrow></munderover><msub><mi>X</mi><mi>i</mi></msub></math></span></span><script id="MathJax-Element-261" type="math/tex">\bar{X}=\frac{1}{N} \sum_{i=1}^{N}X_i</script></p>
+
+<p>方差：<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-262-Frame" tabindex="0" style="position: relative;" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mi>v</mi><mi>a</mi><mi>r</mi><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><munderover><mo>&amp;#x2211;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>N</mi></mrow></munderover><mo stretchy=&quot;false&quot;>(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>&amp;#x2212;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mover><mi>X</mi><mo stretchy=&quot;false&quot;>&amp;#x00AF;</mo></mover></mrow><msup><mo stretchy=&quot;false&quot;>)</mo><mn>2</mn></msup></math>" role="presentation"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-25" style="width: 13.253em; display: inline-block;"><span style="display: inline-block; position: relative; width: 10.603em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.203em, 1010.6em, 2.853em, -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-26"><span class="mi" id="MathJax-Span-27" style="font-family: MathJax_Math-italic;">v</span><span class="mi" id="MathJax-Span-28" style="font-family: MathJax_Math-italic;">a</span><span class="mi" id="MathJax-Span-29" style="font-family: MathJax_Math-italic;">r</span><span class="mo" id="MathJax-Span-30" style="font-family: MathJax_Main; padding-left: 0.302em;">=</span><span class="mfrac" id="MathJax-Span-31" style="padding-left: 0.302em;"><span style="display: inline-block; position: relative; width: 0.753em; height: 0px; margin-right: 0.102em; margin-left: 0.102em;"><span style="position: absolute; clip: rect(3.402em, 1000.3em, 4.152em, -999.998em); top: -4.397em; left: 50%; margin-left: -0.198em;"><span class="mn" id="MathJax-Span-32" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1000.65em, 4.152em, -999.998em); top: -3.598em; left: 50%; margin-left: -0.297em;"><span class="mi" id="MathJax-Span-33" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(0.853em, 1000.75em, 1.203em, -999.998em); top: -1.248em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 0.753em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.052em;"></span></span></span></span><span class="munderover" id="MathJax-Span-34" style="padding-left: 0.152em;"><span style="display: inline-block; position: relative; width: 2.302em; height: 0px;"><span style="position: absolute; clip: rect(3.103em, 1001em, 4.402em, -999.998em); top: -3.998em; left: 0em;"><span class="mo" id="MathJax-Span-35" style="font-family: MathJax_Size1; vertical-align: 0em;">∑</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1000.7em, 4.152em, -999.998em); top: -4.498em; left: 1.052em;"><span class="texatom" id="MathJax-Span-36"><span class="mrow" id="MathJax-Span-37"><span class="mi" id="MathJax-Span-38" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.402em, 1001.2em, 4.152em, -999.998em); top: -3.698em; left: 1.052em;"><span class="texatom" id="MathJax-Span-39"><span class="mrow" id="MathJax-Span-40"><span class="mi" id="MathJax-Span-41" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span class="mo" id="MathJax-Span-42" style="font-size: 70.7%; font-family: MathJax_Main;">=</span><span class="mn" id="MathJax-Span-43" style="font-size: 70.7%; font-family: MathJax_Main;">1</span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-44" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-45"><span style="display: inline-block; position: relative; width: 1.153em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-46" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.848em; left: 0.853em;"><span class="mi" id="MathJax-Span-47" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-48" style="font-family: MathJax_Main; padding-left: 0.202em;">−</span><span class="texatom" id="MathJax-Span-49" style="padding-left: 0.202em;"><span class="mrow" id="MathJax-Span-50"><span class="munderover" id="MathJax-Span-51"><span style="display: inline-block; position: relative; width: 0.853em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-52" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.252em, 1000.45em, 3.603em, -999.998em); top: -4.248em; left: 0.302em;"><span class="mo" id="MathJax-Span-53" style="font-family: MathJax_Main;">¯</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span></span><span class="msubsup" id="MathJax-Span-54"><span style="display: inline-block; position: relative; width: 0.802em; height: 0px;"><span style="position: absolute; clip: rect(3.103em, 1000.3em, 4.402em, -999.998em); top: -3.998em; left: 0em;"><span class="mo" id="MathJax-Span-55" style="font-family: MathJax_Main;">)</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -4.348em; left: 0.403em;"><span class="mn" id="MathJax-Span-56" style="font-size: 70.7%; font-family: MathJax_Main;">2</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.559em; border-left: 0px solid; width: 0px; height: 1.816em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>v</mi><mi>a</mi><mi>r</mi><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><munderover><mo>∑</mo><mrow class="MJX-TeXAtom-ORD"><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class="MJX-TeXAtom-ORD"><mi>N</mi></mrow></munderover><mo stretchy="false">(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>−</mo><mrow class="MJX-TeXAtom-ORD"><mover><mi>X</mi><mo stretchy="false">¯</mo></mover></mrow><msup><mo stretchy="false">)</mo><mn>2</mn></msup></math></span></span><script id="MathJax-Element-262" type="math/tex">var=\frac{1}{N} \sum_{i=1}^{N}(X_i-\bar{X})^2</script></p>
+
+<p>样本方差：<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-263-Frame" tabindex="0" style="position: relative;" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mi>S</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mo>&amp;#x2212;</mo><mn>1</mn></mrow></mfrac><munderover><mo>&amp;#x2211;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>N</mi></mrow></munderover><mo stretchy=&quot;false&quot;>(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>&amp;#x2212;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mover><mi>X</mi><mo stretchy=&quot;false&quot;>&amp;#x00AF;</mo></mover></mrow><msup><mo stretchy=&quot;false&quot;>)</mo><mn>2</mn></msup></math>" role="presentation"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-57" style="width: 13.453em; display: inline-block;"><span style="display: inline-block; position: relative; width: 10.753em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.203em, 1010.75em, 2.902em, -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-58"><span class="mi" id="MathJax-Span-59" style="font-family: MathJax_Math-italic;">S<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span class="mo" id="MathJax-Span-60" style="font-family: MathJax_Main; padding-left: 0.302em;">=</span><span class="mfrac" id="MathJax-Span-61" style="padding-left: 0.302em;"><span style="display: inline-block; position: relative; width: 1.652em; height: 0px; margin-right: 0.102em; margin-left: 0.102em;"><span style="position: absolute; clip: rect(3.402em, 1000.3em, 4.152em, -999.998em); top: -4.397em; left: 50%; margin-left: -0.198em;"><span class="mn" id="MathJax-Span-62" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1001.5em, 4.202em, -999.998em); top: -3.598em; left: 50%; margin-left: -0.747em;"><span class="mrow" id="MathJax-Span-63"><span class="mi" id="MathJax-Span-64" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span class="mo" id="MathJax-Span-65" style="font-size: 70.7%; font-family: MathJax_Main;">−</span><span class="mn" id="MathJax-Span-66" style="font-size: 70.7%; font-family: MathJax_Main;">1</span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(0.853em, 1001.65em, 1.203em, -999.998em); top: -1.248em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 1.652em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.052em;"></span></span></span></span><span class="munderover" id="MathJax-Span-67" style="padding-left: 0.152em;"><span style="display: inline-block; position: relative; width: 2.302em; height: 0px;"><span style="position: absolute; clip: rect(3.103em, 1001em, 4.402em, -999.998em); top: -3.998em; left: 0em;"><span class="mo" id="MathJax-Span-68" style="font-family: MathJax_Size1; vertical-align: 0em;">∑</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1000.7em, 4.152em, -999.998em); top: -4.498em; left: 1.052em;"><span class="texatom" id="MathJax-Span-69"><span class="mrow" id="MathJax-Span-70"><span class="mi" id="MathJax-Span-71" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.402em, 1001.2em, 4.152em, -999.998em); top: -3.698em; left: 1.052em;"><span class="texatom" id="MathJax-Span-72"><span class="mrow" id="MathJax-Span-73"><span class="mi" id="MathJax-Span-74" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span class="mo" id="MathJax-Span-75" style="font-size: 70.7%; font-family: MathJax_Main;">=</span><span class="mn" id="MathJax-Span-76" style="font-size: 70.7%; font-family: MathJax_Main;">1</span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-77" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-78"><span style="display: inline-block; position: relative; width: 1.153em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-79" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.848em; left: 0.853em;"><span class="mi" id="MathJax-Span-80" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-81" style="font-family: MathJax_Main; padding-left: 0.202em;">−</span><span class="texatom" id="MathJax-Span-82" style="padding-left: 0.202em;"><span class="mrow" id="MathJax-Span-83"><span class="munderover" id="MathJax-Span-84"><span style="display: inline-block; position: relative; width: 0.853em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-85" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.252em, 1000.45em, 3.603em, -999.998em); top: -4.248em; left: 0.302em;"><span class="mo" id="MathJax-Span-86" style="font-family: MathJax_Main;">¯</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span></span><span class="msubsup" id="MathJax-Span-87"><span style="display: inline-block; position: relative; width: 0.802em; height: 0px;"><span style="position: absolute; clip: rect(3.103em, 1000.3em, 4.402em, -999.998em); top: -3.998em; left: 0em;"><span class="mo" id="MathJax-Span-88" style="font-family: MathJax_Main;">)</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -4.348em; left: 0.403em;"><span class="mn" id="MathJax-Span-89" style="font-size: 70.7%; font-family: MathJax_Main;">2</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.622em; border-left: 0px solid; width: 0px; height: 1.878em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>S</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></mfrac><munderover><mo>∑</mo><mrow class="MJX-TeXAtom-ORD"><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class="MJX-TeXAtom-ORD"><mi>N</mi></mrow></munderover><mo stretchy="false">(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>−</mo><mrow class="MJX-TeXAtom-ORD"><mover><mi>X</mi><mo stretchy="false">¯</mo></mover></mrow><msup><mo stretchy="false">)</mo><mn>2</mn></msup></math></span></span><script id="MathJax-Element-263" type="math/tex">S=\frac{1}{N-1} \sum_{i=1}^{N}(X_i-\bar{X})^2</script></p>
+
+<p>样本协方差：<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-264-Frame" tabindex="0" style="position: relative;" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mi>c</mi><mi>o</mi><mi>v</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mo>&amp;#x2212;</mo><mn>1</mn></mrow></mfrac><munderover><mo>&amp;#x2211;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>N</mi></mrow></munderover><mo stretchy=&quot;false&quot;>(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>&amp;#x2212;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mover><mi>X</mi><mo stretchy=&quot;false&quot;>&amp;#x00AF;</mo></mover></mrow><mo stretchy=&quot;false&quot;>)</mo><mo stretchy=&quot;false&quot;>(</mo><msub><mi>Y</mi><mi>i</mi></msub><mo>&amp;#x2212;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mover><mi>Y</mi><mo stretchy=&quot;false&quot;>&amp;#x00AF;</mo></mover></mrow><mo stretchy=&quot;false&quot;>)</mo></math>" role="presentation"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-90" style="width: 18.402em; display: inline-block;"><span style="display: inline-block; position: relative; width: 14.703em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.203em, 1014.6em, 2.902em, -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-91"><span class="mi" id="MathJax-Span-92" style="font-family: MathJax_Math-italic;">c</span><span class="mi" id="MathJax-Span-93" style="font-family: MathJax_Math-italic;">o</span><span class="mi" id="MathJax-Span-94" style="font-family: MathJax_Math-italic;">v</span><span class="mo" id="MathJax-Span-95" style="font-family: MathJax_Main; padding-left: 0.302em;">=</span><span class="mfrac" id="MathJax-Span-96" style="padding-left: 0.302em;"><span style="display: inline-block; position: relative; width: 1.652em; height: 0px; margin-right: 0.102em; margin-left: 0.102em;"><span style="position: absolute; clip: rect(3.402em, 1000.3em, 4.152em, -999.998em); top: -4.397em; left: 50%; margin-left: -0.198em;"><span class="mn" id="MathJax-Span-97" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1001.5em, 4.202em, -999.998em); top: -3.598em; left: 50%; margin-left: -0.747em;"><span class="mrow" id="MathJax-Span-98"><span class="mi" id="MathJax-Span-99" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span class="mo" id="MathJax-Span-100" style="font-size: 70.7%; font-family: MathJax_Main;">−</span><span class="mn" id="MathJax-Span-101" style="font-size: 70.7%; font-family: MathJax_Main;">1</span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(0.853em, 1001.65em, 1.203em, -999.998em); top: -1.248em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 1.652em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.052em;"></span></span></span></span><span class="munderover" id="MathJax-Span-102" style="padding-left: 0.152em;"><span style="display: inline-block; position: relative; width: 2.302em; height: 0px;"><span style="position: absolute; clip: rect(3.103em, 1001em, 4.402em, -999.998em); top: -3.998em; left: 0em;"><span class="mo" id="MathJax-Span-103" style="font-family: MathJax_Size1; vertical-align: 0em;">∑</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1000.7em, 4.152em, -999.998em); top: -4.498em; left: 1.052em;"><span class="texatom" id="MathJax-Span-104"><span class="mrow" id="MathJax-Span-105"><span class="mi" id="MathJax-Span-106" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.402em, 1001.2em, 4.152em, -999.998em); top: -3.698em; left: 1.052em;"><span class="texatom" id="MathJax-Span-107"><span class="mrow" id="MathJax-Span-108"><span class="mi" id="MathJax-Span-109" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span class="mo" id="MathJax-Span-110" style="font-size: 70.7%; font-family: MathJax_Main;">=</span><span class="mn" id="MathJax-Span-111" style="font-size: 70.7%; font-family: MathJax_Main;">1</span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-112" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-113"><span style="display: inline-block; position: relative; width: 1.153em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-114" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.848em; left: 0.853em;"><span class="mi" id="MathJax-Span-115" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-116" style="font-family: MathJax_Main; padding-left: 0.202em;">−</span><span class="texatom" id="MathJax-Span-117" style="padding-left: 0.202em;"><span class="mrow" id="MathJax-Span-118"><span class="munderover" id="MathJax-Span-119"><span style="display: inline-block; position: relative; width: 0.853em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-120" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.252em, 1000.45em, 3.603em, -999.998em); top: -4.248em; left: 0.302em;"><span class="mo" id="MathJax-Span-121" style="font-family: MathJax_Main;">¯</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span></span><span class="mo" id="MathJax-Span-122" style="font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-123" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-124"><span style="display: inline-block; position: relative; width: 0.903em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.75em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-125" style="font-family: MathJax_Math-italic;">Y<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.202em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.848em; left: 0.603em;"><span class="mi" id="MathJax-Span-126" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-127" style="font-family: MathJax_Main; padding-left: 0.202em;">−</span><span class="texatom" id="MathJax-Span-128" style="padding-left: 0.202em;"><span class="mrow" id="MathJax-Span-129"><span class="munderover" id="MathJax-Span-130"><span style="display: inline-block; position: relative; width: 0.753em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.75em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-131" style="font-family: MathJax_Math-italic;">Y<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.202em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.252em, 1000.45em, 3.603em, -999.998em); top: -4.248em; left: 0.253em;"><span class="mo" id="MathJax-Span-132" style="font-family: MathJax_Main;">¯</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span></span><span class="mo" id="MathJax-Span-133" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.622em; border-left: 0px solid; width: 0px; height: 1.878em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>c</mi><mi>o</mi><mi>v</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></mfrac><munderover><mo>∑</mo><mrow class="MJX-TeXAtom-ORD"><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class="MJX-TeXAtom-ORD"><mi>N</mi></mrow></munderover><mo stretchy="false">(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>−</mo><mrow class="MJX-TeXAtom-ORD"><mover><mi>X</mi><mo stretchy="false">¯</mo></mover></mrow><mo stretchy="false">)</mo><mo stretchy="false">(</mo><msub><mi>Y</mi><mi>i</mi></msub><mo>−</mo><mrow class="MJX-TeXAtom-ORD"><mover><mi>Y</mi><mo stretchy="false">¯</mo></mover></mrow><mo stretchy="false">)</mo></math></span></span><script id="MathJax-Element-264" type="math/tex">cov=\frac{1}{N-1} \sum_{i=1}^{N}(X_i-\bar{X})(Y_i-\bar{Y})</script></p>
+
+<p>首先我们应该清楚的区分两个概念，即方差和样本方差的无偏估计： <br>
+方差公式中分母上是N；样本方差无偏估计公式中分母上是N-1 （N为样本个数）。</p>
+
+<p>其中样本方差公式中为什么除的n-1而不是n？样本协方差同样除的是n-1而不是n？如果除的是n，那么求的方差就不是随机抽取变量组成样本的方差，而是整个空间的方差。</p>
+
+<h3 id="1-求协方差"><a name="t0"></a>1. 求协方差</h3>
+
+<p>协方差矩阵计算的是不同维度之间的协方差，而不是不同样本之间的。理解协方差矩阵的关键就在于牢记它计算的是不同维度之间的协方差，而不是不同样本之间，拿到一个样本矩阵，我们最先要明确的就是一行是一个样本还是一个维度。</p>
+
+<p>例1.1</p>
+
+<pre class="prettyprint" name="code"><code class="hljs lua has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt;&gt; X=np.array(<span class="hljs-string">[[1 ,5 ,6] ,[4 ,3 ,9 ],[ 4 ,2 ,9],[ 4 ,7 ,2]]</span>)
+&gt;&gt;&gt; np.cov(X)
+array(<span class="hljs-string">[[  7.  ,   4.5    ,       4.   ,   -0.5     ],
+       [  4.5 ,  10.33333333,   11.5  ,  -7.16666667],
+       [  4.  ,  11.5     ,      13.  ,   -8.5      ],
+       [ -0.5 ,  -7.16666667,   -8.5  ,  6.33333333]]</span>)<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>在numpy中，将x的每一列视作一个独立的变量，因此这里一共有3个4维的变量，因此将会输出一个4*4的协方差矩阵 ,其中对角线元素是每个维度的方差，非对角线上的元素则是不同维度间的协方差。</p>
+
+<p>例1.2 下面是一个协方差实现的另一个简单例子：</p>
+
+<pre class="prettyprint" name="code"><code class="hljs lua has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; x = np.array(<span class="hljs-string">[[0, 2], [1, 1], [2, 0]]</span>).T 
+&gt;&gt;&gt; x
+array(<span class="hljs-string">[[0, 1, 2],
+       [2, 1, 0]]</span>)
+&gt;&gt;&gt; np.cov(x)  # 两个变量x0和x1，有很大的相关性，但是相反的方向
+array(<span class="hljs-string">[[ 1., -1.],
+       [-1.,  1.]]</span>)
+&gt;&gt;&gt; x = [-<span class="hljs-number">2.1</span>, -<span class="hljs-number">1</span>,  <span class="hljs-number">4.3</span>]
+&gt;&gt;&gt; y = [<span class="hljs-number">3</span>,  <span class="hljs-number">1.1</span>,  <span class="hljs-number">0.12</span>]
+&gt;&gt;&gt; X = np.vstack((x,y))
+&gt;&gt;&gt; X
+array(<span class="hljs-string">[[-2.1 , -1.  ,  4.3 ],
+       [ 3.  ,  1.1 ,  0.12]]</span>)
+&gt;&gt;&gt; np.cov(X)
+array(<span class="hljs-string">[[ 11.71      ,  -4.286     ],
+       [ -4.286     ,   2.14413333]]</span>)
+&gt;&gt;&gt; np.cov(x, y)
+array(<span class="hljs-string">[[ 11.71      ,  -4.286     ],
+       [ -4.286     ,   2.14413333]]</span>)
+&gt;&gt;&gt; np.cov(x)
+array(<span class="hljs-number">11.709999999999999</span>)<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>1.3  numpy中cov(x)与cover(x,y)的区别</p>
+
+<p>示例：</p>
+
+<pre class="prettyprint" name="code"><code class="hljs lua has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt;&gt; X=np.array(<span class="hljs-string">[[1 ,5 ,6] ,[4 ,3 ,9 ],[ 4 ,2 ,9],[ 4 ,7 ,2]]</span>)
+&gt;&gt;&gt; X
+array(<span class="hljs-string">[[1, 5, 6],
+       [4, 3, 9],
+       [4, 2, 9],
+       [4, 7, 2]]</span>)
+&gt;&gt;&gt; x=X[<span class="hljs-number">0</span>:<span class="hljs-number">2</span>]
+&gt;&gt;&gt; y=X[<span class="hljs-number">2</span>:<span class="hljs-number">4</span>]
+&gt;&gt;&gt; np.cov(X)
+array(<span class="hljs-string">[[  7. ,   4.5   ,       4.  ,    -0.5    ],
+       [  4.5,  10.33333333,  11.5 ,  -7.16666667],
+       [  4. ,  11.5       ,  13.  ,  -8.5       ],
+       [ -0.5,  -7.16666667,  -8.5 ,  6.33333333]]</span>)
+&gt;&gt;&gt; np.cov(x,y)
+array(<span class="hljs-string">[[  7.  ,   4.5     ,    4.  ,   -0.5      ],
+       [  4.5 ,  10.33333333,  11.5 ,  -7.16666667],
+       [  4.  ,  11.5       ,  13.  ,  -8.5       ],
+       [ -0.5 ,  -7.16666667,  -8.5 ,   6.33333333]]</span>)
+&gt;&gt;&gt; <div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>可以看出两者的输出是相同的。因此np.cov(X)其实就是把np.cov(x,y)中两个变量所有的维度纵向拼接在一起作为X参与运算。</p>
+
+<h3 id="2由协方差矩阵求其相关的矩阵"><a name="t1"></a>2.由协方差矩阵求其相关的矩阵：</h3>
+
+<p>假设协方差矩阵sigma</p>
+
+<pre class="prettyprint" name="code"><code class="hljs lua has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt;&gt; sigma=np.array(<span class="hljs-string">[[4,1,2],[2,3,4],[2,3,5]]</span>)  
+&gt;&gt;&gt; sigma
+array(<span class="hljs-string">[[4, 1, 2],
+       [2, 3, 4],
+       [2, 3, 5]]</span>)
+&gt;&gt;&gt; p=len(sigma)  # 得出协方差的长度 
+&gt;&gt;&gt; p
+<span class="hljs-number">3</span>
+&gt;&gt;&gt; e=np.eye(p) 
+&gt;&gt;&gt; e
+array(<span class="hljs-string">[[ 1.,  0.,  0.],
+       [ 0.,  1.,  0.],
+       [ 0.,  0.,  1.]]</span>)
+&gt;&gt;&gt; variance=e*sigma  # 得出协方差矩阵的对角线元素，即方差矩阵
+&gt;&gt;&gt; variance
+array(<span class="hljs-string">[[ 4.,  0.,  0.],
+       [ 0.,  3.,  0.],
+       [ 0.,  0.,  5.]]</span>)
+&gt;&gt;&gt; v=np.power(variance,<span class="hljs-number">0.5</span>) # 得出标准差矩阵
+&gt;&gt;&gt; v
+array(<span class="hljs-string">[[ 2.        ,  0.        ,  0.        ],
+       [ 0.        ,  1.73205081,  0.        ],
+       [ 0.        ,  0.        ,  2.23606798]]</span>)
+&gt;&gt;&gt; I=np.linalg.inv(v)  # 得出标准差的逆矩阵 
+&gt;&gt;&gt; I
+array(<span class="hljs-string">[[ 0.5       ,  0.        ,  0.        ],
+       [ 0.        ,  0.57735027,  0.        ],
+       [ 0.        ,  0.        ,  0.4472136 ]]</span>)
+&gt;&gt;&gt; cov=I.dot(sigma).dot(I) # 得出相关系数矩阵
+&gt;&gt;&gt; cov
+array(<span class="hljs-string">[[ 1.        ,  0.28867513,  0.4472136 ],
+       [ 0.57735027,  1.        ,  1.03279556],
+       [ 0.4472136 ,  0.77459667,  1.        ]]</span>)
+&gt;&gt;&gt; <div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>其中对角线元素是每个维度的方差，非对角线上的元素则是不同维度间的协方差</p>
+
+<h3 id="3-计算矩阵的方差"><a name="t2"></a>3. 计算矩阵的方差</h3>
+
+<p>在数学中，每一维度指的是列，例如：[1,2,3]维度是三维的，但是在array中，每一维度指的是一个array,也就是一个样本。 <br>
+计算方差的公式为：</p>
+
+<pre class="prettyprint" name="code"><code class="hljs python has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"><span class="hljs-prompt">&gt;&gt;&gt; </span>a=np.array([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">7</span>])
+<span class="hljs-prompt">&gt;&gt;&gt; </span>a
+array([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">7</span>])
+<span class="hljs-prompt">&gt;&gt;&gt; </span>a.var()
+<span class="hljs-number">6.8888888888888884</span>
+<span class="hljs-prompt">&gt;&gt;&gt; </span><div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>这里计算的方差不是如方差公式<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-286-Frame" tabindex="0" style="position: relative;" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mi>s</mi></math>" role="presentation"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-134" style="width: 0.603em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.453em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.702em, 1000.4em, 2.452em, -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-135"><span class="mi" id="MathJax-Span-136" style="font-family: MathJax_Math-italic;">s</span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.059em; border-left: 0px solid; width: 0px; height: 0.691em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>s</mi></math></span></span><script id="MathJax-Element-286" type="math/tex">s</script>那样除以N-1,在numpy里是上述的var。</p>
+
+
+
+<h3 id="4-在matlab中的使用"><a name="t3"></a>4. 在matlab中的使用</h3>
+
+<p><strong>4.1 matlab 统计基本函数 var方差</strong> <br>
+参考:(<a target="_blank" href="http://blog.csdn.net/tong_huijiao/article/details/54018019" rel="nofollow" data-token="7efc24df17e851fb2905882fe875f8d8">http://blog.csdn.net/tong_huijiao/article/details/54018019</a>）</p>
+
+<p>函数名称： var  <br>
+函数功能：求解方差  <br>
+函数用法：</p>
+
+<ul>
+<li>var（X) 【与var(X,0)相同 】</li>
+<li>var(X,W) </li>
+<li>var(X,W,dim) </li>
+</ul>
+
+<p>注：var(X,W) </p>
+
+<ul>
+<li>W可以取0或1：取0求样本方差的无偏估计值（除以N-1），对应取1求得的是方差（除以N）</li>
+<li>W也可以是向量，但必须与X中的第一个维度数相同，即length(W)= size(X,1) </li>
+</ul>
+
+<p>var(X ,0 ,dim) ：除以N-1 ；dim =1 对每列操作 dim = 2 对每行操作  <br>
+var(X ,1 ,dim) :   除以N    ；dim =1 对每列操作 dim = 2 对每行操作 <br>
+var(X,W,dim)  : 关于W取向量时，把Ｗ看做Ｘ中观察值发生的次数（或者说概率也行）</p>
+
+<p><strong>1.对于X是向量时：把向量中每个元素看做一个样本</strong>  <br>
+var(X) 或者 var（x,0)函数输出这个向量中元素的样本方差的无偏估计值,var(x,1)输出的是样本方差 。</p>
+
+<p><strong>2. 对于X是矩阵时</strong>  <br>
+把每行看做一个观察值，每列看做一个变量，函数输出一个行向量，每个元素计算的是该列的方差</p>
+
+<p><strong>3. 对于var(X ,0 ,dim) 或者 var(X ,1 ,dim)</strong>  <br>
+   前面已说 0 对应 除以N-1； 1对应除以N <br>
+dim 指维度信息，默认为1，dim =1 就指对每列操作； dim =2 就指对每行操作。</p>
+
+<p><strong>4 . 对于 var(X,W)、var(X,W,dim) 中W为向量的情况：</strong>  <br>
+把Ｗ看做Ｘ中对应观察值发生的次数（或者说概率也行）处理</p>
+
+<p><strong>4.2  MATLAB中cov函数的用法</strong> <br>
+参考:(<a target="_blank" href="http://blog.sina.com.cn/s/blog_9e67285801010twv.html" rel="nofollow" data-token="77990ac6895be06f58f29ff5d6bf9c64">http://blog.sina.com.cn/s/blog_9e67285801010twv.html</a>) <br>
+函数名称：cov <br>
+函数功能：求协方差矩阵 <br>
+函数用法：</p>
+
+<ul>
+<li>cov(X)  ：cov(X,0) = cov(X)</li>
+<li>cov(X,Y) ：X,Y必须是各维数都相同的矩阵</li>
+<li>cov(X,1) ：除以N而不是N-1   </li>
+<li>cov(X,Y,1) ： 除以N而不是N-1 </li>
+</ul>
+
+<p><strong>1.如果X是向量</strong> <br>
+cov(X)输出的是这个向量的方差</p>
+
+<p><strong>2. X是一个矩阵来</strong> <br>
+matlab把每行看做一个观察值，把每列当做一个变量.也就是说对于一个4*3的矩阵求协方差矩阵，matlab会认为存在三个变量，即会求出一个3*3的协方差矩阵。其中，对角线元素为对应变量的方差无偏估计值，其他位置为对应变量间的协方差无偏估计值（即除的是N-1）</p>
+
+<p><strong>3.对于cov(X,Y)</strong> <br>
+X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看做一个变量的样本，Y中所有元素看做另外一个变量的样本,把矩阵中每个对应位置看做一个联合观察值,函数实现的是求出两个变量的协方差矩阵。</p>
+
+<p><strong>4. cov(X,1)  和  cov(X,Y,1)</strong>  <br>
+ 与之前的求解过程一致。不同的是，其求出的是协方差，而不是样本的协方差无偏估计值，即其除以的是N 而不是N-1。</p>
+
+<p>先到这里。。。</p>                                    </div>
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/machine-learning/">machine learning</a>
+  </div>
+
+        
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div></div></div>
+      <aside id="sidebar" class="alignright">
+        
+           <div class="search">
+  <form action="/search/index.html" method="get" accept-charset="utf-8">
+<!--     <input type="search" name="wd"results="0" placeholder="搜索">
+    <input type="hidden" name="wd" value="site:yoursite.com"> -->
+     <input type="text" id="search" class="st-default-search-input" placeholder="搜索" style="height: 100%" />
+  </form>
+</div> 
+        
+          
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/">PWN</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/blockchain/">blockchain</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/data-mining/">data mining</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/machine-learning/">machine learning</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/math/linear-algebra/">linear algebra</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/恶意代码分析/">恶意代码分析</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
+</div>
+ 
+
+        
+          <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/qrcode.jpg" alt="欢迎关注个人公众账号" style= "width: 100%">
+    </ul>
+</div>
+        
+          <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">友情链接</h3>
+      <ul class="entry">
+        
+          <li class='link'><a href=''>(tool)</a></li>
+        
+          <li class='link'><a href='https://www.mathsisfun.com/'>MathIsFun</a></li>
+        
+          <li class='link'><a href='https://www.shuxuele.com/index.html'>数学乐</a></li>
+        
+          <li class='link'><a href=''>(blog)</a></li>
+        
+          <li class='link'><a href='https://hpasserby.me/'>一个bin菜鸡</a></li>
+        
+          <li class='link'><a href='https://zzqcn.github.io/opensource/dpdk/index.html#'>赵子清(dpdk)</a></li>
+        
+          <li class='link'><a href='https://www.laojiyou.com/books/sdnwlzn/reference.html'>SDN网络指南</a></li>
+        
+          <li class='link'><a href='https://www.cnblogs.com/zengzy'>曾志优(数据结构与算法)</a></li>
+        
+          <li class='link'><a href='https://www.cnblogs.com/bonelee/tag/安全分析/'>安全分析</a></li>
+        
+          <li class='link'><a href='https://blog.csdn.net/houyanhua1'>WEB</a></li>
+        
+          <li class='link'><a href=''>(empty)</a></li>
+        
+          <li class='link'><a href='https://www.sdnlab.com/'>SDNLAB</a></li>
+        
+          <li class='link'><a href='https://medium.com/'>Medium</a></li>
+        
+          <li class='link'><a href='https://mooc.study.163.com/smartSpec/detail/1001319001.htm?from=study'>深度学习微专业</a></li>
+        
+          <li class='link'><a href=''>(book)</a></li>
+        
+          <li class='link'><a href='chrome-extension://cdonnmffkdaoajfknoeeecmchibpmkmg/static/pdf/web/viewer.html?file=http%3A%2F%2Fpdf.ebook23.com%2Febook%2F19_%25E7%25A8%258B%25E5%25BA%258F%25E5%2591%2598%25E4%25B8%25AA%25E4%25BA%25BA%25E4%25BF%25AE%25E5%2585%25BB%2F%255B%25E4%25BB%25A3%25E7%25A0%2581%25E5%25A4%25A7%25E5%2585%25A82%25E4%25B8%25AD%25E6%2596%2587%25E7%2589%2588%2528%25E5%25AE%258C%25E6%2595%25B4%25E6%25B8%2585%25E6%2599%25B0%25E7%2589%2588%2529%255D.pdf'>代码大全</a></li>
+        
+      </ul>
+  </div>
+
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">75</span></li></ul>
+  </div>
+
+        
+      </aside>
+      <div class="clearfix"></div>
+    </div>
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2019 cendeavor
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+
+  <div>
+    Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a>
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="/js/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 百度统计 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','HcqxzAQHLZzGwtjJSqw3','2.0.0');
+</script>
+</body>
+</html>
