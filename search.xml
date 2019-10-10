@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[PCA数据降维]]></title>
+    <url>%2F2019%2F10%2F10%2F0xM-PCA%E6%95%B0%E6%8D%AE%E9%99%8D%E7%BB%B4%2F</url>
+    <content type="text"><![CDATA[机器学习中的分类问题，给出178个葡萄酒样本，每个样本含有13个参数，比如酒精度、酸度、镁含量等，这些样本属于3个不同种类的葡萄酒。任务是提取3种葡萄酒的特征，以便下一次给出一个新的葡萄酒样本的时候，能根据已有数据判断出新样本是哪一种葡萄酒。问题详细描述：UCI Machine Learning Repository: Wine Data Set训练样本数据：http://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data数据降维原数据有13维，但这之中含有冗余，减少数据量最直接的方法就是降维。做法：把数据集赋给一个178行13列的矩阵R，减掉均值并归一化，它的协方差矩阵，C是13行13列的矩阵，对C进行特征分解，对角化，其中U是特征向量组成的矩阵，D是特征之组成的对角矩阵，并按由大到小排列。然后，另，就实现了数据集在特征向量这组正交基上的投影。嗯，重点来了，R’中的数据列是按照对应特征值的大小排列的，后面的列对应小特征值，去掉以后对整个数据集的影响比较小。比如，现在我们直接去掉后面的7列，只保留前6列，就完成了降维。这个降维方法叫PCA（Principal Component Analysis）。下面看结果：这是不降维时候的分类错误率。这是降维以后的分类错误率。结论：降维以后分类错误率与不降维的方法相差无几，但需要处理的数据量减小了一半（不降维需要处理13维，降维后只需要处理6维）。]]></content>
+      <categories>
+        <category>machine learning</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[协方差矩阵]]></title>
+    <url>%2F2019%2F10%2F10%2F0xP-Linear_Algebra%20%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5%2F</url>
+    <content type="text"><![CDATA[二、协方差矩阵协方差矩阵计算的是不同维度之间的协方差，而不是不同样本之间的]]></content>
+  </entry>
+  <entry>
+    <title><![CDATA[特征值与特征向量]]></title>
+    <url>%2F2019%2F10%2F10%2F0xP-Linear_Algebra%20%E7%89%B9%E5%BE%81%E5%80%BC%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F%2F</url>
+    <content type="text"><![CDATA[一、定义和计算转自 https://blog.csdn.net/Junerror/article/details/80222540 1.矩阵特征值和特征向量定义&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A为n阶矩阵，若数λ和n维非0列向量x满足Ax=λx，那么数λ称为A的特征值，x称为A的对应于特征值λ的特征向量。式Ax=λx也可写成( A-λE)x=0，并且|λE-A|叫做A 的特征多项式。当特征多项式等于0的时候，称为A的特征方程，特征方程是一个齐次线性方程组，求解特征值的过程其实就是求解特征方程的解。&nbsp;计算：A的特征值和特征向量。计算行列式得化简得：得到特征值：化简得：&nbsp;令得到特征向量：同理，当得：，令得到特征向量：&nbsp;&nbsp;&nbsp;]]></content>
+      <categories>
+        <category>math</category>
+        <category>linear algebra</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[windows注册表]]></title>
+    <url>%2F2019%2F10%2F10%2F0xW-windows%E6%B3%A8%E5%86%8C%E8%A1%A8%2F</url>
+    <content type="text"><![CDATA[什么是注册表？注册表（registry）是Microsoft Windows 中的一个重要数据库。如何打开注册表？用快捷键Windows+R打开运行窗口，输入regedit、regedit.exe或者regedt32、regedt32.exe四个名称均可。注册表的作用？用于存储系统和应用程序的设置信息。注册表的结构？注册表是层次结构的数据库，由以下嵌套容器和数据组成：子树（根目录或者层次结构的主要部分）、项（子树下的主要子容器。项可以包含子项或键值）项值（影响系统的实际数据。项值在注册表编辑器右边的面板中显示）HKEY（子树符号，设计者认为根目录是“到项的句柄”。HandleTo key的简写）接下来从五个子树介绍整个注册表；1、HKEY_CLASSES_ROOT这个子树包含了所有应用程序运行时必需的信息；在文件和应用程序之间所有的扩展名和关联所有的驱动程序名称。类的ID数字（所要存取项的名字用数字来代替）用于应用程序和文件的图标；在Windows用户图形界面下每件事、每个文件、每个目录、每个小程序、每个连接、每个驱动都被看做一个对象，每个对象都有确定的属性和它联系。HKCR包含着对象类型和他们属性的列表。HKCR主要功能设置为；一个对象类型和一个扩展名关联；一个对象类型和一种图标关联；一个对象类型和一个命令行动的关联。定义对象类型相关菜单选项和没一个对象类型属性选项。2、HKEY_CURRENT_USER此根键（子树）中记录的是当前用户的配置数据信息，用户可以利用此根键下的子键修改Windows的许多环境配置。HKEY_CURRENT_USER根键中的主键（1）AppEvents主键，包含了已注册了的各种应用事件。（2）Console主键Windows2003控制台子系统存储设置，控制台子系统运行所有基于字符的应用程序。（3）Control Panel主键，包含了与控制面板有关的内容。（4）Environment主键，已登录用户表示环境变量的设置的数据项值。（5）Identities它是当前用户的ID，但不是主要的ID。在HKEY_USERS中，每个用户都有唯一的ID。这与之相匹配。（6）Keyboaed Layout储存安装键盘的布局信息，包含硬件和驱动器设置。（7）Network仅当当前用户具有映像的网络磁盘时才存在。是父项，不保留重要数据。（8）Printers在计算机打印机上的相关信息，包括用户设置的配置选项。（9）Session Information包含当前会话中使用的与应用程序相关的信息。（10）Software存储登录用户的特定应用程序用户设置和程序变量、（11）Volatile Environment 当前用户会话设置。3、HKEY_LOCAL_MACHINE此根键保存与计算机、硬件、所安装的设备驱动器，以及影响所有计算机用户的配置选项（安全和软件设置）等相关信息。它包含了5个项。（1）HARDWARE Ntdetect.com（Windows 2003硬件识别程序）在启动过程中，从头开始建立这个项的内容。该信息保存在RAM中，子项的层次结构保存计算机所有的硬件组件信息。（2）SAM 安全账户管理器，存储用户和数据组的地方，SAM数据由所有本地用户和组组成包括用户访问文件夹，文件以及外设的权限。（3）SECURITY 有安全有关的数据项，保存安全策略和用户组策略的配置信息。（4）SOFTWARE 操作系统在这里保存计算机设置，包括组策略配置生效的设置，所安装的软件、版本等等。（5）SYSTEM 控制操作系统的启动。几乎控制操作系统所做的每一件事（特别是内核服务），这是对计算机配置的正确性的方法。4、HKEY_USER包含计算机默认用户的配置文件和已知用户的配置文件的子项。5、HKEY_CURRENT_CONFIG保存计算机启动时所使用的与硬件配置文件相关信息。它是HKEY_LOCAL_MACHINESYSTEMCurrentControlSetHardware Profilescurrent的别名。如何导入与导出注册表进入注册表编辑器，选择“文件”“导出”命令，打开“导出注册表文件”对话框。选择保存位置并为其取名，单击保存即可完成注册表的备份。打开注册表编辑器，选择“文件”“导入”命令，打开“导入注册表”文件对话框，选择要导入的注册表文件，然后单击“打开”按钮，这是系统开始导入注册表文件，中间最好不要做其它操作。如果中途弹出对话框，提示无法导入部分数据，则可重启一下电脑，然后在执行导入操作。注册表文件的扩张名为.reg如何查询注册表中IE历史记录？IE浏览网站的历史记录：依次是HKEY_CURRENT_USERSoftwareMicrosoftInternet ExplorerTyped URLs如何查寻注册表中计算机盘符记录？HEKY_LOCAL_MACHINESYSTEMMounted Devices键值下如何查询注册表中U盘挂载记录？HKEY_LOCAL_MACHINESYSTEMCurrentControlSetControlDeviceClasses{a5dcbf10-6530-11d2-901f-00c04fb951ed}如何查询远程桌面登录记录？HKEY_CURRENT_USERSoftwareMicrosoftTerminalServerClientDefault如何查询注册表中操作系统型号记录？HKEY_CURRENT_USERSoftwareMicrosoftWindowns NTCurrent Version]]></content>
+      <categories>
+        <category>恶意代码分析</category>
+      </categories>
+  </entry>
+  <entry>
     <title><![CDATA[XSS Attack Detection]]></title>
     <url>%2F2019%2F10%2F09%2F0xD-XSS%20Attack%20Detection%2F</url>
     <content type="text"><![CDATA[基础特征机器学习识别XSS实践使用深度学习检测XSS]]></content>
