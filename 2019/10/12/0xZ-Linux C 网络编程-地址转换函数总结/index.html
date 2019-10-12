@@ -111,7 +111,7 @@
 <p> 这里还需要注意<a href="https://cendeavor.github.io/2019/09/25/0xZ-Linux%20C%20INADDR_ANY%20INADDR_NONE/" target="_blank" rel="noopener">INADDR_ANY和INADDR_NONE</a></p>
 </li>
 <li><p>inet_addr、inet_ntoa、atoi</p>
-<p> 这三个函数都是字符串和二进制的转换，但是功能不雷同，只能根据名称强记。</p>
+<p> 这三个函数都是字符串和二进制的转换，但是功能不雷同，只能根据名称强记。（其中inet_addr和inet_ntoa可用<a href="https://cendeavor.github.io/2019/10/12/0xZ-Linux%20C%20%E5%AD%97%E7%AC%A6%E4%B8%B2IP%E5%92%8C%E4%BA%8C%E8%BF%9B%E5%88%B6IP%E8%BD%AC%E6%8D%A2/" target="_blank" rel="noopener">安全地址转换函数inet_pton和inet_ntop</a>替代，虽然用法难多了，但是名称更对称了。。）</p>
 <p> inet_addr：字符串-&gt;网络字节序整型</p>
 <p> <a href="https://www.iteye.com/blog/dll38dll-1349221" target="_blank" rel="noopener">inet_ntoa</a>：’net to asiic’ <code>网络地址</code>-&gt;字符串 (注意是这里比较特殊，参数是网络地址<code>struct in_addr</code>，返回的是一个<code>字符串</code>，有一个规律：只要返回时char*的都是指向<code>静态内存</code>的指针，即函数的下一次调用会覆盖掉上一次的结果)</p>
 <p> atoi：’asiic to int’ 字符串-&gt;int型，这个在网络编程中用于<code>用户输入的PORT</code>的<code>第一层转换</code>，这里也是socket编程中唯一个需要两层转换的地方，先atoi后htons才进入socket地址</p>
