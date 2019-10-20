@@ -1,0 +1,303 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>Ubuntu 16.04 部署sqli-labs踩坑记录 | 沉浮之道</title>
+  <meta name="author" content="cendeavor">
+  
+  <meta name="description" content="一切都要从升级win10下升级phpstudy后的某一天说起。。。那天实训sql注入，发现n年前部署好的sqli-lab访问不了了，mysql-front的root账户登进去各种报错，于是乎转战winxp虚拟机，但是做题过程中遇到需要python脚本的题目，网上copy了一个代码结果用了termcolor不支持cmd，在加上本来就不喜欢在没有安装任何插件的winxp上写代码（不是没有想过跨主机，由于以前改过了vmware的网卡设置，复原后还是桥接、nat各种ping不通。。。问题太多，干脆在最爱的Ubuntu 16.04上部署然后本地测试吧。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Ubuntu 16.04 部署sqli-labs踩坑记录">
+  <meta property="og:site_name" content="沉浮之道">
+
+  
+    <meta property="og:image" content>
+  
+
+  <link rel="alternate" href="/atom.xml" title="沉浮之道" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+</html>
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/avatar.png">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">沉浮之道</a></h1>
+		    <h2><a href="/"></a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/node"><i class="fa fa-book"></i>Node.js</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		      <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-20T06:13:56.467Z"><a href="/2019/10/20/0xK-Ubuntu 16.04部署sqli-lab踩坑记录/">2019-10-20</a></time>
+        
+  
+    <h1 class="title">Ubuntu 16.04 部署sqli-labs踩坑记录</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Step-1-搭建LAMP环境"><span class="toc-text">Step 1 搭建LAMP环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Step-2-解压sqli-labs至网站根目录，并修改sql-connection目录下的db-creds-inc文件的password为”root”"><span class="toc-text">Step 2 解压sqli-labs至网站根目录，并修改sql-connection目录下的db-creds.inc文件的password为”root”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Step-3-切换PHP版本为5-6-5-7"><span class="toc-text">Step 3 切换PHP版本为5.6/5.7</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Step-4-用root账户连接mysql，并新建一个账户，赋予所有权限"><span class="toc-text">Step 4 用root账户连接mysql，并新建一个账户，赋予所有权限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Step-5-更新sqli-labs的db-creds-inc文件里的username和password为“新建的账户”"><span class="toc-text">Step 5 更新sqli-labs的db-creds.inc文件里的username和password为“新建的账户”</span></a></li></ol>
+    </div>
+
+        <p>一切都要从升级win10下升级phpstudy后的某一天说起。。。那天实训sql注入，发现n年前部署好的sqli-lab访问不了了，mysql-front的root账户登进去各种报错，于是乎转战winxp虚拟机，但是做题过程中遇到需要python脚本的题目，网上copy了一个代码结果用了termcolor不支持cmd，在加上本来就不喜欢在没有安装任何插件的winxp上写代码（不是没有想过跨主机，由于以前改过了vmware的网卡设置，复原后还是桥接、nat各种ping不通。。。问题太多，干脆在最爱的Ubuntu 16.04上部署然后本地测试吧。</p>
+<a id="more"></a>
+<h2 id="Step-1-搭建LAMP环境"><a href="#Step-1-搭建LAMP环境" class="headerlink" title="Step 1 搭建LAMP环境"></a>Step 1 搭建LAMP环境</h2><p>PHPstudy不稳定（反正我在16.04上没试通）、宝塔没装成功（无论是原版还是<a href="https://www.moerats.com/archives/387/" target="_blank" rel="noopener">魔改版</a>，原版是pip import main出错了，大概率是我同时安装了python2 python3，不想查怎么解决pip的问题）</p>
+<p>几番折腾后绝望下只能老老实实手工搭建<a href="https://blog.csdn.net/lu_embedded/article/details/79604380" target="_blank" rel="noopener">LAMP</a></p>
+<p>具体安装命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install apache2</span><br><span class="line">sudo apt-get install mysql-server mysql-client</span><br><span class="line">sudo apt-get install php7.0 libapache2-mod-php7.0 php7.0-mysql</span><br><span class="line">sudo apt-get install phpmyadmin</span><br><span class="line">sudo ln -s /usr/share/phpmyadmin /var/www/html</span><br><span class="line">sudo a2enmod rewrite</span><br><span class="line"></span><br><span class="line">sudo service php7.0-fpm restart</span><br><span class="line">sudo service apache2 restart</span><br><span class="line">sudo service mysql restart</span><br><span class="line"></span><br><span class="line">访问127.0.0.1/phpmyadmin</span><br></pre></td></tr></table></figure>
+
+<p>注意：网站根目录在/var/www/html，而不是/var/www；其他的文件安装位置可以用whereis查看</p>
+<h2 id="Step-2-解压sqli-labs至网站根目录，并修改sql-connection目录下的db-creds-inc文件的password为”root”"><a href="#Step-2-解压sqli-labs至网站根目录，并修改sql-connection目录下的db-creds-inc文件的password为”root”" class="headerlink" title="Step 2 解压sqli-labs至网站根目录，并修改sql-connection目录下的db-creds.inc文件的password为”root”"></a>Step 2 解压sqli-labs至网站根目录，并修改sql-connection目录下的db-creds.inc文件的password为”root”</h2><p>访问localhost/sqli-labs，然后点击setup，发现没有回显，跟win10下一毛一样，顿时崩溃。但是不甘心啊，于是找到sqli-labs的mysql-connection原setup-db.php文件。<br><img src="/pic/0xK-Ubuntu%2016.04%E9%83%A8%E7%BD%B2sqli-lab%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/2019-10-20-14-34-27.png" alt></p>
+<p>sudo php setup-db.php，终于发现了报错信息：<br><a href="https://blog.csdn.net/zhoucheng05_13/article/details/75082722" target="_blank" rel="noopener">PHP连接mysql数据库报错：Call to undefined function mysql_connect()</a></p>
+<p><code>原因：PHP7.0开始启用mysql_connect()函数改用mysqli_connect()</code></p>
+<p>联系到自己的win10下的php版本，真心想哭出来了，不就是要换个php版本嘛，当时就想到了，但是为什么不回显错误信息呢！！！</p>
+<h2 id="Step-3-切换PHP版本为5-6-5-7"><a href="#Step-3-切换PHP版本为5-6-5-7" class="headerlink" title="Step 3 切换PHP版本为5.6/5.7"></a>Step 3 切换PHP版本为5.6/5.7</h2><p>由于apt里面是没有php老版本的，所以需要先更新安装源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo add-apt-repository ppa:ondrej/php</span><br><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
+
+<p>然后当然是想安装什么版本就安装什么版本了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install -y php5.6-common php5.6-mbstring php5.6-mcrypt php5.6-mysql php5.6-xml php5.6-gd php5.6-curl php5.6-json php5.6-fpm php5.6-zip php5.6-mcrypt libapache2-mod-php5.6</span><br><span class="line"></span><br><span class="line">sudo apt-get install -y php7.0-common php7.0-mbstring php7.0-mcrypt php7.0-mysql php7.0-xml php7.0-gd php7.0-curl php7.0-json php7.0-fpm php7.0-zip php7.0-mcrypt libapache2-mod-php7.0</span><br><span class="line"></span><br><span class="line">sudo apt-get install -y php7.1-common php7.1-mbstring php7.1-mcrypt php7.1-mysql php7.1-xml php7.1-gd php7.1-curl php7.1-json php7.1-fpm php7.1-zip php7.1-mcrypt libapache2-mod-php7.1</span><br></pre></td></tr></table></figure>
+
+<p>开启重写转向（个人认为这一步没啥用）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo a2enmod rewrite</span><br><span class="line">sudo a2enmod headers</span><br></pre></td></tr></table></figure>
+
+<p>为了以后能够方便切换，用别名来指代一串切换的命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">vim ~/.zshrc</span><br><span class="line">alias php56=&apos;sudo a2dismod php7.0 &amp;&amp; sudo a2dismod php7.1 &amp;&amp; sudo a2enmod php5.6 &amp;&amp; sudo service apache2 restart&apos; &amp;&amp; sudo update-alternatives --set php /usr/bin/php5.6</span><br><span class="line">alias php70=&apos;sudo a2dismod php5.6 &amp;&amp; sudo a2dismod php7.1 &amp;&amp; sudo a2enmod php7.0 &amp;&amp; sudo service apache2 restart&apos; &amp;&amp; sudo update-alternatives --set php /usr/bin/php7.0</span><br><span class="line">alias php71=&apos;sudo a2dismod php5.6 &amp;&amp; sudo a2dismod php7.0 &amp;&amp; sudo a2enmod php7.1 &amp;&amp; sudo service apache2 restart&apos; &amp;&amp; sudo update-alternatives --set php /usr/bin/php7.1</span><br><span class="line">source ~/.zshrc</span><br><span class="line"></span><br><span class="line">注意：这里编辑的文件视个人采用的终端而定，我采用的是Oh-my-zsh终端，而ubuntu默认采用bash所以要去编辑~/.bashrc</span><br></pre></td></tr></table></figure>
+
+<p>最后，最后？你以为就没有了，你这时候确实可以在使用sudo php setup-db.php来完成sqli-labs数据库的初始化了，而且你登录到phpmyadmin里面确实会看到多了一个security数据库和challenges数据库。但是你会悲哀的发现你还是无法使用sqli-labs，因为他会返回给你一个Access denied: root@localhost 巴拉巴拉。</p>
+<h2 id="Step-4-用root账户连接mysql，并新建一个账户，赋予所有权限"><a href="#Step-4-用root账户连接mysql，并新建一个账户，赋予所有权限" class="headerlink" title="Step 4 用root账户连接mysql，并新建一个账户，赋予所有权限"></a>Step 4 用root账户连接mysql，并新建一个账户，赋予所有权限</h2><p><a href="https://blog.csdn.net/teddy_dewei_lu/article/details/79659013" target="_blank" rel="noopener">ubuntu16.04 phpmyadmin使用root登录提示#1698 - Access denied for user ‘root’@’localhost’</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1. 进入mysql交互界面</span><br><span class="line">sudo mysql -u root -p</span><br><span class="line">2. 新建用户</span><br><span class="line">CREATE USER &apos;youruname&apos;@&apos;localhost&apos; IDENTIFIED BY &apos;yourpasswd&apos;;</span><br><span class="line">GRANT ALL PRIVILEGES ON *.* TO &apos;youruname&apos;@&apos;localhost&apos; WITH GRANT OPTION;</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+
+<p>其实到这一步我严重怀疑我的win10下mysql-front打不开是因为mysql更新后两者之间的版本不对应造成的，所以只需要用phpstudy新建一个用户，再用phpmyadmin账户里给它分配一个所有权限，到时候用这个账户连接数据库就可以了</p>
+<h2 id="Step-5-更新sqli-labs的db-creds-inc文件里的username和password为“新建的账户”"><a href="#Step-5-更新sqli-labs的db-creds-inc文件里的username和password为“新建的账户”" class="headerlink" title="Step 5 更新sqli-labs的db-creds.inc文件里的username和password为“新建的账户”"></a>Step 5 更新sqli-labs的db-creds.inc文件里的username和password为“新建的账户”</h2><p>最后终于成功了，泪流满面</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div></div></div>
+      <aside id="sidebar" class="alignright">
+        
+           <div class="search">
+  <form action="/search/index.html" method="get" accept-charset="utf-8">
+<!--     <input type="search" name="wd"results="0" placeholder="搜索">
+    <input type="hidden" name="wd" value="site:yoursite.com"> -->
+     <input type="text" id="search" class="st-default-search-input" placeholder="搜索" style="height: 100%" />
+  </form>
+</div> 
+        
+          
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">15</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/IPC/">IPC</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多线程/">多线程</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多路I-O复用/">多路I/O复用</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/网络编程/">网络编程</a><span class="category-list-count">6</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/">PWN</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/blockchain/">blockchain</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/data-mining/">data mining</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/machine-learning/">machine learning</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/math/linear-algebra/">linear algebra</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/安全/web/">web</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/恶意代码分析/">恶意代码分析</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
+</div>
+ 
+
+        
+          <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/qrcode.jpg" alt="欢迎关注个人公众账号" style= "width: 100%">
+    </ul>
+</div>
+        
+          <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">友情链接</h3>
+      <ul class="entry">
+        
+          <li class='link'><a href=''>(tool)</a></li>
+        
+          <li class='link'><a href='https://www.mathsisfun.com/'>MathIsFun</a></li>
+        
+          <li class='link'><a href='https://www.shuxuele.com/index.html'>数学乐</a></li>
+        
+          <li class='link'><a href=''>(blog)</a></li>
+        
+          <li class='link'><a href='https://hpasserby.me/'>一个bin菜鸡</a></li>
+        
+          <li class='link'><a href='https://blog.csdn.net/ljianhui'>初学Linux</a></li>
+        
+          <li class='link'><a href='https://zzqcn.github.io/opensource/dpdk/index.html#'>赵子清(dpdk)</a></li>
+        
+          <li class='link'><a href='https://www.laojiyou.com/books/sdnwlzn/reference.html'>SDN网络指南</a></li>
+        
+          <li class='link'><a href='https://www.cnblogs.com/zengzy'>曾志优(数据结构与算法)</a></li>
+        
+          <li class='link'><a href='https://www.cnblogs.com/bonelee/tag/安全分析/'>安全分析</a></li>
+        
+          <li class='link'><a href='https://blog.csdn.net/houyanhua1'>WEB</a></li>
+        
+          <li class='link'><a href=''>(empty)</a></li>
+        
+          <li class='link'><a href='https://www.sdnlab.com/'>SDNLAB</a></li>
+        
+          <li class='link'><a href='https://medium.com/'>Medium</a></li>
+        
+          <li class='link'><a href='https://mooc.study.163.com/smartSpec/detail/1001319001.htm?from=study'>深度学习微专业</a></li>
+        
+          <li class='link'><a href=''>(book)</a></li>
+        
+          <li class='link'><a href='chrome-extension://cdonnmffkdaoajfknoeeecmchibpmkmg/static/pdf/web/viewer.html?file=http%3A%2F%2Fpdf.ebook23.com%2Febook%2F19_%25E7%25A8%258B%25E5%25BA%258F%25E5%2591%2598%25E4%25B8%25AA%25E4%25BA%25BA%25E4%25BF%25AE%25E5%2585%25BB%2F%255B%25E4%25BB%25A3%25E7%25A0%2581%25E5%25A4%25A7%25E5%2585%25A82%25E4%25B8%25AD%25E6%2596%2587%25E7%2589%2588%2528%25E5%25AE%258C%25E6%2595%25B4%25E6%25B8%2585%25E6%2599%25B0%25E7%2589%2588%2529%255D.pdf'>代码大全</a></li>
+        
+      </ul>
+  </div>
+
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">99</span></li></ul>
+  </div>
+
+        
+      </aside>
+      <div class="clearfix"></div>
+    </div>
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2019 cendeavor
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+
+  <div>
+    Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a>
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="/js/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 百度统计 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','HcqxzAQHLZzGwtjJSqw3','2.0.0');
+</script>
+</body>
+</html>

