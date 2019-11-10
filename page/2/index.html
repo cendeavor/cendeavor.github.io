@@ -80,25 +80,566 @@
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-09-14T05:44:47.491Z"><a href="/2019/09/14/0xC-吴恩达机器学习入门课程总结/">2019-09-14</a></time>
+        <time datetime="2019-10-25T15:36:37.640Z"><a href="/2019/10/25/0xK-C 字节对齐规则/">2019-10-25</a></time>
         
   
-    <h1 class="title"><a href="/2019/09/14/0xC-吴恩达机器学习入门课程总结/">吴恩达机器学习入门课程总结</a></h1>
+    <h1 class="title"><a href="/2019/10/25/0xK-C 字节对齐规则/">C 结构体字节对齐规则</a></h1>
   
 
     </header>
 
     <div class="entry">
       
-        The article has been encrypted, please enter your password to view.<br>
+        <p>周一写raw socket的时候自己写了结构体来存储协议头，结果发现发出去的包的丢包率很高（被接收方的网卡丢掉了），导致SYN flood程序扫描redhat虚机连接数根本达不到上限769，仔细检查自己写的代码的和网上正确代码的填充内容，并查看了它们在内存结构体里面的内容，发现并没有任何差别，瞬间心态炸裂。于是将两个程序构造的包从结构体里面拷贝到数组里面进行比较，结果发现内存里面的内容完全不一样！？？？而两份代码唯一的区别在于我的结构体是自己写的，网上的代码的结构体是直接用的<a href="https://www.xuebuyuan.com/1799284.html?mobile=0" target="_blank" rel="noopener">C库</a>，这还能不一样？这就触到了我的知识体系的灰色地带——结构体字节对齐。</p>
       
     </div>
     <footer>
       
         
           <div class="alignleft">
-            <a href="/2019/09/14/0xC-吴恩达机器学习入门课程总结/#more" class="more-link">Read More</a>
+            <a href="/2019/10/25/0xK-C 字节对齐规则/#more" class="more-link">Read More</a>
           </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-25T15:02:48.541Z"><a href="/2019/10/25/0xS-资源/">2019-10-25</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/25/0xS-资源/">资源合集</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#null"><span class="toc-text"></span></a></li></ol>
+    </div>
+
+        <h2 id><a href="#" class="headerlink" title></a></h2><p><a href="https://www.iqiyi.com/v_19rr4blpm8.html#curid=1609119900_15f3c64124476c8446ecb5d5698d8046" target="_blank" rel="noopener">C语言基础（视频）</a><br><a href="http://c.biancheng.net" target="_blank" rel="noopener">C语言中文网（除了C外还有许多教程可以用于入门，但不完全正确）</a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-25T14:51:54.299Z"><a href="/2019/10/25/0xK-win10 电脑连不上手机热点/">2019-10-25</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/25/0xK-win10 电脑连不上手机热点/">win10 电脑连不上手机热点</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        <p>最近校园网老是掉线，于是用了某不知名角落传出来的“治网脚本”，然后电脑就（经常？）连不上手机热点了。。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2019/10/25/0xK-win10 电脑连不上手机热点/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-24T02:21:28.352Z"><a href="/2019/10/24/0xWEB-Python web开发入门/">2019-10-24</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/24/0xWEB-Python web开发入门/">Python web开发入门</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SQLAlchemy"><span class="toc-text">SQLAlchemy</span></a></li></ol>
+    </div>
+
+        <h2 id="SQLAlchemy"><a href="#SQLAlchemy" class="headerlink" title="SQLAlchemy"></a>SQLAlchemy</h2><p>ORM 全称 Object Relational Mapping, 翻译过来叫对象关系映射。简单的说，ORM 将数据库中的表与面向对象语言中的类建立了一种对应关系。这样，我们要操作数据库，数据库中的表或者表中的一条记录就可以直接通过操作类或者类实例来完成。</p>
+<p>SQLAlchemy 是Python 社区最知名的 ORM 工具之一，为高效和高性能的数据库访问设计，实现了完整的企业级持久模型。</p>
+<p><a href="http://www.pythondoc.com/flask-sqlalchemy/quickstart.html" target="_blank" rel="noopener">Flask-SQLAlchemy快速入门</a></p>
+<p><a href="https://www.cnblogs.com/Toney-01-22/p/9911672.html" target="_blank" rel="noopener">SQLite表操作</a></p>
+<p><a href="https://flask-admin.readthedocs.io/en/latest/" target="_blank" rel="noopener">FLask-Admin</a></p>
+<p><a href="https://blog.csdn.net/luanpeng825485697/article/details/80934185" target="_blank" rel="noopener">Flask 快速入门</a></p>
+<p><a href="https://www.cnblogs.com/huchong/p/8227606.html" target="_blank" rel="noopener">https://www.cnblogs.com/huchong/p/8227606.html</a></p>
+<p><a href="https://www.jianshu.com/p/1e94d3b49f3e" target="_blank" rel="noopener">使用Flask+AdminLTE 开发自己的管理平台</a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-22T05:56:27.900Z"><a href="/2019/10/22/0xSEC-BIN 堆溢出基础/">2019-10-22</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/22/0xSEC-BIN 堆溢出基础/">堆溢出基础</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一、windows异常处理"><span class="toc-text">一、windows异常处理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-windows异常处理链表"><span class="toc-text">1.1 windows异常处理链表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-覆盖异常"><span class="toc-text">1.2 覆盖异常</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二、堆溢出"><span class="toc-text">二、堆溢出</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-堆结构"><span class="toc-text">1.1 堆结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-堆表结构验证（空表和快表）"><span class="toc-text">1.2 堆表结构验证（空表和快表）</span></a></li></ol></li></ol>
+    </div>
+
+        <h1 id="一、windows异常处理"><a href="#一、windows异常处理" class="headerlink" title="一、windows异常处理"></a>一、windows异常处理</h1><h2 id="1-1-windows异常处理链表"><a href="#1-1-windows异常处理链表" class="headerlink" title="1.1 windows异常处理链表"></a>1.1 windows异常处理链表</h2><p>TEB (FS[0]: address in stack -&gt; STACK: SEH handler1 -&gt; SEH handler2 -&gt; … -&gt; 0xFFFFFFFF</p>
+<h2 id="1-2-覆盖异常"><a href="#1-2-覆盖异常" class="headerlink" title="1.2 覆盖异常"></a>1.2 覆盖异常</h2><ol>
+<li>jmp esp后加jmp -1(\x..\x..)</li>
+<li>jmp ebx</li>
+</ol>
+<h1 id="二、堆溢出"><a href="#二、堆溢出" class="headerlink" title="二、堆溢出"></a>二、堆溢出</h1><h2 id="1-1-堆结构"><a href="#1-1-堆结构" class="headerlink" title="1.1 堆结构"></a>1.1 堆结构</h2><p><strong>堆包括 堆块 和 堆表</strong></p>
+<ol>
+<li><p>堆块</p>
+<ol>
+<li><p>块首（8字节）</p>
+<p>  自身长度（2）+ 前一个chunk长度（2） + 段索引（1） + Flags（1） + 未使用字节（1） + 标签索引（1：调试用）</p>
+</li>
+<li><p>块身</p>
+</li>
+</ol>
+</li>
+</ol>
+<p><strong>空闲块</strong>（<code>至少</code>16字节）：malloc后<code>被free掉的内存块</code>，标志位为0x00，表示这块是空闲的，块首后面8个字节分别是 下一个块的地址(4) 和 上一个块的地址(4) + 数据区（size：malloc后的大小）</p>
+<ol start="2">
+<li><p>堆表</p>
+<ol>
+<li><p>空表（双向回环链表）【空闲堆块信息表】</p>
+</li>
+<li><p>快表（单向链表）</p>
+<p>两表都为128大小的指针数组（空表每一项有两个指针，快表有一个指针）</p>
+<p>快表最多只有四个节点</p>
+<p>空表除了数组的第一个元素外其他分别链接：数组下标*8 大小的堆块，数组的第一个元素链接者大于1kb的堆块，并升序排列</p>
+<p>快表的堆块处于占用状态，不会发生堆栈合并</p>
+<p>快表的只存在精确分配，快表优先空表分配</p>
+</li>
+</ol>
+</li>
+</ol>
+<p><strong>堆初始化时的状态</strong></p>
+<p>其中只包含一个<code>块尾</code></p>
+<p>块尾：又称freelist[0]，位于0x178处（未启用块表的情况下），加上堆的基地址就是0x3A0178</p>
+<p>freelist[0]指向“块尾”，八个字节（前四个字节前向指针，后四个字节后向指针，即：空表中的一对指针），其余各项索引指向自身</p>
+<h2 id="1-2-堆表结构验证（空表和快表）"><a href="#1-2-堆表结构验证（空表和快表）" class="headerlink" title="1.2 堆表结构验证（空表和快表）"></a>1.2 堆表结构验证（空表和快表）</h2><p><a href="https://introspelliam.github.io/2017/06/24/0day/%E5%A0%86%E6%BA%A2%E5%87%BA%E7%A0%94%E7%A9%B6%E8%AF%95%E9%AA%8C/" target="_blank" rel="noopener">堆溢出研究试验</a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-20T15:56:56.915Z"><a href="/2019/10/20/0xZ-JS js 中箭头函数使用总结/">2019-10-20</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/20/0xZ-JS js 中箭头函数使用总结/">=&gt; js 中箭头函数使用总结</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#箭头函数感性认识"><span class="toc-text">箭头函数感性认识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#箭头函数中this-指向"><span class="toc-text">箭头函数中this 指向</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#下面对比写es5-es6-直接关于箭头函数的对比使用"><span class="toc-text">下面对比写es5 es6 直接关于箭头函数的对比使用</span></a></li></ol>
+    </div>
+
+        <div id="content_views" class="markdown_views">
+                    <!-- flowchart 箭头图标 勿删 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"/>
+                    </svg>
+                                            <h1 id="箭头函数感性认识"><a name="t0"></a>箭头函数感性认识</h1>
+
+<p>箭头函数 是在es6 中添加的一种规范</p>
+
+<p>x =&gt; x * x 相当于 function(x){return x*x}</p>
+
+<p>箭头函数相当于 匿名函数， 简化了函数的定义。 语言的发展都是倾向于简洁 对人类友好的， 减轻工作量的。 就相当于我最钟情的python, 有很多类似之处， 在 关于promise 文章中我会和Python 框架中的tornado 中的异步进行对比的， 很相似。</p>
+
+<p>箭头函数有两种格式， 一种只包含一个表达式，没有{…} 和 return 。 一种包含多条语句， 这个时候{} return  就不能省略</p>
+
+
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">x =&gt; {
+     <span class="hljs-keyword">if</span> (x&gt;<span class="hljs-number">0</span>){
+         <span class="hljs-keyword">return</span> x*x
+     }<span class="hljs-keyword">else</span>{
+        <span class="hljs-keyword">return</span> x
+     }
+}<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>如果有多个参数就要用（）：</p>
+
+
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">// 两个参数返回后面的值
+(x, y) =&gt;x*y + y*y
+//没有参数
+() =&gt; <span class="hljs-number">999</span>
+// 可变参数
+(x, y, ...rest) =&gt;{
+    var i,sum = x+y;
+    <span class="hljs-keyword">for</span> (i=<span class="hljs-number">0</span>;i&lt;rest.length;i++){
+        sum += rest[i];
+    }
+    <span class="hljs-keyword">return</span> sum;
+}<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+
+<h2 id="箭头函数中this-指向"><a name="t1"></a>箭头函数中this 指向</h2>
+
+<p>箭头函数 看起来是匿名函数的简写。但是还是有不一样的地方。 箭头函数中的this是词法作用域， 由上写文确定</p>
+
+
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">var obj = {
+    birth: <span class="hljs-number">1990</span>,
+    getAge: function () {
+        var b = this.birth; // <span class="hljs-number">1990</span>
+        var fn = function () {
+            <span class="hljs-keyword">return</span> new Date().getFullYear() - this.birth; // this指向window或undefined
+        };
+        <span class="hljs-keyword">return</span> fn();
+    }
+};<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>箭头函数修复了this的指向， this 总是指向词法作用域， 也就是外层调用者obj:</p>
+
+
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">var obj = {
+    birth: <span class="hljs-number">1990</span>,
+    getAge: function () {
+        var b = this.birth; // <span class="hljs-number">1990</span>
+        var fn = () =&gt; new Date().getFullYear() - this.birth; // this指向obj对象
+        <span class="hljs-keyword">return</span> fn();
+    }
+};
+obj.getAge(); // <span class="hljs-number">25</span><div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>如果使用箭头函数，以前的那种hack写法 就不需要了： <br>
+var that = this;</p>
+
+<p>由于this 在箭头函数中已经按照词法作用域绑定了， 所以施一公call  或者apply() 调用函数的时候， 无法对this 进行绑定， 即 传入的第一个参数被忽略：</p>
+
+
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">var obj={
+    birth:<span class="hljs-number">2018</span>,
+    getAge:function(year){
+    var b =this.birth;//<span class="hljs-number">2018</span>
+    var fn = (y)=&gt;y-this.birth //this.birth 仍然是<span class="hljs-number">2018</span>
+    <span class="hljs-keyword">return</span> fn.call({birth:<span class="hljs-number">200</span>},year)
+}
+}
+obj.getAge(<span class="hljs-number">2020</span>)<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<h1 id="下面对比写es5-es6-直接关于箭头函数的对比使用"><a name="t2"></a>下面对比写es5 es6 直接关于箭头函数的对比使用</h1>
+
+
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">//es5
+var fn = function(a, b){<span class="hljs-keyword">return</span> a+b}
+//es6   直接被<span class="hljs-keyword">return</span>时候可以省略函数体的括号
+const fn=(a,b) =&gt; a+b;
+
+//es5
+var foo = function(){
+    var a=<span class="hljs-number">20</span>;
+    var b= <span class="hljs-number">30</span>;
+    <span class="hljs-keyword">return</span> a+b;
+}
+//es6
+const foo=()=&gt;{
+    const a= <span class="hljs-number">20</span>;
+    const b=<span class="hljs-number">30</span>;
+    <span class="hljs-keyword">return</span> a+b  
+}
+
+// 注意这里   箭头函数可以替代函数表达式但是不能替代函数声明<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>再回到this 上面来，箭头函数样意义上面来说没有this.  如果使用了this 那么就一定是外层this .不会自动指向window对象。所以也就不能使用call/apply/bind来改变this指向</p>
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">var person = {
+    name: <span class="hljs-string">'tom'</span>,
+    getName: function() {
+        <span class="hljs-keyword">return</span> this.name;
+    }
+}
+
+使用es6 来重构上面的对象
+const person = {
+    name:<span class="hljs-string">'tom'</span>,
+    getName:()=&gt;this.name
+}
+这样编译的结果就是
+var person ={
+    name:<span class="hljs-string">'tom'</span>,
+    getName:function getName(){<span class="hljs-keyword">return</span> undefined.name}
+}<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>在ES6中，会默认采用严格模式，因此this也不会自动指向window对象了，而箭头函数本身并没有this，因此this就只能是undefined，这一点，在使用的时候，一定要慎重慎重再慎重，不然踩了坑你都不知道自己错在哪！这种情况，如果你还想用this，就不要用使用箭头函数的写法。</p>
+
+
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">// 可以稍做改动
+const person = {
+    name: <span class="hljs-string">'tom'</span>,
+    getName: function() {
+        <span class="hljs-keyword">return</span> setTimeout(() =&gt; this.name, <span class="hljs-number">1000</span>);
+    }
+}
+
+// 编译之后变成
+var person = {
+    name: <span class="hljs-string">'tom'</span>,
+    getName: function getName() {
+        var _this = this;  // 使用了我们在es5时常用的方式保存this引用
+
+        <span class="hljs-keyword">return</span> setTimeout(function () {
+            <span class="hljs-keyword">return</span> _this.name;
+        }, <span class="hljs-number">1000</span>);
+    }
+};<div class="hljs-button {2}" data-title="复制"></div></code></pre></div>
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-20T12:08:33.470Z"><a href="/2019/10/20/0xZ-Solidity 基础/">2019-10-20</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/20/0xZ-Solidity 基础/">solidity基础</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p><a href="https://www.cnblogs.com/Ellon-Daris/p/5468504.html" target="_blank" rel="noopener">代币基础</a></p>
+<p><a href="https://www.jianshu.com/p/795e97f793a4" target="_blank" rel="noopener">基础语法几个点</a></p>
+<p><a href="https://www.jianshu.com/p/e7610a7e4763" target="_blank" rel="noopener">msg.value</a></p>
+<p><a href="https://blog.csdn.net/qq_34611579/article/details/85163326" target="_blank" rel="noopener">msg.owner，msg.sender，tx.origin</a></p>
+<p><a href="https://blog.csdn.net/qq_37694390/article/details/79512698" target="_blank" rel="noopener">this, balance</a></p>
+<p><a href="http://www.pianshen.com/article/394329266/" target="_blank" rel="noopener"></a></p>
+<p><a href="https://www.cnblogs.com/mambakb/p/9826872.html" target="_blank" rel="noopener">memory和 storage详解</a></p>
+<p><a href="https://www.cnblogs.com/wanghui-garcia/p/9587937.html" target="_blank" rel="noopener">值传递和引用传递</a></p>
+<p><a href="https://www.jianshu.com/p/1d7a681b7496" target="_blank" rel="noopener">结构体和Mapping</a></p>
+<p><a href="https://blog.csdn.net/weixin_40693324/article/details/79889138" target="_blank" rel="noopener">modifier函数修改器</a></p>
+<p><a href="https://www.jianshu.com/p/a99375c4e003" target="_blank" rel="noopener">事件和日志</a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-20T11:19:45.774Z"><a href="/2019/10/20/0xZ-Solidity storage和memory关键字的区别和用法/">2019-10-20</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/20/0xZ-Solidity storage和memory关键字的区别和用法/">Storage和memory关键字的区别和用法</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#storage使用注意点"><span class="toc-text">storage使用注意点</span></a></li></ol>
+    </div>
+
+        <div id="content_views" class="markdown_views">
+                    <!-- flowchart 箭头图标 勿删 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"/>
+                    </svg>
+                                            <p>在 <strong>Solidity</strong> 中，有两个地方可以存储变量 —— <code>storage</code>以及<code>memory</code>。</p>
+
+<p><code>Storage</code> 变量是指永久存储在区块链中的变量。 <code>Memory</code> 变量则是临时的，当外部函数对某合约调用完成时，内存型变量即被移除。</p>
+
+<p>状态变量（在函数之外声明的变量）默认为“<strong>storage</strong>”形式，并永久写入区块链；而在函数内部声明的变量默认是“<strong>memory</strong>”型的，它们函数调用结束后消失。</p>
+
+<p>然而也有一些情况下，你需要<strong>手动声明</strong>存储类型，主要用于处理函数内的<strong>结构体</strong>和<strong>数组</strong>时：</p>
+
+<pre class="prettyprint" name="code"><code class="language-javascript hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">pragma solidity ^<span class="hljs-number">0.4</span><span class="hljs-number">.19</span>;
+
+contract SandwichFactory {
+  struct Sandwich {
+    string name;
+    string status;
+  }
+
+  Sandwich[] sandwiches;
+
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">eatSandwich</span><span class="hljs-params">(uint _index)</span> <span class="hljs-title">public</span> {</span>
+    <span class="hljs-comment">// 如果写成 Sandwich mySandwich = sandwiches[_index];</span>
+    <span class="hljs-comment">// Solidity 将会给出警告，告诉你应该明确在这里定义 `storage` 或者 `memory`。</span>
+    <span class="hljs-comment">// 这里定义为 `storage`:</span>
+    Sandwich storage mySandwich = sandwiches[_index];
+    <span class="hljs-comment">// ...这样 `mySandwich` 是指向 `sandwiches[_index]`的指针</span>
+    <span class="hljs-comment">// 在存储里，另外...</span>
+    mySandwich.status = <span class="hljs-string">"Eaten!"</span>;
+    <span class="hljs-comment">// ...这将永久把 `sandwiches[_index]` 变为区块链上的存储</span>
+    <span class="hljs-comment">// 如果你只想要一个副本，可以使用`memory`:</span>
+    Sandwich memory anotherSandwich = sandwiches[_index + <span class="hljs-number">1</span>];
+    <span class="hljs-comment">// ...这样 `anotherSandwich` 就仅仅是一个内存里的副本了</span>
+    <span class="hljs-comment">// 另外</span>
+    anotherSandwich.status = <span class="hljs-string">"Eaten!"</span>;
+    <span class="hljs-comment">// ...将仅仅修改临时变量，对 `sandwiches[_index + 1]` 没有任何影响</span>
+    <span class="hljs-comment">// 不过你可以这样做:</span>
+    sandwiches[_index + <span class="hljs-number">1</span>] = anotherSandwich;
+    <span class="hljs-comment">// ...如果你想把副本的改动保存回区块链存储</span>
+  }
+}</code></pre>
+
+<p>简单的说，上述代码：</p>
+
+<ul>
+<li><code>Sandwich storage mySandwich = sandwiches[_index];</code>拿到的是<strong>引用/句柄/指针</strong></li>
+<li><code>Sandwich memory anotherSandwich = sandwiches[_index + 1];</code>拿到的是一份<strong>拷贝</strong></li>
+</ul>                                    </div>
+
+<h3 id="storage使用注意点"><a href="#storage使用注意点" class="headerlink" title="storage使用注意点"></a><a href="https://www.zuanbi8.com/eth/20652.html" target="_blank" rel="noopener">storage使用注意点</a></h3><p>一个合约的storage变量是定义你的合约状态的，只有通过调用sendTransaction才能改变[1]</p>
+<p>memory变量是仅存在于调用函数内（它们不能在其之外被声明）的临时变量。 在函数退出后它们会被抹掉，而且通常比使用storage变量更便宜，详情请看这里。</p>
+<p><img src="/pic/0xZ-Solidity%20storage%E5%92%8Cmemory%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E7%94%A8%E6%B3%95/2019-10-20-19-33-53.png" alt></p>
+
+      
+    </div>
+    <footer>
+      
         
         
       
@@ -117,6 +658,8 @@
     <a href="/" class="alignleft prev">上一页</a>
   
   
+    <a href="/page/3/" class="alignright next">下一页</a>
+  
   <div class="clearfix"></div>
 </nav>
 </div></div>
@@ -133,7 +676,7 @@
           
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">15</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/IPC/">IPC</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多线程/">多线程</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多路I-O复用/">多路I/O复用</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/网络编程/">网络编程</a><span class="category-list-count">6</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/">PWN</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/blockchain/">blockchain</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/data-mining/">data mining</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/machine-learning/">machine learning</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/math/linear-algebra/">linear algebra</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/安全/web/">web</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/恶意代码分析/">恶意代码分析</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Data-Science/">Data Science</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">15</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/IPC/">IPC</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多线程/">多线程</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多路I-O复用/">多路I/O复用</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/网络编程/">网络编程</a><span class="category-list-count">6</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/blockchain/">blockchain</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/machine-learning/">machine learning</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/math/linear-algebra/">linear algebra</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/web/">web</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a><span class="category-list-count">6</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/安全/BIN/">BIN</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/PROTOCOL/">PROTOCOL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/WEB/">WEB</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/恶意代码分析/">恶意代码分析</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/javascript/">javascript</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/solidity/">solidity</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
 </div>
  
 
@@ -178,6 +721,8 @@
         
           <li class='link'><a href='https://blog.csdn.net/houyanhua1'>WEB</a></li>
         
+          <li class='link'><a href='https://learnblockchain.cn/'>深入浅出区块链</a></li>
+        
           <li class='link'><a href=''>(empty)</a></li>
         
           <li class='link'><a href='https://www.sdnlab.com/'>SDNLAB</a></li>
@@ -187,6 +732,8 @@
           <li class='link'><a href='https://mooc.study.163.com/smartSpec/detail/1001319001.htm?from=study'>深度学习微专业</a></li>
         
           <li class='link'><a href=''>(book)</a></li>
+        
+          <li class='link'><a href='https://wizardforcel.gitbooks.io/q-buffer-overflow-tutorial/content/57.html'>Q版缓冲区溢出教程</a></li>
         
           <li class='link'><a href='chrome-extension://cdonnmffkdaoajfknoeeecmchibpmkmg/static/pdf/web/viewer.html?file=http%3A%2F%2Fpdf.ebook23.com%2Febook%2F19_%25E7%25A8%258B%25E5%25BA%258F%25E5%2591%2598%25E4%25B8%25AA%25E4%25BA%25BA%25E4%25BF%25AE%25E5%2585%25BB%2F%255B%25E4%25BB%25A3%25E7%25A0%2581%25E5%25A4%25A7%25E5%2585%25A82%25E4%25B8%25AD%25E6%2596%2587%25E7%2589%2588%2528%25E5%25AE%258C%25E6%2595%25B4%25E6%25B8%2585%25E6%2599%25B0%25E7%2589%2588%2529%255D.pdf'>代码大全</a></li>
         
@@ -198,7 +745,7 @@
           
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">99</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">109</span></li></ul>
   </div>
 
         

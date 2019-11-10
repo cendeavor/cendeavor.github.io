@@ -80,395 +80,201 @@
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-10-10T04:00:45.053Z"><a href="/2019/10/10/0xS-numpy.ndarray/">2019-10-10</a></time>
+        <time datetime="2019-10-15T16:07:38.009Z"><a href="/2019/10/16/0xZ-Linux C 多线程：条件变量详解/">2019-10-16</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/10/0xS-numpy.ndarray/">numpy.ndarray总结</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ndarray-value"><span class="toc-text">ndarray == value</span></a></li></ol>
-    </div>
-
-        <h2 id="ndarray-value"><a href="#ndarray-value" class="headerlink" title="ndarray == value"></a>ndarray == value</h2><p>以下面的y_train==l为例，其返回结果是array中元素值为l的元素下标<code>切片</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">colors = [<span class="string">'r'</span>, <span class="string">'b'</span>, <span class="string">'g'</span>]</span><br><span class="line">markers = [<span class="string">'s'</span>, <span class="string">'x'</span>, <span class="string">'o'</span>]</span><br><span class="line"><span class="keyword">for</span> l, c, m <span class="keyword">in</span> zip(np.unique(y_train), colors, markers):</span><br><span class="line">    plt.scatter(X_train_pca[y_train==l, <span class="number">0</span>],</span><br><span class="line">               X_train_pca[y_train==l, <span class="number">1</span>],</span><br><span class="line">               c=c, label=<span class="number">1</span>, marker=m)</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-<!-- 返回顶部 -->
-<div id="toTop">
-	<a href="#">▲</a>
-	<a href="#footer">▼</a>
-</div>
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2019-10-10T03:39:20.585Z"><a href="/2019/10/10/0xMP-numpy点积和星乘/">2019-10-10</a></time>
-        
-  
-    <h1 class="title"><a href="/2019/10/10/0xMP-numpy点积和星乘/">numpy中星乘(*)和点乘(.dot)的区别</a></h1>
+    <h1 class="title"><a href="/2019/10/16/0xZ-Linux C 多线程：条件变量详解/">Linux C 多线程：条件变量详解</a></h1>
   
 
     </header>
 
     <div class="entry">
       
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>转自<br><a href="https://blog.csdn.net/like4501/article/details/79753346" target="_blank" rel="noopener">https://blog.csdn.net/like4501/article/details/79753346</a></p>
-<div class="htmledit_views" id="content_views">
-                                            <pre><code class="hljs cpp"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-keyword">import</span> numpy</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">a = numpy.<span class="hljs-built_in">array</span>([[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>],</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">                 [<span class="hljs-number">3</span>,<span class="hljs-number">4</span>]])</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">b = numpy.<span class="hljs-built_in">array</span>([[<span class="hljs-number">5</span>,<span class="hljs-number">6</span>],</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">                 [<span class="hljs-number">7</span>,<span class="hljs-number">8</span>]])</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><pre><code class="hljs css"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-selector-tag">a</span>*<span class="hljs-selector-tag">b</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">&gt;&gt;&gt;<span class="hljs-selector-tag">array</span>(<span class="hljs-selector-attr">[[ 5, 12]</span>,</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">          <span class="hljs-selector-attr">[21, 32]</span>])</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><pre><code class="hljs css"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-selector-tag">a</span><span class="hljs-selector-class">.dot</span>(<span class="hljs-selector-tag">b</span>)</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">&gt;&gt;&gt;<span class="hljs-selector-tag">array</span>(<span class="hljs-selector-attr">[[19, 22]</span>,</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">          <span class="hljs-selector-attr">[43, 50]</span>])</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><pre><code class="hljs css"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-selector-tag">numpy</span><span class="hljs-selector-class">.dot</span>(<span class="hljs-selector-tag">a</span>,<span class="hljs-selector-tag">b</span>)</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">&gt;&gt;&gt;<span class="hljs-selector-tag">array</span>(<span class="hljs-selector-attr">[[19, 22]</span>,</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">          <span class="hljs-selector-attr">[43, 50]</span>])</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><pre><code class="hljs css"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-selector-tag">numpy</span><span class="hljs-selector-class">.dot</span>(<span class="hljs-selector-tag">b</span>,<span class="hljs-selector-tag">a</span>)</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">&gt;&gt;&gt;<span class="hljs-selector-tag">array</span>(<span class="hljs-selector-attr">[[23, 34]</span>,</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">          <span class="hljs-selector-attr">[31, 46]</span>])</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><p>总结：</p><p>星乘表示矩阵内各对应位置相乘，矩阵a*b下标(0,0)=矩阵a下标(0,0) x 矩阵b下标(0,0)；</p><p>点乘表示求矩阵内积，二维数组称为矩阵积<span style="color:rgb(0,0,0);font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;">（mastrix&nbsp;product）。</span></p><p>用文字表述：</p><p><span style="color:rgb(128,0,0);font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:left;">所得到的数组中的每个元素为，第一个矩阵中与</span><span style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:left;color:rgb(0,128,0);">该元素行号</span><span style="color:rgb(128,0,0);font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:left;">相同的元素与第二个矩阵与</span><span style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:left;color:rgb(0,128,0);">该元素列号</span><span style="color:rgb(128,0,0);font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:left;">相同的元素，两两相乘后再求和。</span></p><p>文字难以理解，直接上图：</p><p><img src="https://img-blog.csdn.net/2018033010180743" alt><br></p><p>综上所述，二维矩阵a*b下标(0,1)=矩阵a下标(0,) x 矩阵b下标(,1)</p><p>补充：</p><p>一维矩阵下标<br></p><pre><code class="hljs css"><span class="hljs-selector-attr">[(0),(1),(2),(3)]</span></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><p>二维矩阵下标</p><pre><code class="hljs css"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-selector-attr">[[(0,0),(0,1),(0,2),(0,3)]</span>,</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> <span class="hljs-selector-attr">[(1,0),(1,1),(1,2),(1,3)]</span>,</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> <span class="hljs-selector-attr">[(2,0),(2,1),(2,2),(2,3)]</span>,</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> <span class="hljs-selector-attr">[(3,0),(3,1),(3,2),(3,3)]</span>]</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><br>                                    </div>
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-<!-- 返回顶部 -->
-<div id="toTop">
-	<a href="#">▲</a>
-	<a href="#footer">▼</a>
-</div>
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2019-10-10T03:27:54.662Z"><a href="/2019/10/10/0xMP-numpy.newaxis/">2019-10-10</a></time>
-        
-  
-    <h1 class="title"><a href="/2019/10/10/0xMP-numpy.newaxis/">numpy.newaxis</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-npnewaxis-的实用"><span class="toc-text">1. np.newaxis 的实用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-索引多维数组的某一列时返回的是一个行向量"><span class="toc-text">2. 索引多维数组的某一列时返回的是一个行向量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-使用-npexpanddims"><span class="toc-text">3. 使用 np.expand_dims</span></a></li></ol>
-    </div>
-
-        <div id="content_views" class="markdown_views">
-                    <!-- flowchart 箭头图标 勿删 -->
-                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-                        <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"/>
-                    </svg>
-                                            <pre class="prettyprint" name="code"><code class="hljs haskell has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt; <span class="hljs-typedef"><span class="hljs-keyword">type</span><span class="hljs-container">(<span class="hljs-title">np</span>.<span class="hljs-title">newaxis</span>)</span></span>
-<span class="hljs-type">NoneType</span>
-&gt;&gt; np.newaxis == <span class="hljs-type">None</span>
-<span class="hljs-type">True</span><div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>np.newaxis 在使用和功能上等价于 None，查看源码发现：<code>newaxis = None</code>，其实就是 None 的一个别名。</p>
-
-
-
-<h2 id="1-npnewaxis-的实用"><a name="t0"></a>1. np.newaxis 的实用</h2>
-
-
-
-<pre class="prettyprint" name="code"><code class="hljs lua has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt; x = np.arange(<span class="hljs-number">3</span>)
-&gt;&gt; x
-array([<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>])
-&gt;&gt; x.shape
-(<span class="hljs-number">3</span>,)
-
-&gt;&gt; x[:, np.newaxis]
-array(<span class="hljs-string">[[0],
-       [1],
-       [2]]</span>)
-
-&gt;&gt; x[:, None]
-array(<span class="hljs-string">[[0],
-       [1],
-       [2]]</span>)
-
-&gt;&gt; x[:, np.newaxis].shape
- (<span class="hljs-number">3</span>, <span class="hljs-number">1</span>)
-<div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-
-
-<h2 id="2-索引多维数组的某一列时返回的是一个行向量"><a name="t1"></a>2. 索引多维数组的某一列时返回的是一个行向量</h2>
-
-
-
-<pre class="prettyprint" name="code"><code class="hljs lua has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt;&gt; X = np.array(<span class="hljs-string">[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]</span>)
-&gt;&gt;&gt; X[:, <span class="hljs-number">1</span>]
-array([<span class="hljs-number">2</span>, <span class="hljs-number">6</span>, <span class="hljs-number">10</span>])       % 这里是一个行
-&gt;&gt;&gt; X[:, <span class="hljs-number">1</span>].shape       % X[:, <span class="hljs-number">1</span>] 的用法完全等同于一个行，而不是一个列，
-(<span class="hljs-number">3</span>, )<div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>如果我们索引多维数组的某一列时，返回的仍然是列的结构，一种正确的索引方式是：</p>
-
-
-
-<pre class="prettyprint" name="code"><code class="hljs markdown has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt;&gt;X[<span class="hljs-link_label">:, 1</span>][<span class="hljs-link_reference">:, np.newaxis</span>]
-array([[2],
-<span class="hljs-code">      [6],</span>
-<span class="hljs-code">      [10]])</span><div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>如果想实现第二列和第四列的拼接（层叠）：</p>
-
-
-
-<pre class="prettyprint" name="code"><code class="hljs markdown has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt;&gt;X_sub = np.hstack([<span class="hljs-link_label">X[:, 1</span>][<span class="hljs-link_reference">:, np.newaxis</span>], X[<span class="hljs-link_label">:, 3</span>][<span class="hljs-link_reference">:, np.newaxis</span>]])           
-<span class="hljs-code">                   % hstack：horizontal stack，水平方向上的层叠</span>
-&gt;&gt;&gt;X_sub
-array([[2, 4]
-<span class="hljs-code">      [6, 8]</span>
-<span class="hljs-code">      [10, 12]])</span><div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>当然更为简单的方式还是使用切片：</p>
-
-
-
-<pre class="prettyprint" name="code"><code class="hljs lua has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt; X[:, [<span class="hljs-number">1</span>, <span class="hljs-number">3</span>]]
-array(<span class="hljs-string">[[ 2,  4],
-       [ 6,  8],
-       [10, 12]]</span>)<div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-
-
-<h2 id="3-使用-npexpanddims"><a name="t2"></a>3. 使用 np.expand_dims</h2>
-
-<pre class="prettyprint" name="code"><code class="hljs avrasm has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt; <span class="hljs-built_in">X</span> = np<span class="hljs-preprocessor">.random</span><span class="hljs-preprocessor">.randint</span>(<span class="hljs-number">0</span>, <span class="hljs-number">9</span>, (<span class="hljs-number">2</span>, <span class="hljs-number">3</span>))
-&gt;&gt; mean_X = np<span class="hljs-preprocessor">.mean</span>(<span class="hljs-built_in">X</span>, axis=<span class="hljs-number">0</span>)
-&gt;&gt; <span class="hljs-built_in">X</span> - mean_X                      <span class="hljs-preprocessor"># 这样做是没有问题的</span>
-
-&gt;&gt; mean_X = np<span class="hljs-preprocessor">.mean</span>(<span class="hljs-built_in">X</span>, axis=<span class="hljs-number">1</span>)
-&gt;&gt; <span class="hljs-built_in">X</span> - mean_X
-<span class="hljs-label">ValueError:</span> operands could not be broadcast together with shapes (<span class="hljs-number">2</span>,<span class="hljs-number">3</span>) (<span class="hljs-number">2</span>,)<div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>此时便需要手动的调整 mean_X 的维度，使其能够 broadcast，有以下三种方式，在指定的轴上进行 broadcast：</p>
-
-<ul>
-<li>mean_X[:, None]</li>
-<li>mean_X[:, np.newaxis]</li>
-<li>mean_X = np.expand_dims(mean_X, axis=1)</li>
-</ul>                                    </div>
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-<!-- 返回顶部 -->
-<div id="toTop">
-	<a href="#">▲</a>
-	<a href="#footer">▼</a>
-</div>
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2019-10-10T02:46:05.387Z"><a href="/2019/10/10/0xS-How to code pythonic/">2019-10-10</a></time>
-        
-  
-    <h1 class="title"><a href="/2019/10/10/0xS-How to code pythonic/">How to code pythonicly.md</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#列表推导"><span class="toc-text">列表推导</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lambda表达式"><span class="toc-text">lambda表达式</span></a></li></ol>
-    </div>
-
-        <h2 id="列表推导"><a href="#列表推导" class="headerlink" title="列表推导"></a>列表推导</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">eigen_pairs = [(np.abs(eigen_vals[i]), eigen_vecs[:,i])</span><br><span class="line">              <span class="keyword">for</span> i <span class="keyword">in</span> range(len(eigen_vals))]</span><br><span class="line">eigen_pairs.sort(reverse=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
-
-<h2 id="lambda表达式"><a href="#lambda表达式" class="headerlink" title="lambda表达式"></a>lambda表达式</h2>
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-<!-- 返回顶部 -->
-<div id="toTop">
-	<a href="#">▲</a>
-	<a href="#footer">▼</a>
-</div>
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2019-10-10T02:41:31.422Z"><a href="/2019/10/10/0xP-python sort/">2019-10-10</a></time>
-        
-  
-    <h1 class="title"><a href="/2019/10/10/0xP-python sort/">python sort函数</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#python内建的排序方法"><span class="toc-text">Python内建的排序方法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-排序方法介绍"><span class="toc-text">1 排序方法介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-基本的列表排序"><span class="toc-text">2 基本的列表排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-以tuple作为list的元素"><span class="toc-text">3 以tuple作为list的元素</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-扩展-以dict作为list的元素"><span class="toc-text">4 [扩展] 以dict作为list的元素</span></a></li></ol></li></ol>
-    </div>
-
-        <div id="content_views" class="markdown_views">
-                    <!-- flowchart 箭头图标 勿删 -->
-                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-                        <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"/>
-                    </svg>
-                                            <p><strong>Python版本</strong>： python3.+  <br>
-<strong>运行环境</strong>： Mac OS  <br>
-<strong>IDE</strong>： pycharm</p>
-
-<p></p><div class="toc"><div class="toc">
-<ul>
-<li><a href="#python内建的排序方法" rel="nofollow" data-token="368219e14987ab3e165d48a5d585c682" target="_self">Python内建的排序方法</a><ul>
-<li><a href="#1-排序方法介绍" rel="nofollow" data-token="ebbb5c31cafe3a8f853d3f14188dc475" target="_self">排序方法介绍</a></li>
-<li><a href="#2-基本的列表排序" rel="nofollow" data-token="54de6a7dbc2ef965a43d47b3f0d9529e" target="_self">基本的列表排序</a></li>
-<li><a href="#3-以tuple作为list的元素" rel="nofollow" data-token="e58cbca14dc7d2577714f2e6d1324adf" target="_self">以tuple作为list的元素</a></li>
-<li><a href="#4-扩展-以dict作为list的元素" rel="nofollow" data-token="69f1fa5f1fb2e4a76e4870a33804470f" target="_self">扩展 以dict作为list的元素</a></li>
-</ul>
+        <p>之前一直对条件变量懵懵的，加上上学期OS实验课造成的阴影，一直不敢用条件变量，最近频繁的在多线程编程中看到条件变量的使用：线程安全双缓冲、线程池，隐隐感觉到大家都使用条件变量编程而不是明显使用更简单的信号量是有一定原因，花了一晚上搞清楚了许多关于条件变量的问题，在此总结一下。</p>
+<ol>
+<li><p>多线程编程采用条件变量而不是信号量</p>
+<p>性能开销</p>
 </li>
-</ul>
+<li><p>条件变量while的作用</p>
+<p>保证signal或broadcast时只让<code>一个线程</code>进入临界区（共享内存），而用if则会出现signal时有两个线程进入临界区的情况。</p>
+<p>这个问题可以这么想，条件变量的wait函数内部实现是释放外部锁，锁上内部锁，而如果内部锁被其他人抢走了却去尝试上锁就会被阻塞（多个线程同时使用一个条件变量）。</p>
+</li>
+<li><p><a href="https://blog.csdn.net/dove1984/article/details/7996085" target="_blank" rel="noopener">pthread_cond_signal 和 pthread_mutex_unlock顺序问题</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">pthread_cond_signal即可以放在pthread_mutex_lock和pthread_mutex_unlock之间，也可以放在pthread_mutex_lock和pthread_mutex_unlock之后，但是各有有缺点。</span><br><span class="line"></span><br><span class="line"> 之间：</span><br><span class="line"> pthread_mutex_lock</span><br><span class="line">     xxxxxxx</span><br><span class="line"> pthread_cond_signal</span><br><span class="line"> pthread_mutex_unlock</span><br><span class="line"> 缺点：在某下线程的实现中，会造成等待线程从内核中唤醒（由于cond_signal)然后又回到内核空间（因为cond_wait返回后会有原子加锁的行为），所以一来一回会有性能的问题。但是在LinuxThreads或者NPTL里面，就不会有这个问题，因为在Linux 线程中，有两个队列，分别是cond_wait队列和mutex_lock队列， cond_signal只是让线程从cond_wait队列移到mutex_lock队列，而不用返回到用户空间，不会有性能的损耗。</span><br><span class="line"> 所以在Linux中推荐使用这种模式。</span><br><span class="line"></span><br><span class="line"> 之后：</span><br><span class="line"> pthread_mutex_lock</span><br><span class="line">     xxxxxxx</span><br><span class="line"> pthread_mutex_unlock</span><br><span class="line"> pthread_cond_signal</span><br><span class="line"> 优点：不会出现之前说的那个潜在的性能损耗，因为在signal之前就已经释放锁了</span><br><span class="line"> 缺点：如果unlock和signal之前，有个低优先级的线程正在mutex上等待的话，那么这个低优先级的线程就会抢占高优先级的线程（cond_wait的线程)，而这在上面的放中间的模式下是不会出现的。</span><br><span class="line"></span><br><span class="line"> 所以，在Linux下最好pthread_cond_signal放中间，但从编程规则上说，其他两种都可以</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><a href="#三、pthread_cond_signal、pthread_cond_broadcast的使用">pthread_cond_signal、pthread_cond_broadcast的使用</a></p>
+</li>
+</ol>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2019/10/16/0xZ-Linux C 多线程：条件变量详解/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
 </div>
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-15T15:54:33.582Z"><a href="/2019/10/15/0xO-浅析三种特殊进程：守护进程 孤儿进程 僵尸进程/">2019-10-15</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/15/0xO-浅析三种特殊进程：守护进程 孤儿进程 僵尸进程/">浅析三种特殊进程:孤儿进程,僵尸进程和守护进程</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        <p><code>僵尸进程</code>是 一个进程使用fork创建子进程，如果子进程退出，而父进程并没有调用wait或waitpid获取子进程的状态信息，那么子进程的进程描述符仍然保存在系统中。这种进程称之为僵死进程。</p>
+<p><code>孤儿进程</code>是因为父进程异常结束了，然后被1号进程init收养。</p>
+<p><code>守护进程</code>是创建守护进程时有意把父进程结束，然后被1号进程init收养</p>
+<p><code>区分：</code>    一个正常运行的子进程，如果此刻子进程退出，父进程没有及时调用wait或waitpid收回子进程的系统资源，该进程就是僵尸进程，如果系统收回了，就是正常退出，如果一个正常运行的子进程，父进程退出了但是子进程还在，该进程此刻是孤儿进程，被init收养，如果父进程是故意被杀掉，子进程做相应处理后就是守护进程</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2019/10/15/0xO-浅析三种特殊进程：守护进程 孤儿进程 僵尸进程/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
 </div>
-<p></p>
 
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-15T15:29:57.849Z"><a href="/2019/10/15/思考：两年课程的意义/">2019-10-15</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/15/思考：两年课程的意义/">思考：两年课程的意义</a></h1>
+  
 
+    </header>
 
-<h1 id="python内建的排序方法"><a name="t0"></a>Python内建的排序方法</h1>
+    <div class="entry">
+      
+        The article has been encrypted, please enter your password to view.<br>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2019/10/15/思考：两年课程的意义/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
 
-<h2 id="1-排序方法介绍"><a name="t1"></a>1 排序方法介绍</h2>
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-15T14:51:00.495Z"><a href="/2019/10/15/0xZ-Linux C IPC：信号量/">2019-10-15</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/15/0xZ-Linux C IPC：信号量/">Linux C IPC：信号量</a></h1>
+  
 
-<p>Python中有2个排序函数，一个是list内置的sort()方法，另一个是全局的sorted()方法</p>
+    </header>
 
-<pre class="prettyprint" name="code"><code class="language-python3 hljs oxygene has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">sorted(iterable,key=None,<span class="hljs-keyword">reverse</span>=<span class="hljs-keyword">False</span>) #返回排好序的新列表,不改变对象本身,默认升序;<span class="hljs-keyword">reverse</span>:-<span class="hljs-keyword">True</span>降序 -<span class="hljs-keyword">False</span> 正序对所有可迭代的对象均有效 
-list.sort(key=None,<span class="hljs-keyword">reverse</span>=<span class="hljs-keyword">False</span>) #将list自身进行排序,不返回新的list对象,默认升序;<span class="hljs-keyword">reverse</span>:-<span class="hljs-keyword">True</span>降序 -<span class="hljs-keyword">False</span> 正序<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+    <div class="entry">
+      
+        <p>转自<br><a href="https://blog.csdn.net/ljianhui/article/details/10128731" target="_blank" rel="noopener">https://blog.csdn.net/ljianhui/article/details/10128731</a></p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2019/10/15/0xZ-Linux C IPC：信号量/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
 
-<h2 id="2-基本的列表排序"><a name="t2"></a>2 基本的列表排序</h2>
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-15T14:24:41.116Z"><a href="/2019/10/15/0xO-并发/">2019-10-15</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/15/0xO-并发/">并发</a></h1>
+  
 
-<p>1）list.sort()排序</p>
+    </header>
 
-<pre class="prettyprint" name="code"><code class="hljs haskell has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"><span class="hljs-typedef"><span class="hljs-keyword">data</span> = [5, 7, 9, 3, -6, -7, -8, -9, 3, -8]</span>
-<span class="hljs-title">result</span> = <span class="hljs-typedef"><span class="hljs-keyword">data</span>.sort<span class="hljs-container">()</span></span>
-<span class="hljs-title">print</span>(<span class="hljs-typedef"><span class="hljs-keyword">data</span>) #结果为 [-9, -8, -8, -7, -6, 3, 3, 5, 7, 9]</span>
-<span class="hljs-title">print</span>(result) #结果为<span class="hljs-type">None</span><div class="hljs-button {2}" data-title="复制"></div></code></pre>
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
 
-<p>2）sorted()排序</p>
+        <p><a href="https://blog.csdn.net/weixin_34304013/article/details/92426569" target="_blank" rel="noopener">进程和并发</a></p>
+<p>那什么是并发呢，并发就是在某个时间段内，两件或两件以上的事件轮流交替使用某一资源，其目的是提高效率；</p>
+<p><a href="https://www.cnblogs.com/rgever/p/9534641.html" target="_blank" rel="noopener">并行与并发的区别</a></p>
+<p>并行在多处理器系统中存在，而并发可以在单处理器和多处理器系统中都存在，并发能够在单处理器系统中存在是因为并发是并行的假象，并行要求程序能够同时执行多个操作，而并发只是要求程序假装同时执行多个操作（每个小时间片执行一个操作，多个操作快速切换执行）。</p>
+<p><a href="https://blog.csdn.net/Bonie_juzi/article/details/83412185" target="_blank" rel="noopener">为什么学习并发</a></p>
+<p>抢占式多线程：java线程机制都是抢占式的，即调度机制会周期性的中断线程，将上下文切换到另一个线程，从而为每个线程都提供时间片，使得每个线程都会分配到数量合理的时间去驱动他的任务。</p>
+<p>协作多线程：每个任务都会自动放弃控制，由程序员有意识的插入让步语句；</p>
+<p>协作的优势：上下文切换的开销比抢占式要小很多。</p>
+<p><a href="https://blog.csdn.net/sinat_34082752/article/details/80680348" target="_blank" rel="noopener">并发与高并发</a></p>
+<p><a href="http://ifeve.com/?x=37&y=10&s=%E8%81%8A%E8%81%8A%E5%B9%B6%E5%8F%91" target="_blank" rel="noopener">重磅资料：并发编程网</a></p>
 
-<pre class="prettyprint" name="code"><code class="hljs haskell has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">    <span class="hljs-typedef"><span class="hljs-keyword">data</span> = [5, 7, 9, 3, -6, -7, -8, -9, 3, -8]</span>
-    result = sorted(<span class="hljs-typedef"><span class="hljs-keyword">data</span>)</span>
-    print(<span class="hljs-typedef"><span class="hljs-keyword">data</span>) #结果为 [5, 7, 9, 3, -6, -7, -8, -9, 3, -8]</span>
-    print(result) #结果为 [-<span class="hljs-number">9</span>, -<span class="hljs-number">8</span>, -<span class="hljs-number">8</span>, -<span class="hljs-number">7</span>, -<span class="hljs-number">6</span>, <span class="hljs-number">3</span>, <span class="hljs-number">3</span>, <span class="hljs-number">5</span>, <span class="hljs-number">7</span>, <span class="hljs-number">9</span>]<div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-
-
-<h2 id="3-以tuple作为list的元素"><a name="t3"></a>3 以tuple作为list的元素</h2>
-
-<p><img src="/pic/0xP-python%20sort/2019-10-10-10-50-29.png" alt></p>
-<p>在默认情况下sort和sorted函数接收的参数是元组时，它将会先按元组的第一个元素进行排序再按第二个元素进行排序，再按第三个、第四个…依次排序。 <br>
-我们通过一个简单的例子来了解它，以下面这个list为例：</p>
-
-<pre class="prettyprint" name="code"><code class="hljs haskell has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"><span class="hljs-typedef"><span class="hljs-keyword">data</span> = [<span class="hljs-container">(1, '<span class="hljs-type">B</span>')</span>, <span class="hljs-container">(1, '<span class="hljs-type">A</span>')</span>, <span class="hljs-container">(2, '<span class="hljs-type">A</span>')</span>, <span class="hljs-container">(0, '<span class="hljs-type">B</span>')</span>, <span class="hljs-container">(0, '<span class="hljs-title">a'</span>)</span>]</span><div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>我们通过sorted()对它进行排序</p>
-
-<pre class="prettyprint" name="code"><code class="hljs haskell has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"><span class="hljs-typedef"><span class="hljs-keyword">data</span> = [<span class="hljs-container">(1, '<span class="hljs-type">B</span>')</span>, <span class="hljs-container">(1, '<span class="hljs-type">A</span>')</span>, <span class="hljs-container">(2, '<span class="hljs-type">A</span>')</span>, <span class="hljs-container">(0, '<span class="hljs-type">B</span>')</span>, <span class="hljs-container">(0, '<span class="hljs-title">a'</span>)</span>]</span>
-<span class="hljs-title">result</span> = sorted(<span class="hljs-typedef"><span class="hljs-keyword">data</span>)</span>
-<span class="hljs-title">print</span>(<span class="hljs-typedef"><span class="hljs-keyword">data</span>) #结果为 [<span class="hljs-container">(1, '<span class="hljs-type">B</span>')</span>, <span class="hljs-container">(1, '<span class="hljs-type">A</span>')</span>, <span class="hljs-container">(2, '<span class="hljs-type">A</span>')</span>, <span class="hljs-container">(0, '<span class="hljs-type">B</span>')</span>, <span class="hljs-container">(0, '<span class="hljs-title">a'</span>)</span>]</span>
-<span class="hljs-title">print</span>(result) #结果为 [(<span class="hljs-number">0</span>, '<span class="hljs-type">B'</span>), (<span class="hljs-number">0</span>, 'a'), (<span class="hljs-number">1</span>, '<span class="hljs-type">A'</span>), (<span class="hljs-number">1</span>, '<span class="hljs-type">B'</span>), (<span class="hljs-number">2</span>, '<span class="hljs-type">A'</span>)]<div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>会发现排序后的结果中(0, ‘B’)在(0, ‘a’)的前面。这是因为在按元组第一个元素排好之后，将(0, ‘B’), (0, ‘a’)再按第二个元素进行排序了，而’B’的ASCII编码比’a’小，所以(0, ‘B’)就排在(0, ‘a’)的前面了。</p>
-
-<p><strong>那如何想要让它排序时不分大小写呢？</strong></p>
-
-<p>这就要用到<code>sort</code>方法和<code>sorted</code>方法里的<code>key</code>参数了。 <br>
-我们来看一下具体的实现：</p>
-
-<pre class="prettyprint" name="code"><code class="hljs haskell has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"><span class="hljs-typedef"><span class="hljs-keyword">data</span> = [<span class="hljs-container">(1, '<span class="hljs-type">B</span>')</span>, <span class="hljs-container">(1, '<span class="hljs-type">A</span>')</span>, <span class="hljs-container">(2, '<span class="hljs-type">A</span>')</span>, <span class="hljs-container">(0, '<span class="hljs-type">B</span>')</span>, <span class="hljs-container">(0, '<span class="hljs-title">a'</span>)</span>]</span>
-<span class="hljs-preprocessor">#利用参数key来规定排序的规则</span>
-<span class="hljs-title">result</span> = sorted(<span class="hljs-typedef"><span class="hljs-keyword">data</span>,key=lambda x:<span class="hljs-container">(<span class="hljs-title">x</span>[0],<span class="hljs-title">x</span>[1].<span class="hljs-title">lower</span>()</span>))</span>
-
-<span class="hljs-title">print</span>(<span class="hljs-typedef"><span class="hljs-keyword">data</span>) #结果为 [<span class="hljs-container">(1, '<span class="hljs-type">B</span>')</span>, <span class="hljs-container">(1, '<span class="hljs-type">A</span>')</span>, <span class="hljs-container">(2, '<span class="hljs-type">A</span>')</span>, <span class="hljs-container">(0, '<span class="hljs-type">B</span>')</span>, <span class="hljs-container">(0, '<span class="hljs-title">a'</span>)</span>]</span>
-<span class="hljs-title">print</span>(result) #结果为 [(<span class="hljs-number">0</span>, 'a'), (<span class="hljs-number">0</span>, '<span class="hljs-type">B'</span>), (<span class="hljs-number">1</span>, '<span class="hljs-type">A'</span>), (<span class="hljs-number">1</span>, '<span class="hljs-type">B'</span>), (<span class="hljs-number">2</span>, '<span class="hljs-type">A'</span>)]<div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>其中的<code>lambda x:(x[0],x[1].lower()</code>可以理解为一个匿名函数； <br>
-其功能类似于:</p>
-
-<pre class="prettyprint" name="code"><code class="hljs scss has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">def <span class="hljs-function">fun(x)</span>
-    <span class="hljs-function">return(x[<span class="hljs-number">0</span>],x[<span class="hljs-number">1</span>].<span class="hljs-function">lower()</span>)</span><div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p><strong>如果想要以字母作为第一排序规则,并且字母大小写不敏感，该怎么实现？</strong> <br>
-这就能要运用到之前所讲到的</p>
-
-<blockquote>
-  <p>在默认情况下sort和sorted函数接收的参数是元组时，它将会先按元组的第一个元素进行排序再按第二个元素进行排序，再按第三个、第四个…依次排序。</p>
-</blockquote>
-
-<p>再配合lambda返回一个自定义tuple；代码如下：</p>
-
-<pre class="prettyprint" name="code"><code class="hljs haskell has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"><span class="hljs-typedef"><span class="hljs-keyword">data</span> = [<span class="hljs-container">(1, '<span class="hljs-type">B</span>')</span>, <span class="hljs-container">(1, '<span class="hljs-type">A</span>')</span>, <span class="hljs-container">(2, '<span class="hljs-type">A</span>')</span>, <span class="hljs-container">(0, '<span class="hljs-type">B</span>')</span>, <span class="hljs-container">(0, '<span class="hljs-title">a'</span>)</span>]</span>
-<span class="hljs-preprocessor">#将x[1].lower()作为返回元组里的第一个元素,按照sorted的排序规律,就会先按字母排序,再按数字排序了</span>
-<span class="hljs-title">result</span> = sorted(<span class="hljs-typedef"><span class="hljs-keyword">data</span>,key=lambda x:<span class="hljs-container">(<span class="hljs-title">x</span>[1].<span class="hljs-title">lower</span>()</span>,x[0]))</span>
-
-<span class="hljs-title">print</span>(<span class="hljs-typedef"><span class="hljs-keyword">data</span>) #结果为 [<span class="hljs-container">(1, '<span class="hljs-type">B</span>')</span>, <span class="hljs-container">(1, '<span class="hljs-type">A</span>')</span>, <span class="hljs-container">(2, '<span class="hljs-type">A</span>')</span>, <span class="hljs-container">(0, '<span class="hljs-type">B</span>')</span>, <span class="hljs-container">(0, '<span class="hljs-title">a'</span>)</span>] </span>
-<span class="hljs-title">print</span>(result) #结果为 [(<span class="hljs-number">0</span>, 'a'), (<span class="hljs-number">1</span>, '<span class="hljs-type">A'</span>), (<span class="hljs-number">2</span>, '<span class="hljs-type">A'</span>), (<span class="hljs-number">0</span>, '<span class="hljs-type">B'</span>), (<span class="hljs-number">1</span>, '<span class="hljs-type">B'</span>)]<div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-
-
-<h2 id="4-扩展-以dict作为list的元素"><a name="t4"></a>4 [扩展] 以dict作为list的元素</h2>
-
-<p>这个list里的元素是dict形式,每个dict都存有<code>姓名</code>和<code>升高</code>现在想要以升高进行升序排列：</p>
-
-<pre class="prettyprint" name="code"><code class="hljs ruleslanguage has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">data = [{<span class="hljs-string">'name'</span>: <span class="hljs-string">'张三'</span>, <span class="hljs-string">'height'</span>: <span class="hljs-number">175</span>}, {<span class="hljs-string">'name'</span>: <span class="hljs-string">'李四'</span>, <span class="hljs-string">'height'</span>: <span class="hljs-number">165</span>}, {<span class="hljs-string">'name'</span>: <span class="hljs-string">'王五'</span>, <span class="hljs-string">'height'</span>: <span class="hljs-number">185</span>}]
-#将x[<span class="hljs-string">'height'</span>]最为返回tuple的第个一元素
-result = sorted(data,key=lambda x:(x[<span class="hljs-string">'height'</span>],x[<span class="hljs-string">'name'</span>]))
-print(data) #结果为 
-print(result)
-<span class="hljs-array">#data   </span>结果:[{<span class="hljs-string">'name'</span>: <span class="hljs-string">'张三'</span>, <span class="hljs-string">'height'</span>: <span class="hljs-number">175</span>}, {<span class="hljs-string">'name'</span>: <span class="hljs-string">'李四'</span>, <span class="hljs-string">'height'</span>: <span class="hljs-number">165</span>}, {<span class="hljs-string">'name'</span>: <span class="hljs-string">'王五'</span>, <span class="hljs-string">'height'</span>: <span class="hljs-number">185</span>}]
-<span class="hljs-array">#result </span>结果:[{<span class="hljs-string">'name'</span>: <span class="hljs-string">'李四'</span>, <span class="hljs-string">'height'</span>: <span class="hljs-number">165</span>}, {<span class="hljs-string">'name'</span>: <span class="hljs-string">'张三'</span>, <span class="hljs-string">'height'</span>: <span class="hljs-number">175</span>}, {<span class="hljs-string">'name'</span>: <span class="hljs-string">'王五'</span>, <span class="hljs-string">'height'</span>: <span class="hljs-number">185</span>}]<div class="hljs-button {2}" data-title="复制"></div></code></pre>                                    </div>
       
     </div>
     <footer>
@@ -492,12 +298,51 @@ print(result)
     <header>
         <div class="icon"></div>
         
-          <div id="top">置顶</div>
-        
-        <time datetime="2019-10-10T02:25:27.371Z"><a href="/2019/10/10/0xS-matplotlib绘图总结/">2019-10-10</a></time>
+        <time datetime="2019-10-15T13:42:22.030Z"><a href="/2019/10/15/0xO-信号量和条件变量性能比较/">2019-10-15</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/10/0xS-matplotlib绘图总结/">matplotlib绘图总结</a></h1>
+    <h1 class="title"><a href="/2019/10/15/0xO-信号量和条件变量性能比较/">信号量和条件变量的性能比较</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        <p><code>信号量</code>、共享内存，以及消息队列等System V IPC三剑客主要关注<code>进程间通信</code>；</p>
+<p>而<code>条件变量</code>、互斥锁，主要关注<code>线程间通信</code>。</p>
+<p>—— <a href="https://www.cnblogs.com/charlesblc/p/6143397.html" target="_blank" rel="noopener">信号量与条件变量的区别</a></p>
+<p>为什么有上面这段话，且看下面解答。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2019/10/15/0xO-信号量和条件变量性能比较/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-15T03:36:01.476Z"><a href="/2019/10/15/0xZ-C 指针/">2019-10-15</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/15/0xZ-C 指针/">指针</a></h1>
   
 
     </header>
@@ -506,11 +351,13 @@ print(result)
       
         
     <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#plt-bar-amp-plt-step"><span class="toc-text">plt.bar &amp; plt.step</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#plt-scatter"><span class="toc-text">plt.scatter</span></a></li></ol>
+        
     </div>
 
-        <h3 id="plt-bar-amp-plt-step"><a href="#plt-bar-amp-plt-step" class="headerlink" title="plt.bar &amp; plt.step"></a>plt.bar &amp; plt.step</h3><p><img src="/pic/0xS-matplotlib%E7%BB%98%E5%9B%BE%E6%80%BB%E7%BB%93/2019-10-10-10-27-29.png" alt="plt.bar &amp; plt.step"></p>
-<h3 id="plt-scatter"><a href="#plt-scatter" class="headerlink" title="plt.scatter"></a>plt.scatter</h3><p><img src="/pic/0xS-matplotlib%E7%BB%98%E5%9B%BE%E6%80%BB%E7%BB%93/2019-10-10-11-59-56.png" alt="plt.scatter"></p>
+        <p><a href="http://c.biancheng.net/view/228.html" target="_blank" rel="noopener">函数指针</a></p>
+<p>如果在程序中定义了一个函数，那么在编译时系统就会为这个函数代码分配一段存储空间，这段存储空间的首地址称为这个函数的地址。而且函数名表示的就是这个地址。既然是地址我们就可以定义一个指针变量来存放，这个指针变量就叫作函数指针变量，简称函数指针。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>(*p)(<span class="keyword">int</span>, <span class="keyword">int</span>);</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -535,141 +382,10 @@ print(result)
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-10-10T02:14:00.167Z"><a href="/2019/10/10/0xMP-numpy.cumsum()/">2019-10-10</a></time>
+        <time datetime="2019-10-15T02:20:56.255Z"><a href="/2019/10/15/0xZ-C 字符串函数/">2019-10-15</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/10/0xMP-numpy.cumsum()/">numpy.cumsum()</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>转自 <a href="https://blog.csdn.net/yuansuo0516/article/details/78331568" target="_blank" rel="noopener">https://blog.csdn.net/yuansuo0516/article/details/78331568</a></p>
-<div class="htmledit_views" id="content_views">
-
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<strong>C</strong><span style="font-size:18px;"><strong>umsum ：计算轴向元素累加和，返回由中间结果组成的数组</strong></span></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<span style="font-size:18px;"><strong>重点就是返回值是“<span style="color:#ff0000;"><strong>由中间结果组成的数组</strong></span>”</strong></span></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<span style="font-size:14px;">以下代码在python3.6版本运行成功！</span></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-下面看代码，定义一个2*2*3的数组，所以其shape是2，2，3，索引分别0，1，2</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<div class="table-box"><table width="200" border="1" cellspacing="1" cellpadding="1"><tbody><tr><td>shape</td>
-<td>索引</td>
-</tr><tr><td>2</td>
-<td>0</td>
-</tr><tr><td>2</td>
-<td>1</td>
-</tr><tr><td>3</td>
-<td>2</td>
-</tr></tbody></table></div></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<span style="font-size:18px;"><strong>代码：</strong></span></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<pre><code class="hljs python"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">arr&nbsp; = np.array([[[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>],[<span class="hljs-number">8</span>,<span class="hljs-number">9</span>,<span class="hljs-number">12</span>]],[[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">4</span>],[<span class="hljs-number">2</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>]]]) <span style="color:#ff6666;"><span class="hljs-comment">#2*2*3</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">print(arr.cumsum(<span class="hljs-number">0</span>))</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">print(arr.cumsum(<span class="hljs-number">1</span>))</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">print(arr.cumsum(<span class="hljs-number">2</span>))</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><pre><code class="hljs"></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><pre class="python" name="code"><code class="hljs"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><strong>输出结果:</strong></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-comment">#cumsum(0)</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">[[[ <span class="hljs-number">1</span>  <span class="hljs-number">2</span>  <span class="hljs-number">3</span>]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  [ <span class="hljs-number">8</span>  <span class="hljs-number">9</span> <span class="hljs-number">12</span>]]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> [[ <span class="hljs-number">2</span>  <span class="hljs-number">4</span>  <span class="hljs-number">7</span>]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  [<span class="hljs-number">10</span> <span class="hljs-number">13</span> <span class="hljs-number">17</span>]]]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-comment">#cumsum(1)</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">[[[ <span class="hljs-number">1</span>  <span class="hljs-number">2</span>  <span class="hljs-number">3</span>]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  [ <span class="hljs-number">9</span> <span class="hljs-number">11</span> <span class="hljs-number">15</span>]]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="11"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="12"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> [[ <span class="hljs-number">1</span>  <span class="hljs-number">2</span>  <span class="hljs-number">4</span>]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="13"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  [ <span class="hljs-number">3</span>  <span class="hljs-number">6</span>  <span class="hljs-number">9</span>]]]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="14"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-comment">#cumsum(2)</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="15"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">[[[ <span class="hljs-number">1</span>  <span class="hljs-number">3</span>  <span class="hljs-number">6</span>]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="16"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  [ <span class="hljs-number">8</span> <span class="hljs-number">17</span> <span class="hljs-number">29</span>]]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="17"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="18"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> [[ <span class="hljs-number">1</span>  <span class="hljs-number">3</span>  <span class="hljs-number">7</span>]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="19"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  [ <span class="hljs-number">2</span>  <span class="hljs-number">6</span> <span class="hljs-number">11</span>]]]</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre>
-<pre></pre>
-<span style="font-size:18px;"><strong></strong></span>
-<pre></pre>
-</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<span style="font-size:18px;"><strong>注释：</strong></span></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-arr是一个2*2*3三维矩阵，索引值为0，1，2</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-cumsum(0)：实现0轴上的累加：以最外面的数组元素为单位，以[[1,2,3],[8,9,12]]为开始实现后面元素的对应累加</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-cumsum(1)：实现1轴上的累加：以中间数组元素为单位，以[1,2,3]为开始，实现后面元素的对应累加</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-cumsum(2)：实现2轴上的累加：以最里面的元素为累加单位，即1为开始，实现后面的元素累加</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-四维数组实现</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-下面看一个四维数组2*2*2*4，索引值为0，1，2，3</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<span style="font-size:18px;"><strong>代码：</strong></span></div>
-</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<pre><code class="hljs python"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">arr  = np.arange(<span class="hljs-number">32</span>).reshape((<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">4</span>))</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">print(arr)</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">print(arr.cumsum(<span class="hljs-number">0</span>))</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">print(arr.cumsum(<span class="hljs-number">1</span>))</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">print(arr.cumsum(<span class="hljs-number">2</span>))</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">print(arr.cumsum(<span class="hljs-number">3</span>))</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<pre><code class="hljs css"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-selector-tag">arr</span>:</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-selector-attr">[[[[ 0  1  2  3]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[ 4  5  6  7]</span>]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  <span class="hljs-selector-attr">[[ 8  9 10 11]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[12 13 14 15]</span>]]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> <span class="hljs-selector-attr">[[[16 17 18 19]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[20 21 22 23]</span>]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="11"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="12"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  <span class="hljs-selector-attr">[[24 25 26 27]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="13"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[28 29 30 31]</span>]]]</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><pre><code class="hljs">arr是一个2*2*2*4四维矩阵，索引值为0，1，2，3</code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-cumsum(0)：实现0轴上的累加即：以最外面数组元素为单位即</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<pre><code class="hljs css"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-selector-attr">[[[ 0  1  2  3]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[ 4  5  6  7]</span>]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  <span class="hljs-selector-attr">[[ 8  9 10 11]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[12 13 14 15]</span>]]</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-与</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<pre><code class="hljs css"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-selector-attr">[[[16 17 18 19]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[20 21 22 23]</span>]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  <span class="hljs-selector-attr">[[24 25 26 27]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[28 29 30 31]</span>]]]</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre>对应位置元素相加起来<br></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-结果：</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<pre><code class="hljs css"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-selector-attr">[[[[ 0  1  2  3]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[ 4  5  6  7]</span>]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  <span class="hljs-selector-attr">[[ 8  9 10 11]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[12 13 14 15]</span>]]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> <span class="hljs-selector-attr">[[[16 18 20 22]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[24 26 28 30]</span>]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="11"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  <span class="hljs-selector-attr">[[32 34 36 38]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="12"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[40 42 44 46]</span>]]]</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-cumsum(1)：实现1轴上的累加即：以次外面元素为单位，累加：</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<pre><code class="hljs css"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-selector-attr">[[ 0  1  2  3]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[ 4  5  6  7]</span>]</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-加</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<pre><code class="hljs css"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  <span class="hljs-selector-attr">[[ 8  9 10 11]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[12 13 14 15]</span>]</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-加</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<pre><code class="hljs css"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-selector-attr">[[16 17 18 19]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[20 21 22 23]</span>]</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-加</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<pre><code class="hljs css"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-selector-attr">[[24 25 26 27]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[28 29 30 31]</span>]</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-累计过程产生的中间结果要记录到数组中</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-所以，结果：</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<pre><code class="hljs css"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-selector-attr">[[[[ 0  1  2  3]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[ 4  5  6  7]</span>]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  <span class="hljs-selector-attr">[[ 8 10 12 14]</span>          </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[16 18 20 22]</span>]]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> <span class="hljs-selector-attr">[[[16 17 18 19]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[20 21 22 23]</span>]</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="11"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">  <span class="hljs-selector-attr">[[40 42 44 46]</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="12"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">   <span class="hljs-selector-attr">[48 50 52 54]</span>]]]</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-cumsum(2)就对应从[ 0&nbsp; 1&nbsp; 2&nbsp; 3]数组元素开始实现累加，然后记录中间结果</div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-cumsum(3)对应的是从最里面最小的数组元素，即从0开始实现累加，记录中间结果<br></div>
-<div style="text-align:left;line-height:1.75;font-size:14px;">
-<span style="color:#ff0000;"><strong>原创解释，禁止复制，支持转载！注明来源<br></strong></span><br></div>
-<br><br></div>
-                                    </div>
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-<!-- 返回顶部 -->
-<div id="toTop">
-	<a href="#">▲</a>
-	<a href="#footer">▼</a>
-</div>
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2019-10-10T02:00:03.706Z"><a href="/2019/10/10/0xMP-numpy.linalg.eig/">2019-10-10</a></time>
-        
-  
-    <h1 class="title"><a href="/2019/10/10/0xMP-numpy.linalg.eig/">numpy.linalg.eig</a></h1>
+    <h1 class="title"><a href="/2019/10/15/0xZ-C 字符串函数/">C 字符串函数</a></h1>
   
 
     </header>
@@ -681,10 +397,9 @@ cumsum(3)对应的是从最里面最小的数组元素，即从0开始实现累�
         
     </div>
 
-        <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">cov_mat = np.cov(X_train_std.T)</span><br><span class="line">eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)</span><br><span class="line">print(<span class="string">'\nEigenvalues \n%s'</span> % eigen_vals)</span><br><span class="line"></span><br><span class="line">output:</span><br><span class="line">Eigenvalues </span><br><span class="line">[<span class="number">4.8923083</span>  <span class="number">2.46635032</span> <span class="number">1.42809973</span> <span class="number">1.01233462</span> <span class="number">0.84906459</span> <span class="number">0.60181514</span></span><br><span class="line"> <span class="number">0.52251546</span> <span class="number">0.08414846</span> <span class="number">0.33051429</span> <span class="number">0.29595018</span> <span class="number">0.16831254</span> <span class="number">0.21432212</span></span><br><span class="line"> <span class="number">0.2399553</span> ]</span><br></pre></td></tr></table></figure>
+        <a id="more"></a>
 
-<p>应用numpy.cov函数，得到经标准化处理的训练数据集的协方差矩阵。</p>
-<p>使用linalg.eig函数，通过特征分解，得到一个包含13个特征值的向量（eigen_vals）及其对应的特征值，特征向量以<code>列的方式</code>存储于一个13*13维的矩阵中(eigen_vecs)</p>
+<p>strcat<br>sprintf<br>sscanf<br>strlen</p>
 
       
     </div>
@@ -726,7 +441,7 @@ cumsum(3)对应的是从最里面最小的数组元素，即从0开始实现累�
           
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">15</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/IPC/">IPC</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多线程/">多线程</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多路I-O复用/">多路I/O复用</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/网络编程/">网络编程</a><span class="category-list-count">6</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/">PWN</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/blockchain/">blockchain</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/data-mining/">data mining</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/machine-learning/">machine learning</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/math/linear-algebra/">linear algebra</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/安全/web/">web</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/恶意代码分析/">恶意代码分析</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Data-Science/">Data Science</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">15</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/IPC/">IPC</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多线程/">多线程</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多路I-O复用/">多路I/O复用</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/网络编程/">网络编程</a><span class="category-list-count">6</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/blockchain/">blockchain</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/machine-learning/">machine learning</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/math/linear-algebra/">linear algebra</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/web/">web</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a><span class="category-list-count">6</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/安全/BIN/">BIN</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/PROTOCOL/">PROTOCOL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/WEB/">WEB</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/恶意代码分析/">恶意代码分析</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/javascript/">javascript</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/solidity/">solidity</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
 </div>
  
 
@@ -771,6 +486,8 @@ cumsum(3)对应的是从最里面最小的数组元素，即从0开始实现累�
         
           <li class='link'><a href='https://blog.csdn.net/houyanhua1'>WEB</a></li>
         
+          <li class='link'><a href='https://learnblockchain.cn/'>深入浅出区块链</a></li>
+        
           <li class='link'><a href=''>(empty)</a></li>
         
           <li class='link'><a href='https://www.sdnlab.com/'>SDNLAB</a></li>
@@ -780,6 +497,8 @@ cumsum(3)对应的是从最里面最小的数组元素，即从0开始实现累�
           <li class='link'><a href='https://mooc.study.163.com/smartSpec/detail/1001319001.htm?from=study'>深度学习微专业</a></li>
         
           <li class='link'><a href=''>(book)</a></li>
+        
+          <li class='link'><a href='https://wizardforcel.gitbooks.io/q-buffer-overflow-tutorial/content/57.html'>Q版缓冲区溢出教程</a></li>
         
           <li class='link'><a href='chrome-extension://cdonnmffkdaoajfknoeeecmchibpmkmg/static/pdf/web/viewer.html?file=http%3A%2F%2Fpdf.ebook23.com%2Febook%2F19_%25E7%25A8%258B%25E5%25BA%258F%25E5%2591%2598%25E4%25B8%25AA%25E4%25BA%25BA%25E4%25BF%25AE%25E5%2585%25BB%2F%255B%25E4%25BB%25A3%25E7%25A0%2581%25E5%25A4%25A7%25E5%2585%25A82%25E4%25B8%25AD%25E6%2596%2587%25E7%2589%2588%2528%25E5%25AE%258C%25E6%2595%25B4%25E6%25B8%2585%25E6%2599%25B0%25E7%2589%2588%2529%255D.pdf'>代码大全</a></li>
         
@@ -791,7 +510,7 @@ cumsum(3)对应的是从最里面最小的数组元素，即从0开始实现累�
           
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">99</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">109</span></li></ul>
   </div>
 
         

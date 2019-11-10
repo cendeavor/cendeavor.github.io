@@ -80,24 +80,24 @@
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-10-15T02:12:41.422Z"><a href="/2019/10/15/0xZ-Linux C 网络编程：send recv read write/">2019-10-15</a></time>
+        <time datetime="2019-10-20T09:02:00.575Z"><a href="/2019/10/20/0xSEC-WEB sql注入基础/">2019-10-20</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/15/0xZ-Linux C 网络编程：send recv read write/">recv read send write</a></h1>
+    <h1 class="title"><a href="/2019/10/20/0xSEC-WEB sql注入基础/">web安全：sql注入基础</a></h1>
   
 
     </header>
 
     <div class="entry">
       
-        <p>默认情况下，send recv是阻塞模式的，read write是非阻塞的。所谓阻塞是保证发送方内核缓冲区中的数据发送到接收方，而非阻塞则不能保证，如果内核缓冲区有数据没有被发送完套接字就被关闭，那么内核缓冲区会自动清空，将数据输入到终端（标准输出）</p>
+        <p>昨天实训讲了sqli-labs的Less 1-6算是给sql注入真正入了个门，这里总结一哈</p>
       
     </div>
     <footer>
       
         
           <div class="alignleft">
-            <a href="/2019/10/15/0xZ-Linux C 网络编程：send recv read write/#more" class="more-link">Read More</a>
+            <a href="/2019/10/20/0xSEC-WEB sql注入基础/#more" class="more-link">Read More</a>
           </div>
         
         
@@ -118,344 +118,24 @@
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-10-12T15:49:19.093Z"><a href="/2019/10/12/0xZ-Linux C 网络编程：字符串IP和二进制IP转换/">2019-10-12</a></time>
+        <time datetime="2019-10-20T06:13:56.467Z"><a href="/2019/10/20/0xK-Ubuntu 16.04部署sqli-lab踩坑记录/">2019-10-20</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/12/0xZ-Linux C 网络编程：字符串IP和二进制IP转换/">Linux C 网络编程：字符串IP和二进制IP转换</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一不安全的不可重入性inetxxx函数族"><span class="toc-text">一：不安全的（不可重入性）inet_xxx()函数族</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二安全的地址转换函数inetptoninetntop"><span class="toc-text">二.安全的地址转换函数inet_pton(),inet_ntop()</span></a></li></ol>
-    </div>
-
-        <p>转自<br><a href="https://blog.csdn.net/hnlyyk/article/details/47976161?tdsourcetag=s_pcqq_aiomsg" target="_blank" rel="noopener">https://blog.csdn.net/hnlyyk/article/details/47976161?tdsourcetag=s_pcqq_aiomsg</a></p>
-<div id="content_views" class="markdown_views">
-                    <!-- flowchart 箭头图标 勿删 -->
-                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-                        <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"/>
-                    </svg>
-                                            <h2 id="一不安全的不可重入性inetxxx函数族"><a name="t0"></a>一：不安全的（不可重入性）inet_xxx()函数族</h2>
-
-<p>由于计算机理解的IP都是以二进制形式保存的，那么在网络程序设计中经常会需要字符串IP和二进制IP的转换，linux系统有一组要用于网络地址转换的函数，如下：</p>
-
-
-
-<pre class="prettyprint" name="code"><code class="hljs cs has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">       <span class="hljs-preprocessor">#include &lt;sys/socket.h&gt;</span>
-       <span class="hljs-preprocessor">#include &lt;netinet/in.h&gt;</span>
-       <span class="hljs-preprocessor">#include &lt;arpa/inet.h&gt;</span>
-
-       <span class="hljs-keyword">int</span> inet_aton(<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> *cp, <span class="hljs-keyword">struct</span> in_addr *inp);
-       <span class="hljs-comment">//将点分4段式的IP地址转换为结构in_addr值</span>
-       in_addr_t inet_addr(<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> *cp);
-       <span class="hljs-comment">//将字符串转换为结构in_addr值</span>
-       in_addr_t inet_network(<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> *cp); 
-       <span class="hljs-comment">//将字符串地址的网络部分转换为结构in_addr值</span>
-       <span class="hljs-keyword">char</span> *inet_ntoa(<span class="hljs-keyword">struct</span> in_addr <span class="hljs-keyword">in</span>); 
-       <span class="hljs-comment">//将结构in_addr转为字符串</span>
-       <span class="hljs-keyword">struct</span> in_addr inet_makeaddr(<span class="hljs-keyword">int</span> net, <span class="hljs-keyword">int</span> host); 
-       <span class="hljs-comment">//将网络地址和主机地址合成为IP地址，返回值是in_addr值</span>
-       in_addr_t inet_lnaof(<span class="hljs-keyword">struct</span> in_addr <span class="hljs-keyword">in</span>); 
-       <span class="hljs-comment">//获得地址的主机部分</span>
-       in_addr_t inet_netof(<span class="hljs-keyword">struct</span> in_addr <span class="hljs-keyword">in</span>); 
-       <span class="hljs-comment">//获得地址的网络部分</span><div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>以上部分函数存在缺陷，例如： <br>
-inet_ntoa函数返回值是一个指向字符串的指针，此内存会在每次调用inet_nota函数的时候被覆盖掉，如果不及时拿走数据就会出现不可预料的错误，因此函数是不安全的，存在某种隐患； <br>
-inet_addr,inet_network函数的返回值是-1时表示错误，占用了地址255.255.255.255的值，存在缺陷，埋下了隐患。 <br>
-下面用一段代码介绍使用方法和隐患的部分：</p>
-
-
-
-<pre class="prettyprint" name="code"><code class="hljs perl has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"><span class="hljs-comment">#include &lt;sys/socket.h&gt;</span>
-<span class="hljs-comment">#include &lt;netinet/in.h&gt;</span>
-<span class="hljs-comment">#include &lt;arpa/inet.h&gt;</span>
-<span class="hljs-comment">#include &lt;stdio.h&gt;</span>
-<span class="hljs-comment">#include &lt;string.h&gt;</span>
-
-<span class="hljs-keyword">int</span> main(<span class="hljs-keyword">int</span> argc, char <span class="hljs-variable">*argv</span>[])
-{
-    struct in_addr ip,<span class="hljs-keyword">local</span>,network;
-    char addr1[]=<span class="hljs-string">"192.168.1.1"</span>;     <span class="hljs-regexp">/* 网络地址字符串 */</span>
-    char addr2[]=<span class="hljs-string">"255.255.255.255"</span>;
-    char addr3[]=<span class="hljs-string">"192.16.1"</span>;
-    char addr[<span class="hljs-number">16</span>];
-    char <span class="hljs-variable">*str</span>=NULL,<span class="hljs-variable">*str2</span>=NULL;
-
-
-    <span class="hljs-keyword">int</span> err = <span class="hljs-number">0</span>;
-
-    <span class="hljs-regexp">/* 测试函数inet_aton */</span> 
-    err = inet_aton(addr1, &amp;ip);
-    <span class="hljs-keyword">if</span>(err){
-        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_aton:string <span class="hljs-variable">%s</span> value is:0x<span class="hljs-variable">%x</span>\n"</span>,addr1, ip.s_addr); 
-    }<span class="hljs-keyword">else</span>{
-        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_aton:string <span class="hljs-variable">%s</span>  error\n"</span>,addr1);   
-    }
-
-    /* inet_addr，先测试<span class="hljs-number">192.168</span>.<span class="hljs-number">1.1</span>，在测试<span class="hljs-number">255.255</span>.<span class="hljs-number">255.255</span> <span class="hljs-variable">*/</span>   
-    ip.s_addr = inet_addr(addr1);
-    <span class="hljs-keyword">if</span>(err != -<span class="hljs-number">1</span>){
-        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_addr:string <span class="hljs-variable">%s</span> value is:0x<span class="hljs-variable">%x</span>\n"</span>,addr1, ip.s_addr); 
-    }<span class="hljs-keyword">else</span>{
-        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_addr:string <span class="hljs-variable">%s</span>  error\n"</span>,addr1);
-    };
-    ip.s_addr = inet_addr(addr2);
-    <span class="hljs-keyword">if</span>(ip.s_addr != -<span class="hljs-number">1</span>){
-        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_addr:string <span class="hljs-variable">%s</span> value is:0x<span class="hljs-variable">%x</span>\n"</span>,addr2, ip.s_addr); 
-    }<span class="hljs-keyword">else</span>{
-        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_addr:string <span class="hljs-variable">%s</span>  error\n"</span>,addr2);
-    };
-
-    <span class="hljs-regexp">/* inet_ntoa，先测试192.168.1.1，在测试255.255.255.255
-    *   证明函数的不可重入性
-     */</span>
-    ip.s_addr = <span class="hljs-number">192</span>&lt;&lt;<span class="hljs-number">24</span>|<span class="hljs-number">168</span>&lt;&lt;<span class="hljs-number">16</span>|<span class="hljs-number">1</span>&lt;&lt;<span class="hljs-number">8</span>|<span class="hljs-number">1</span>;
-    str = inet_ntoa(ip);
-    ip.s_addr = <span class="hljs-number">255</span>&lt;&lt;<span class="hljs-number">24</span>|<span class="hljs-number">255</span>&lt;&lt;<span class="hljs-number">16</span>|<span class="hljs-number">255</span>&lt;&lt;<span class="hljs-number">8</span>|<span class="hljs-number">255</span>;
-    str2 = inet_ntoa(ip);   
-    <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_ntoa:ip:0x<span class="hljs-variable">%x</span> string1 <span class="hljs-variable">%s</span>,pre is:<span class="hljs-variable">%s</span> \n"</span>,ip.s_addr,str2,str);
-
-    <span class="hljs-regexp">/* 测试函数inet_addr */</span> 
-    ip.s_addr = inet_addr(addr3);
-    <span class="hljs-keyword">if</span>(err != -<span class="hljs-number">1</span>){
-        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_addr:string <span class="hljs-variable">%s</span> value is:0x<span class="hljs-variable">%x</span>\n"</span>,addr3, ip.s_addr); 
-    }<span class="hljs-keyword">else</span>{
-        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_addr:string <span class="hljs-variable">%s</span>  error\n"</span>,addr3);
-    };
-    str = inet_ntoa(ip);    
-    <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_ntoa:string <span class="hljs-variable">%s</span> ip:0x<span class="hljs-variable">%x</span> \n"</span>,str,ip.s_addr);
-
-    <span class="hljs-regexp">/* 测试函数inet_lnaof，获得本机地址 */</span> 
-    inet_aton(addr1, &amp;ip);
-    <span class="hljs-keyword">local</span>.s_addr = htonl(ip.s_addr);
-    <span class="hljs-keyword">local</span>.s_addr = inet_lnaof(ip);
-    str = inet_ntoa(<span class="hljs-keyword">local</span>); 
-    <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_lnaof:string <span class="hljs-variable">%s</span> ip:0x<span class="hljs-variable">%x</span> \n"</span>,str,<span class="hljs-keyword">local</span>.s_addr);
-
-    <span class="hljs-regexp">/* 测试函数inet_netof，获得本机地址 */</span>
-    network.s_addr = inet_netof(ip);
-    <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_netof:value:0x<span class="hljs-variable">%x</span> \n"</span>,network.s_addr);
-
-
-    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;   
-}
-<div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>运行结果： <br>
-<img src="https://img-blog.csdn.net/20150825135908122" alt="这里写图片描述" title></p>
-
-<hr>
-
-
-
-<h2 id="二安全的地址转换函数inetptoninetntop"><a name="t1"></a><strong>二.安全的地址转换函数inet_pton(),inet_ntop()</strong></h2>
-
-<p>函数inet_pton(),inet_ntop()都是可以重入的，同时支持多种地址类型，包含IPV4和IPV6。 <br>
-函数介绍： <br>
-<img src="https://img-blog.csdn.net/20150825140034515" alt="这里写图片描述" title> <br>
-<img src="https://img-blog.csdn.net/20150825140055493" alt="这里写图片描述" title> <br>
-下面用一段代码介绍使用方法：</p>
-
-
-
-<pre class="prettyprint" name="code"><code class="hljs cpp has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"><span class="hljs-preprocessor">#include &lt;sys/types.h&gt;</span>
-<span class="hljs-preprocessor">#include &lt;sys/socket.h&gt;</span>
-<span class="hljs-preprocessor">#include &lt;arpa/inet.h&gt;</span>
-<span class="hljs-preprocessor">#include &lt;stdio.h&gt;</span>
-<span class="hljs-preprocessor">#include &lt;string.h&gt;</span>
-
-<span class="hljs-preprocessor">#define ADDRLEN 16</span>
-<span class="hljs-keyword">int</span> main(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> *argv[])
-{
-    <span class="hljs-keyword">struct</span> in_addr ip;
-    <span class="hljs-keyword">char</span> IPSTR[]=<span class="hljs-string">"192.168.1.1"</span>;     <span class="hljs-comment">/* 网络地址字符串 */</span>
-    <span class="hljs-keyword">char</span> addr[ADDRLEN];             <span class="hljs-comment">/* 保存转换后的字符串IP地址，16个字节大小 */</span>
-    <span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span>*str=NULL;    
-    <span class="hljs-keyword">int</span> err = <span class="hljs-number">0</span>;                    <span class="hljs-comment">/* 返回值 */</span>
-
-    <span class="hljs-comment">/* 测试函数inet_pton转换192.168.1.1为二进制形式 */</span>  
-    err = inet_pton(AF_INET, IPSTR, &amp;ip);   <span class="hljs-comment">/* 将字符串转换为二进制 */</span>
-    <span class="hljs-keyword">if</span>(err &gt; <span class="hljs-number">0</span>){
-        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"inet_pton:ip,%s value is:0x%x\n"</span>,IPSTR,ip.s_addr);
-    }
-
-    <span class="hljs-comment">/* 测试函数inet_ntop转换192.168.1.1为字符串 */</span>
-    ip.s_addr = htonl(<span class="hljs-number">192</span>&lt;&lt;<span class="hljs-number">24</span>|<span class="hljs-number">168</span>&lt;&lt;<span class="hljs-number">16</span>|<span class="hljs-number">12</span>&lt;&lt;<span class="hljs-number">8</span>|<span class="hljs-number">255</span>);<span class="hljs-comment">/*192.168.12.255*/</span>
-    <span class="hljs-comment">/*将二进制网络字节序192.168.12.255转换为字符串*/</span>
-    str = (<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span>*)inet_ntop(AF_INET, (<span class="hljs-keyword">void</span>*)&amp;ip, (<span class="hljs-keyword">char</span>*)&amp;addr[<span class="hljs-number">0</span>], ADDRLEN);
-    <span class="hljs-keyword">if</span>(str){
-        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"inet_ntop:ip,0x%x is %s\n"</span>,ip.s_addr,str);  
-    }
-
-    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;   
-}
-<div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>运行结果： <br>
-inet_pton:ip,192.168.1.1 value is:0x101a8c0 <br>
-inet_ntop:ip,0xff0ca8c0 is 192.168.12.255</p>                                    </div>
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-<!-- 返回顶部 -->
-<div id="toTop">
-	<a href="#">▲</a>
-	<a href="#footer">▼</a>
-</div>
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2019-10-12T15:42:08.324Z"><a href="/2019/10/12/0xZ-markdown 锚点/">2019-10-12</a></time>
-        
-  
-    <h1 class="title"><a href="/2019/10/12/0xZ-markdown 锚点/">Markdown目录树、锚（anchor）和页内跳转</a></h1>
+    <h1 class="title"><a href="/2019/10/20/0xK-Ubuntu 16.04部署sqli-lab踩坑记录/">Ubuntu 16.04 部署sqli-labs踩坑记录</a></h1>
   
 
     </header>
 
     <div class="entry">
       
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#markdown目录树"><span class="toc-text">Markdown目录树</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#页内跳转链接"><span class="toc-text">页内跳转链接</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义锚"><span class="toc-text">自定义锚</span></a></li></ol>
-    </div>
-
-        <div id="content_views" class="markdown_views prism-atom-one-dark">
-                    <!-- flowchart 箭头图标 勿删 -->
-                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-                        <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"/>
-                    </svg>
-                                            <p></p><div class="toc">
-<ul>
-<li><a href="#前言" rel="nofollow" target="_self" data-token="80de3393992ef4c950c5d7111f20953d">前言</a></li>
-<li><a href="#markdown目录树" rel="nofollow" target="_self" data-token="a496cb34f90349c951b568093bd4bf5c">Markdown目录树</a></li>
-<li><a href="#页内跳转链接" rel="nofollow" target="_self" data-token="f95eb47a690445dfc2f215e667f65e4d">页内跳转链接</a></li>
-<li><a href="#自定义锚" rel="nofollow" target="_self" data-token="9550e1b21caf55d20979a620f1fad899">自定义锚</a></li>
-</ul>
-</div>
-<p></p>
-
-
-
-<h1 id="前言"><a name="t0"></a>前言</h1>
-
-<p>在使用Markdown写文档时，如果文档内容很多，我们很可能需要给文档生成目录树和使用页内跳转。本文提供了实现这些功能的方法，并且已经在有道云笔记中测试通过。</p>
-
-
-
-<h1 id="markdown目录树"><a name="t1"></a>Markdown目录树</h1>
-
-<p>想要给文档生成目录树，只需要在文档中增加<code>[TOC]</code>，目录树就会根据文档中的h1~h6标题自动生成了。</p>
-
-<blockquote>
-  <p>注：<code>[TOC]</code>需要独占一行才能生效。比如： <br data-filtered="filtered">
-  …… <br data-filtered="filtered">
-  <code>[TOC]</code> <br data-filtered="filtered">
-  ……</p>
-</blockquote>
-
-
-
-<h1 id="页内跳转链接"><a name="t2"></a>页内跳转链接</h1>
-
-<p>Markdown会自动给每一个h1~h6标题生成一个锚，其id就是标题内容。目录树中的每一项都是一个跳转链接，点击后就会跳转到其对应的锚点（即标题所在位置）。你可以点击本文档开始处的目录树尝试一下。</p>
-
-<p>如果需要在目录树之外还要增加跳转到某个标题的链接，则有两种办法可以做到： <br data-filtered="filtered">
-1. 使用Markdown的语法来增加跳转链接：“[名称](#id)”。 <br data-filtered="filtered">
-2. 使用HTML语法来增加跳转链接：“&lt;a href=”#id”&gt;名称
-
-</p><p>其中的“名称”可以随便填写，“id”需要填写跳转到的标题的内容。例如如果想要增加一个到本文档“前言”标题的跳转链接，则需要这么写：</p>
-
-<p>[使用Markdown语法增加的跳转到“前言”的链接](#前言) <br data-filtered="filtered">
-效果： <br data-filtered="filtered">
-<a href="#前言" rel="nofollow" target="_self" data-token="80de3393992ef4c950c5d7111f20953d">使用Markdown语法增加的跳转到“前言”的链接</a></p>
-
-<p>或者这么写：</p>
-
-<p>&lt;a href=”#前言”&gt;使用HTML语法增加的跳转到“前言”的链接
-效果： <br data-filtered="filtered">
-<a href="#前言" rel="nofollow" target="_self" data-token="80de3393992ef4c950c5d7111f20953d">使用HTML语法增加的跳转到“前言”的链接</a></p>
-
-
-
-<h1 id="自定义锚"><a name="t3"></a>自定义锚</h1>
-
-<p>假设我们想跳转到文档中的一个不是标题的位置（比如一张图表），则需要在该位置自定义一个锚。</p>
-
-<p>我们使用HTML语法来定义一个锚。可选的HTML标签很多，比如&lt;span&gt;、&lt;a&gt;等等。本文使用&lt;span&gt;示例。</p>
-
-<p>假设文档中有一个作息时间表，在文档的其他地方需要增加跳转到此表位置的链接，那么我们可以在此表的附近增加一行：</p>
-
-<p>&lt;span id=”表1”&gt;名称
-
-</p><blockquote>
-  <p>注：id为必填项；“名称”可以随便填写，也可以不填。另外，可以给span增加其他属性，比如颜色等等。</p>
-</blockquote>
-
-<p></p><p>效果： <br data-filtered="filtered">
-<span id="表1">作息时间表</span></p>
-
-<p>然后可以在文档其他位置增加一个跳转到它的链接了：</p>
-
-<p><a href="#表1" rel="nofollow" target="_self" data-token="152ed28c37a6b77c1c84dd8005f413bc">点我跳转到作息时间表</a></p>                                    </div>
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-<!-- 返回顶部 -->
-<div id="toTop">
-	<a href="#">▲</a>
-	<a href="#footer">▼</a>
-</div>
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2019-10-12T14:32:59.923Z"><a href="/2019/10/12/0xZ-Linux C 网络编程：地址转换函数总结/">2019-10-12</a></time>
-        
-  
-    <h1 class="title"><a href="/2019/10/12/0xZ-Linux C 网络编程：地址转换函数总结/">Linux C 网络编程：地址转换函数总结</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        <p>每次Linux C网络编程时都要纠结地址转换的对不对，这次终于受不鸟了，总结一下。</p>
+        <p>一切都要从升级win10下升级phpstudy后的某一天说起。。。那天实训sql注入，发现n年前部署好的sqli-lab访问不了了，mysql-front的root账户登进去各种报错，于是乎转战winxp虚拟机，但是做题过程中遇到需要python脚本的题目，网上copy了一个代码结果用了termcolor不支持cmd，在加上本来就不喜欢在没有安装任何插件的winxp上写代码（不是没有想过跨主机，由于以前改过了vmware的网卡设置，复原后还是桥接、nat各种ping不通。。。问题太多，干脆在最爱的Ubuntu 16.04上部署然后本地测试吧。</p>
       
     </div>
     <footer>
       
         
           <div class="alignleft">
-            <a href="/2019/10/12/0xZ-Linux C 网络编程：地址转换函数总结/#more" class="more-link">Read More</a>
+            <a href="/2019/10/20/0xK-Ubuntu 16.04部署sqli-lab踩坑记录/#more" class="more-link">Read More</a>
           </div>
         
         
@@ -476,10 +156,10 @@ inet_ntop:ip,0xff0ca8c0 is 192.168.12.255</p>                                   
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-10-12T02:48:40.404Z"><a href="/2019/10/12/0xZ-Linux C 多线程：线程退出和资源释放/">2019-10-12</a></time>
+        <time datetime="2019-10-18T03:41:56.627Z"><a href="/2019/10/18/0xZ-Blockchain 区块链开发环境搭建/">2019-10-18</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/12/0xZ-Linux C 多线程：线程退出和资源释放/">Linux C 多线程：线程退出和资源释放</a></h1>
+    <h1 class="title"><a href="/2019/10/18/0xZ-Blockchain 区块链开发环境搭建/">区块链开发环境搭建</a></h1>
   
 
     </header>
@@ -488,18 +168,51 @@ inet_ntop:ip,0xff0ca8c0 is 192.168.12.255</p>                                   
       
         
     <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#pthread-join-vs-pthread-detach"><span class="toc-text">pthread_join vs. pthread_detach</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#理解"><span class="toc-text">理解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-阻塞和非阻塞"><span class="toc-text">1. 阻塞和非阻塞</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-为什么要将线程设置成分离状态"><span class="toc-text">2. 为什么要将线程设置成分离状态</span></a></li></ol></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#windows"><span class="toc-text">windows</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ubuntu"><span class="toc-text">ubuntu</span></a></li></ol>
     </div>
 
-        <p><a href="https://blog.csdn.net/weibo1230123/article/details/81410241" target="_blank" rel="noopener">pthread_join()与pthread_detach()详解</a></p>
-<p><a href="https://www.cnblogs.com/zhangxuan/p/6430034.html" target="_blank" rel="noopener">pthread_exit,pthread_join，pthread_kill，pthread_cancel，sigwait，sigaddset</a></p>
-<p><a href="http://blog.chinaunix.net/uid-29134536-id-4754692.html" target="_blank" rel="noopener">关于线程资源的释放: pthread_join, pthread_exit, pthread_detach</a></p>
-<p><a href="https://blog.csdn.net/drdairen/article/details/52517820" target="_blank" rel="noopener">线程状态：分离状态（detached）与可结合状态（joinable）</a></p>
-<h2 id="pthread-join-vs-pthread-detach"><a href="#pthread-join-vs-pthread-detach" class="headerlink" title="pthread_join vs. pthread_detach"></a>pthread_join vs. pthread_detach</h2><p>Linux中线程可分为joinable和unjoinable两种状态。</p>
-<p>pthread_detach()写在线程函数头部，使得创建后的thread处于unjoinable<code>分离</code>状态，这样主线程<code>不必等待</code>子线程运行结束再回收，子线程结束后自行回收释放资源；</p>
-<p>而pthread_join()函数是针对joinable线程的，它将子线程<code>“合并”</code>入主线程，使得主线程<code>阻塞</code>等待回收子线程。</p>
-<h3 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h3><h4 id="1-阻塞和非阻塞"><a href="#1-阻塞和非阻塞" class="headerlink" title="1. 阻塞和非阻塞"></a>1. 阻塞和非阻塞</h4><p>上面的“合并”和“分离”让我对阻塞和非阻塞有了更加直观的认识，且通过这次编写多线程扫描程序的经历，思索之下，我恍然大悟。<br>不管是阻塞还是非阻塞其实都可以理解为“事件驱动”，虽然公认的理解是：非阻塞才是事件驱动，因为通过捕获事件信号从而出发回调函数。但是仔细想一想，<code>阻塞解除的条件</code>不也是如“线程结束”这样的事件嘛，否则如果条件一直不满足就一直阻塞下去。</p>
-<h4 id="2-为什么要将线程设置成分离状态"><a href="#2-为什么要将线程设置成分离状态" class="headerlink" title="2. 为什么要将线程设置成分离状态"></a>2. 为什么要将线程设置成分离状态</h4><p>为了在使用线程的时候，避免线程的资源得不到正确的释放，从而导致了内存泄漏的问题。所以要确保进程为可分离的的状态，否则要进行线程等待已回收他的资源。</p>
+        <p><a href="https://blog.csdn.net/qq_33829547/article/details/80345730" target="_blank" rel="noopener">安装solidity</a></p>
+<h1 id="windows"><a href="#windows" class="headerlink" title="windows"></a><a href="https://my.oschina.net/u/3794778/blog/1799929" target="_blank" rel="noopener">windows</a></h1><p><a href="https://github.com/trufflesuite/ganache/releases" target="_blank" rel="noopener">windows安装truffle solidity智能合约开发框架</a></p>
+<h1 id="ubuntu"><a href="#ubuntu" class="headerlink" title="ubuntu"></a><a href="https://blog.csdn.net/shebao3333/article/details/79792715" target="_blank" rel="noopener">ubuntu</a></h1>
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-17T11:35:28.633Z"><a href="/2019/10/17/0x04-Mininet/">2019-10-17</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/17/0x04-Mininet/">mininet</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#自定义拓扑"><span class="toc-text">自定义拓扑</span></a></li></ol>
+    </div>
+
+        <h4 id="自定义拓扑"><a href="#自定义拓扑" class="headerlink" title="自定义拓扑"></a>自定义拓扑</h4><p>sudo mn –controller=remote,ip=192.168.0.2 –custom ./mytopo_test.py –topo mytopo –mac</p>
 
       
     </div>
@@ -524,12 +237,10 @@ inet_ntop:ip,0xff0ca8c0 is 192.168.12.255</p>                                   
     <header>
         <div class="icon"></div>
         
-          <div id="top">置顶</div>
-        
-        <time datetime="2019-10-11T11:50:07.330Z"><a href="/2019/10/11/0xS-Ubuntu/">2019-10-11</a></time>
+        <time datetime="2019-10-17T00:58:48.069Z"><a href="/2019/10/17/0x02-Libnet/">2019-10-17</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/11/0xS-Ubuntu/">Ubuntu</a></h1>
+    <h1 class="title"><a href="/2019/10/17/0x02-Libnet/">Libnet</a></h1>
   
 
     </header>
@@ -538,51 +249,51 @@ inet_ntop:ip,0xff0ca8c0 is 192.168.12.255</p>                                   
       
         
     <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Shell命令"><span class="toc-text">Shell命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#文件系统"><span class="toc-text">文件系统</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装下载"><span class="toc-text">安装下载</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-apt-install安装的软件的相关位置"><span class="toc-text">1. apt install安装的软件的相关位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-查看软件安装位置"><span class="toc-text">2. 查看软件安装位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Ubuntu-下几种软件安装的方法小结"><span class="toc-text">3. Ubuntu 下几种软件安装的方法小结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装"><span class="toc-text">安装</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#配置"><span class="toc-text">配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#硬件"><span class="toc-text">硬件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#环境"><span class="toc-text">环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#切换版本"><span class="toc-text">切换版本</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BUG"><span class="toc-text">BUG</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-vmware-ubuntu-16-04-共享文件夹重启失效"><span class="toc-text">1. vmware ubuntu 16.04 共享文件夹重启失效</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-执行npm-，再不用sudo"><span class="toc-text">2. 执行npm ，再不用sudo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-更改文件夹权限-opt-免除sudo"><span class="toc-text">3. 更改文件夹权限(/opt)免除sudo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-sqli-lab无法setup"><span class="toc-text">4. sqli-lab无法setup</span></a></li></ol></li></ol></li></ol>
+        
     </div>
 
-        <h1 id="Shell命令"><a href="#Shell命令" class="headerlink" title="Shell命令"></a>Shell命令</h1><p><a href="http://www.mamicode.com/info-detail-1144825.html" target="_blank" rel="noopener">软链接版本管理 update-alternatives</a></p>
-<p><a href="https://www.cnblogs.com/soyo/p/7908430.html" target="_blank" rel="noopener">查看系统可用内存 free -m</a></p>
-<h1 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h1><h2 id="安装下载"><a href="#安装下载" class="headerlink" title="安装下载"></a>安装下载</h2><h3 id="1-apt-install安装的软件的相关位置"><a href="#1-apt-install安装的软件的相关位置" class="headerlink" title="1. apt install安装的软件的相关位置"></a>1. apt install安装的软件的相关位置</h3><p>A、下载的软件的存放位置：/var/cache/apt/archives</p>
-<p>B、安装后软件的默认位置：/usr/share</p>
-<p>C、可执行文件位置：/usr/bin</p>
-<p>D、配置文件位置：/etc</p>
-<p>E、lib文件位置：/usr/lib</p>
-<h3 id="2-查看软件安装位置"><a href="#2-查看软件安装位置" class="headerlink" title="2. 查看软件安装位置"></a>2. <a href="https://blog.csdn.net/baidu_38172402/article/details/80795553" target="_blank" rel="noopener">查看软件安装位置</a></h3><h3 id="3-Ubuntu-下几种软件安装的方法小结"><a href="#3-Ubuntu-下几种软件安装的方法小结" class="headerlink" title="3. Ubuntu 下几种软件安装的方法小结"></a>3. <a href="https://www.cnblogs.com/sablier/p/10915171.html" target="_blank" rel="noopener">Ubuntu 下几种软件安装的方法小结</a></h3><h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a><a href="https://cloud.tencent.com/developer/article/1392294" target="_blank" rel="noopener">安装</a></h1><p><a href="https://www.jianshu.com/p/a9a3885efe5a" target="_blank" rel="noopener">DPDK安装配置（附脚本）及示例程序运行</a></p>
-<p><a href="https://www.sdnlab.com/19189.html" target="_blank" rel="noopener">mininet+floodlight</a></p>
-<p><a href="https://blog.csdn.net/qq_24091555/article/details/76039475" target="_blank" rel="noopener">maven</a></p>
-<p><a href="https://www.cnblogs.com/lidonghao/p/8497145.html" target="_blank" rel="noopener">以太坊环境搭建</a></p>
-<p><a href="https://mshk.top/2017/11/truffle-4-0-geth-1-7-2-testrpc/" target="_blank" rel="noopener">truffle安装</a></p>
-<p><a href="https://blog.csdn.net/xuecuilan/article/details/95481199" target="_blank" rel="noopener">设置Truffle中solc到指定版本</a></p>
-<p><a href="https://blog.csdn.net/JohnnyMartin/article/details/81737910" target="_blank" rel="noopener">truffle与nodejs的版本问题</a></p>
-<p><a href="https://blog.csdn.net/u014454538/article/details/88649963" target="_blank" rel="noopener">go</a></p>
-<p><a href="https://www.moerats.com/archives/387/" target="_blank" rel="noopener">？？？？？BBR+BBR魔改+Lotsever(锐速)一键脚本 for Centos/Debian/Ubuntu</a></p>
-<p><a href="https://clearsky.me/ubuntu-1804-bbr.html" target="_blank" rel="noopener">https://clearsky.me/ubuntu-1804-bbr.html</a></p>
-<p><a href="https://blog.csdn.net/shay_lau/article/details/80205088" target="_blank" rel="noopener">phpstudy wrong!!!!</a></p>
-<p>floodlight 采用0.91版本； java 采用 jdk8版本</p>
-<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><blockquote>
-<p>自从换到 Oh-my-zsh terminal后，对配置文件的修改变为了 .zshrc 而不是 .bashrc</p>
-</blockquote>
-<h2 id="硬件"><a href="#硬件" class="headerlink" title="硬件"></a>硬件</h2><p><a href="https://jingyan.baidu.com/article/86fae34604bdd53c49121a26.html" target="_blank" rel="noopener">磁盘扩容</a></p>
-<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p><a href="https://www.cnblogs.com/butterfly-clover/p/5756688.html" target="_blank" rel="noopener">ubuntu系统jdk安装及环境变量配置</a></p>
-<p><a href="https://blog.csdn.net/qq_21187515/article/details/84850814" target="_blank" rel="noopener">Linux64位 jdk1.8 jdk-8u161下载</a></p>
-<p><a href="https://blog.csdn.net/shebao3333/article/details/79792715" target="_blank" rel="noopener">以太坊环境搭建</a></p>
-<p><a href="https://www.jianshu.com/p/f09e474e9c39" target="_blank" rel="noopener">ubuntu16.04 如何将node命令设置到全局</a></p>
-<p><a href="https://blog.csdn.net/lu_embedded/article/details/79604380" target="_blank" rel="noopener">ubuntu LAMP环境</a></p>
-<p><a href="https://blog.csdn.net/teddy_dewei_lu/article/details/79659013" target="_blank" rel="noopener">ubuntu16.04 phpmyadmin使用root登录提示#1698 - Access denied for user ‘root’@’localhost’</a></p>
-<h3 id="切换版本"><a href="#切换版本" class="headerlink" title="切换版本"></a>切换版本</h3><p><a href="https://blog.csdn.net/qq_43329934/article/details/83098597" target="_blank" rel="noopener">Ubuntu16.04 多切换JDK版本</a></p>
-<p><a href="https://blog.csdn.net/jiangjiang_jian/article/details/80694799" target="_blank" rel="noopener">Ubuntu16.04 GCC多版本切换</a></p>
-<p><a href="https://blog.csdn.net/zhousmq/article/details/77765451" target="_blank" rel="noopener">Ubuntu16.04 PHP多版本切换</a></p>
-<h1 id="BUG"><a href="#BUG" class="headerlink" title="BUG"></a>BUG</h1><h3 id="1-vmware-ubuntu-16-04-共享文件夹重启失效"><a href="#1-vmware-ubuntu-16-04-共享文件夹重启失效" class="headerlink" title="1. vmware ubuntu 16.04 共享文件夹重启失效"></a>1. vmware ubuntu 16.04 共享文件夹重启失效</h3><p>在 ~/.bashrc 添加 “sudo vmhgfs-fuse .host:/ /mnt/hgfs<br>”</p>
-<h3 id="2-执行npm-，再不用sudo"><a href="#2-执行npm-，再不用sudo" class="headerlink" title="2. 执行npm ，再不用sudo"></a>2. 执行npm ，再不用sudo</h3><p>sudo chown -R $(whoami) $(npm config get prefix)/{lib/node_modules,bin,share}</p>
-<p><a href="https://askubuntu.com/questions/955434/sudo-node-command-not-found" target="_blank" rel="noopener">https://askubuntu.com/questions/955434/sudo-node-command-not-found</a></p>
-<h3 id="3-更改文件夹权限-opt-免除sudo"><a href="#3-更改文件夹权限-opt-免除sudo" class="headerlink" title="3. 更改文件夹权限(/opt)免除sudo"></a>3. <a href="http://blog.chinaunix.net/uid-21880738-id-1813031.html" target="_blank" rel="noopener">更改文件夹权限(/opt)免除sudo</a></h3><p>chmod -R a+r * 将目前目录下的所有档案与子目录皆设为任何人可读取</p>
-<h3 id="4-sqli-lab无法setup"><a href="#4-sqli-lab无法setup" class="headerlink" title="4. sqli-lab无法setup"></a>4. sqli-lab无法setup</h3><p><a href="https://blog.csdn.net/zhoucheng05_13/article/details/75082722" target="_blank" rel="noopener">PHP连接mysql数据库报错：Call to undefined function mysql_connect()</a></p>
-<p>PHP7.0开始启用mysql_connect()函数改用mysqli_connect()</p>
-<p><a href="https://segmentfault.com/a/1190000011986836" target="_blank" rel="noopener">Ubuntu 16.04 切换 PHP 版本</a></p>
-<p><a href="https://www.cnblogs.com/baby123/p/6611169.html" target="_blank" rel="noopener">Ubuntu 下解压tar.xz方法</a></p>
-<p><a href="https://www.cnblogs.com/EasonJim/p/7114676.html" target="_blank" rel="noopener">Ubuntu 16.04添加启动图标到Dash Home中</a></p>
-<p><a href="https://blog.csdn.net/u012965373/article/details/74010965" target="_blank" rel="noopener">将Intellij图标固定到工具栏</a></p>
+        
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-16T07:08:33.660Z"><a href="/2019/10/16/0xZ-Linux C/">2019-10-16</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/16/0xZ-Linux C/">Linux C</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#编程"><span class="toc-text">编程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#系统"><span class="toc-text">系统</span></a></li></ol>
+    </div>
+
+        <h1 id="编程"><a href="#编程" class="headerlink" title="编程"></a>编程</h1><p><a href="https://www.cnblogs.com/yorkyang/p/7804733.html" target="_blank" rel="noopener">多线程</a></p>
+<p><a href="https://www.xuebuyuan.com/1799284.html?mobile=0" target="_blank" rel="noopener">常见协议头结构体定义</a></p>
+<h1 id="系统"><a href="#系统" class="headerlink" title="系统"></a>系统</h1><p><a href="https://blog.csdn.net/linyt/article/details/51635768" target="_blank" rel="noopener">何谓PLT与GOT</a></p>
 
       
     </div>
@@ -607,10 +318,10 @@ inet_ntop:ip,0xff0ca8c0 is 192.168.12.255</p>                                   
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-10-11T10:16:50.095Z"><a href="/2019/10/11/0xY-ubuntu16.04安装dpdk/">2019-10-11</a></time>
+        <time datetime="2019-10-16T03:07:02.015Z"><a href="/2019/10/16/0xS-Excel/">2019-10-16</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/11/0xY-ubuntu16.04安装dpdk/">ubuntu 16.04 安装dpdk</a></h1>
+    <h1 class="title"><a href="/2019/10/16/0xS-Excel/">Excel</a></h1>
   
 
     </header>
@@ -619,12 +330,11 @@ inet_ntop:ip,0xff0ca8c0 is 192.168.12.255</p>                                   
       
         
     <div id="toc">
-        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#统计"><span class="toc-text">统计</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#统计筛选后行数"><span class="toc-text">统计筛选后行数</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#筛选"><span class="toc-text">筛选</span></a></li></ol>
     </div>
 
-        <p><a href="https://www.jianshu.com/p/a9a3885efe5a" target="_blank" rel="noopener">DPDK安装配置（附脚本）及示例程序运行</a></p>
-<p><a href="https://blog.csdn.net/shhchen/article/details/88554777" target="_blank" rel="noopener">Ubuntu16.04 虚拟机环境下搭建DPDK教程</a></p>
-
+        <h2 id="统计"><a href="#统计" class="headerlink" title="统计"></a>统计</h2><h4 id="统计筛选后行数"><a href="#统计筛选后行数" class="headerlink" title="统计筛选后行数"></a>统计筛选后行数</h4><p>=SUBTOTAL(3, A1:A5)<br><img src="/pic/0xS-Excel/2019-10-16-11-07-52.png" alt="统计筛选后行数"></p>
+<h2 id="筛选"><a href="#筛选" class="headerlink" title="筛选"></a>筛选</h2>
       
     </div>
     <footer>
@@ -648,10 +358,10 @@ inet_ntop:ip,0xff0ca8c0 is 192.168.12.255</p>                                   
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-10-11T08:41:23.142Z"><a href="/2019/10/11/0xI-ubuntu gcc多版本选择/">2019-10-11</a></time>
+        <time datetime="2019-10-15T16:33:00.265Z"><a href="/2019/10/16/0xO-线程池/">2019-10-16</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/11/0xI-ubuntu gcc多版本选择/">gcc多版本选择</a></h1>
+    <h1 class="title"><a href="/2019/10/16/0xO-线程池/">线程池</a></h1>
   
 
     </header>
@@ -660,11 +370,12 @@ inet_ntop:ip,0xff0ca8c0 is 192.168.12.255</p>                                   
       
         
     <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#content_views"><span class="toc-text">来源：CSDN 作者：gatieme</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#content_views"><span class="toc-text">1 问题发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#content_views"><span class="toc-text">2 问题解决</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#content_views"><span class="toc-text">2.1 添加源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#content_views"><span class="toc-text">2.2 安装新版gcc/g++</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#content_views"><span class="toc-text">2.3 更新系统(可选)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#content_views"><span class="toc-text">2.4 刷新db并locate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#content_views"><span class="toc-text">2.5 切换gcc/g++版本</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#content_views"><span class="toc-text">3 参照</span></a></li></ol>
+        
     </div>
 
-        <div class="htmledit_views" id="content_views">
-                                            <div class="table-box"><table style="height:1px;" align="center" width="907"><tbody><tr><td width="140">&nbsp;</td><td align="right" width="160">&nbsp;</td></tr></tbody></table></div><h2><a name="t0"></a><span style="font-size:12px;">来源：CSDN&nbsp;作者：gatieme</span><br></h2><h2><a name="t1"></a>1 问题发现</h2><hr><p>目前正在使用<a href="http://www.linuxidc.com/topicnews.aspx?tid=2" rel="noopener" title="Ubuntu" data-token="7fac2b7347dd55f0e509665c2e194d00" target="_blank">Ubuntu</a> 14.04 LTS, 虽然更新了HWE之后, 系统仍然在不断的维护he更新, 但是编译工具是不会更新的, 如果目前我还在使用Ubuntu 14.04, 是无法体验新版gcc的. 怎么办呢?</p><h2><a name="t2"></a>2 问题解决</h2><hr><p>其实, 在<code>toolchain/test</code>下已经有打包好的gcc, 版本有4.x、5.0、6.0等, 并为Ubuntu10.04~16.04军均提供了gcc包, 如下图所示</p><p><img src="https://img-blog.csdn.net/20180614163553655?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2ppYW5namlhbmdfamlhbg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt><br></p><p>用这个PPA升级gcc就可以啦</p><h3><a name="t3"></a>2.1 添加源</h3><hr><p>首先添加ppa到库：</p><pre class="prettyprint" name="code"><code class="hljs cs"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo <span class="hljs-keyword">add</span>-apt-repository ppa:ubuntu-toolchain-r/test</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo apt-<span class="hljs-keyword">get</span> update</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><h3><a name="t4"></a>2.2 安装新版gcc/g++</h3><hr><p>默认在系统中安装的是gcc-4.8, 但现在都什么年代了万一有重要或者好玩的更新呢, 接着就可以选择安装gcc-4.9, gcc-5之类的啦!(注意目前gcc-5实际上是5.3.0，没有5.1或5.2可供选择)</p><pre class="prettyprint" name="code"><code class="hljs sql"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo apt-get <span class="hljs-keyword">install</span> gcc<span class="hljs-number">-</span><span class="hljs-number"><span class="hljs-number">4.8</span></span> g++<span class="hljs-number">-</span><span class="hljs-number"><span class="hljs-number">4.8</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo apt-<span class="hljs-keyword">get</span> <span class="hljs-keyword">install</span> gcc<span class="hljs-number">-</span><span class="hljs-number"><span class="hljs-number">4.9</span></span> g++<span class="hljs-number">-</span><span class="hljs-number"><span class="hljs-number">4.9</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo apt-<span class="hljs-keyword">get</span> <span class="hljs-keyword">install</span> gcc<span class="hljs-number">-</span><span class="hljs-number"><span class="hljs-number">5</span></span> g++<span class="hljs-number">-</span><span class="hljs-number"><span class="hljs-number">5</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo apt-<span class="hljs-keyword">get</span> <span class="hljs-keyword">install</span> gcc<span class="hljs-number">-</span><span class="hljs-number"><span class="hljs-number">6</span></span> g++<span class="hljs-number">-</span><span class="hljs-number"><span class="hljs-number">6</span></span></div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><p>具体希望安装哪个版本, 大家可以自己选择</p><h3><a name="t5"></a>2.3 更新系统(可选)</h3><hr><p>下面这个过程是可选的(非必须), 当然我们也可以直接使用<code>upgrade</code>或者<code>dist-upgrade</code>更新来更新<code>gcc/g++</code></p><pre class="prettyprint" name="code"><code class="hljs vbscript">sudo apt-<span class="hljs-keyword">get</span> upgrade</code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><p><img title src="https://www.linuxidc.com/upload/2016_11/161107142684032.png" alt="更新软件"></p><ul><li>upgrade更新可以看到提示出<code>The following packages have been kept back</code>, 说明有部份packages的安装版比release版新, 因此我们使用<code>apt-get -u dist-upgrade</code>统一更新到发布的版本. 这条命令会强制更新软件包到最新版本，并动解决缺少的依赖包.</li></ul><pre class="prettyprint" name="code"><code class="hljs vbscript">sudo apt-<span class="hljs-keyword">get</span> dist-upgrade</code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><p><img title src="https://www.linuxidc.com/upload/2016_11/161107142684033.png" alt="更新软件"></p><h3><a name="t6"></a>2.4 刷新db并locate</h3><hr><p>接着现在可以考虑刷新一下, 否则locate等命令是找不到的, 这个也是可选的(非必须)</p><pre class="prettyprint" name="code"><code class="hljs perl"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo updatedb &amp;&amp; sudo ldconfig</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">locate gcc | <span class="hljs-keyword">grep</span> -E <span class="hljs-string"><span class="hljs-string">"/usr/bin/gcc-[0-9]"</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">locate g++ | <span class="hljs-keyword">grep</span> -E <span class="hljs-string"><span class="hljs-string">"/usr/bin/g\+\+-[0-9]"</span></span></div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><p><img title src="https://www.linuxidc.com/upload/2016_11/161107142684034.png" alt="locate gcc/g++"></p><p>通过locate可以发现, 我们系统中安装了gcc-4.8和gcc-6两个gcc版本</p><h3><a name="t7"></a>2.5 切换gcc/g++版本</h3><hr><p>出与安全和稳定性的考虑, 目前位置我们系统中<code>gcc -v</code>查看到的版本仍然是<code>gcc-4.8</code>, 因此需要我们自己做链接</p><p><img title src="https://www.linuxidc.com/upload/2016_11/161107142684035.png" alt="gcc的版本"></p><p>我们正常使用的gcc/g++其实都是<code>/usr/bin/gcc</code>和<code>/usr/bin/g++</code>, 他们指向了<code>/usr/bin</code>下真正版本的<code>gcc/g++</code>程序</p><p><img title src="https://www.linuxidc.com/upload/2016_11/161107142684036.png" alt="gcc/g++标准链接"></p><p>因此我们只需要将标准的<code>gcc/g++</code>连接到我们期望的<code>gcc/g++</code>程序即可, 我们有如下两种方式建立链接</p><ul><li><p>自己通过ln命令创建链接</p></li><li><p>通过update-alternatives建立文件关联</p></li></ul><p><strong>自己通过ln命令创建链接</strong></p><pre class="prettyprint" name="code"><code class="hljs bash"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-built_in">cd</span> /usr/bin</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo rm gcc</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo ln -s gcc-<span class="hljs-number">6</span> g++</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo rm g++</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo ln -s g++-<span class="hljs-number">6</span> g++</div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><p><strong>通过update-alternatives建立文件关联</strong></p><p>如果安装了同一个软件的不同版本，可以使用update-alternatives命令设置默认使用哪个版本，典型的如在Ubuntu 14.04里安装了gcc-4.8和gcc-6, 想让gcc命令自动使用gcc-6版</p><ul><li>首先要让系统知道我们安装了多个版本的gcc</li></ul><pre class="prettyprint" name="code"><code class="hljs python"><ol class="hljs-ln" style="width:673px"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-preprocessor"><span class="hljs-comment"># 命令最后的 20和50是优先级，如果使用auto选择模式，系统将默认使用优先级高的</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc<span class="hljs-number">-</span><span class="hljs-number"><span class="hljs-number">4.8</span></span> <span class="hljs-number"><span class="hljs-number">20</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc<span class="hljs-number">-</span><span class="hljs-number"><span class="hljs-number">6</span></span> <span class="hljs-number"><span class="hljs-number">50</span></span></div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><p><img title src="https://www.linuxidc.com/upload/2016_11/161107142684037.png" alt="首先要让系统知道我们安装了多个版本的gcc"></p><p>自此我们的系统就默认选择了优先级最高的gcc版本, 具体选择依配置而定, 可以使用<code>update-alternatives --config</code>修改配置</p><ul><li>查询系统中安装有哪些版本</li></ul><pre class="prettyprint" name="code"><code class="hljs sql">sudo <span class="hljs-keyword">update</span>-alternatives <span class="hljs-comment">--query gcc</span></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><p><img title src="https://www.linuxidc.com/upload/2016_11/161107142684038.png" alt="查询系统中安装有哪些版本"></p><ul><li>使用交互方式的命令选择默认使用的版本</li></ul><pre class="prettyprint" name="code"><code class="hljs sql">sudo <span class="hljs-keyword">update</span>-alternatives <span class="hljs-comment">--config gcc</span></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><p><img title src="https://www.linuxidc.com/upload/2016_11/161107142684039.png" alt="使用交互方式的命令选择默认使用的版本"></p><p>同理修改g++的方式类似</p><pre class="prettyprint" name="code"><code class="hljs sql"><ol class="hljs-ln" style="width:673px"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo <span class="hljs-keyword">update</span>-alternatives <span class="hljs-comment">--install /usr/bin/g++ g++ /usr/bin/g++-</span><span class="hljs-number"><span class="hljs-comment">4.8</span></span><span class="hljs-comment"> </span><span class="hljs-number"><span class="hljs-comment">20</span></span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">sudo <span class="hljs-keyword">update</span>-alternatives <span class="hljs-comment">--install /usr/bin/g++ g++ /usr/bin/g++-</span><span class="hljs-number"><span class="hljs-comment">6</span></span><span class="hljs-comment"> </span><span class="hljs-number"><span class="hljs-comment">50</span></span></div></div></li></ol></code><div class="hljs-button {2}" data-title="复制" onclick="hljs.copyCode(event)"></div></pre><p><img title src="https://www.linuxidc.com/upload/2016_11/1611071426840310.png" alt="使用update-alternatives设置g++的版本"></p><h2><a name="t8"></a>3 参照</h2><hr><p>其实我们还可以自己编译新的gcc/g++来使用, 但是此过程很繁琐, 且并不是我们今天内容的重点</p><p>Ubuntu 14.04 LTS 版升级到 GCC 4.9.2&nbsp; <a href="https://www.linuxidc.com/Linux/2016-11/136836.htm" rel="noopener" data-token="8cccdb60b203bb11e9ad8d9385455ec5" target="_blank">http://www.linuxidc.com/Linux/2016-11/136836.htm</a></p><p>Ubuntu 14.04 LTS 下升级GCC到 GCC4.9、GCC5 版本&nbsp; <a href="https://www.linuxidc.com/Linux/2016-11/136839.htm" rel="noopener" data-token="943deaa10d7b685ce40895a873ad2a18" target="_blank">http://www.linuxidc.com/Linux/2016-11/136839.htm</a></p><p><a href="https://wiki.ubuntu.com/ToolChain" rel="noopener" data-token="7b5e350437ff88736957769ed71cfa3b" target="_blank">ToolChain - Ubuntu Wiki</a></p><p><a href="https://launchpad.net/~ubuntu-toolchain-r/+archive/ubuntu/test" rel="noopener" data-token="ef8dbc6d50f82010f1360752e41e7bbb" target="_blank">ToolChain test builds</a></p><p>Linux升级GCC 4.8.1清晰简明教程(Ubuntu 12.04 64位版为例)&nbsp; <a href="https://www.linuxidc.com/Linux/2014-04/99583.htm" rel="noopener" data-token="dac1895d198ba6f47143c492e30be344" target="_blank">http://www.linuxidc.com/Linux/2014-04/99583.htm</a>&nbsp;</p><p>Ubuntu 14.04 LST安装GCC 4.1.2&nbsp; <a href="https://www.linuxidc.com/Linux/2016-06/132040.htm" rel="noopener" data-token="ea6e583c275651e4c780e55cf3655262" target="_blank">http://www.linuxidc.com/Linux/2016-06/132040.htm</a></p><p>Ubuntu下Vim+GCC+GDB安装及使用&nbsp;<a href="https://www.linuxidc.com/Linux/2013-01/78159.htm" rel="noopener" data-token="10b90c207fb38148aca981c0f72e9c80" target="_blank">http://www.linuxidc.com/Linux/2013-01/78159.htm</a>&nbsp;</p><p style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:12px;line-height:normal;">Ubuntu下两个GCC版本切换&nbsp;<a href="https://www.linuxidc.com/Linux/2012-10/72284.htm" rel="noopener" data-token="2c31d6486c970aa73cfed63b92797382" target="_blank">http://www.linuxidc.com/Linux/2012-10/72284.htm</a>&nbsp;</p><p style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:12px;line-height:normal;"><a href="http://www.linuxidc.com/topicnews.aspx?tid=14" rel="noopener" title="CentOS" data-token="74425737d7b40d1de278ac25d514a60b" target="_blank">CentOS</a>6.5升级手动安装GCC4.8.2&nbsp; <a href="https://www.linuxidc.com/Linux/2015-01/112595.htm" rel="noopener" data-token="619e8fa1682c9c2264cb64c8eb71c656" target="_blank">http://www.linuxidc.com/Linux/2015-01/112595.htm</a>&nbsp;</p><p style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:12px;line-height:normal;"><span style="color:#ff0000;"><strong>GCC 的详细介绍</strong></span>：<a title="GCC" href="https://www.linuxidc.com/Linux/2012-03/57328.htm" rel="noopener" data-token="a85150bcc500a0b24c8937c03c8ea4e1" target="_blank">请点这里</a></p><p><span style="font-size:12px;"><strong>转载文永久更新链接地址</strong></span>：<a href="https://www.linuxidc.com/Linux/2016-11/136840.htm" rel="noopener" data-token="a257f2ee2e4888f3dab0633d7aca012d" target="_blank">http://www.linuxidc.com/Linux/2016-11/136840.htm</a></p>                                    </div>
+        <p><a href="https://www.cnblogs.com/zhaoheng/p/4412342.html" target="_blank" rel="noopener">https://www.cnblogs.com/zhaoheng/p/4412342.html</a></p>
+<p><a href="https://blog.csdn.net/Ivan_zcy/article/details/88399709" target="_blank" rel="noopener">https://blog.csdn.net/Ivan_zcy/article/details/88399709</a></p>
+
       
     </div>
     <footer>
@@ -705,7 +416,7 @@ inet_ntop:ip,0xff0ca8c0 is 192.168.12.255</p>                                   
           
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">15</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/IPC/">IPC</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多线程/">多线程</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多路I-O复用/">多路I/O复用</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/网络编程/">网络编程</a><span class="category-list-count">6</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/">PWN</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/blockchain/">blockchain</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/data-mining/">data mining</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/machine-learning/">machine learning</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/math/linear-algebra/">linear algebra</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/安全/web/">web</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/恶意代码分析/">恶意代码分析</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Data-Science/">Data Science</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">15</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/IPC/">IPC</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多线程/">多线程</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多路I-O复用/">多路I/O复用</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/网络编程/">网络编程</a><span class="category-list-count">6</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/blockchain/">blockchain</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/machine-learning/">machine learning</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/math/linear-algebra/">linear algebra</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/web/">web</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a><span class="category-list-count">6</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/安全/BIN/">BIN</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/PROTOCOL/">PROTOCOL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/WEB/">WEB</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/恶意代码分析/">恶意代码分析</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/javascript/">javascript</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/solidity/">solidity</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
 </div>
  
 
@@ -750,6 +461,8 @@ inet_ntop:ip,0xff0ca8c0 is 192.168.12.255</p>                                   
         
           <li class='link'><a href='https://blog.csdn.net/houyanhua1'>WEB</a></li>
         
+          <li class='link'><a href='https://learnblockchain.cn/'>深入浅出区块链</a></li>
+        
           <li class='link'><a href=''>(empty)</a></li>
         
           <li class='link'><a href='https://www.sdnlab.com/'>SDNLAB</a></li>
@@ -759,6 +472,8 @@ inet_ntop:ip,0xff0ca8c0 is 192.168.12.255</p>                                   
           <li class='link'><a href='https://mooc.study.163.com/smartSpec/detail/1001319001.htm?from=study'>深度学习微专业</a></li>
         
           <li class='link'><a href=''>(book)</a></li>
+        
+          <li class='link'><a href='https://wizardforcel.gitbooks.io/q-buffer-overflow-tutorial/content/57.html'>Q版缓冲区溢出教程</a></li>
         
           <li class='link'><a href='chrome-extension://cdonnmffkdaoajfknoeeecmchibpmkmg/static/pdf/web/viewer.html?file=http%3A%2F%2Fpdf.ebook23.com%2Febook%2F19_%25E7%25A8%258B%25E5%25BA%258F%25E5%2591%2598%25E4%25B8%25AA%25E4%25BA%25BA%25E4%25BF%25AE%25E5%2585%25BB%2F%255B%25E4%25BB%25A3%25E7%25A0%2581%25E5%25A4%25A7%25E5%2585%25A82%25E4%25B8%25AD%25E6%2596%2587%25E7%2589%2588%2528%25E5%25AE%258C%25E6%2595%25B4%25E6%25B8%2585%25E6%2599%25B0%25E7%2589%2588%2529%255D.pdf'>代码大全</a></li>
         
@@ -770,7 +485,7 @@ inet_ntop:ip,0xff0ca8c0 is 192.168.12.255</p>                                   
           
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">99</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">109</span></li></ul>
   </div>
 
         

@@ -1,0 +1,445 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>=&gt; js 中箭头函数使用总结 | 沉浮之道</title>
+  <meta name="author" content="cendeavor">
+  
+  <meta name="description" content="箭头函数感性认识
+
+箭头函数 是在es6 中添加的一种规范
+
+x =&amp;gt; x * x 相当于 function(x){return x*x}
+
+箭头函数相当于 匿名函数， 简化了函数的定义。 语言的发展都是倾向于简洁 对人类友好的， 减轻工作量的。 就相当于我最钟情的python, 有很多类似之">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="=&gt; js 中箭头函数使用总结">
+  <meta property="og:site_name" content="沉浮之道">
+
+  
+    <meta property="og:image" content>
+  
+
+  <link rel="alternate" href="/atom.xml" title="沉浮之道" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+</html>
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/avatar.png">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">沉浮之道</a></h1>
+		    <h2><a href="/"></a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/node"><i class="fa fa-book"></i>Node.js</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		      <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-20T15:56:56.915Z"><a href="/2019/10/20/0xZ-JS js 中箭头函数使用总结/">2019-10-20</a></time>
+        
+  
+    <h1 class="title">=&gt; js 中箭头函数使用总结</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#箭头函数感性认识"><span class="toc-text">箭头函数感性认识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#箭头函数中this-指向"><span class="toc-text">箭头函数中this 指向</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#下面对比写es5-es6-直接关于箭头函数的对比使用"><span class="toc-text">下面对比写es5 es6 直接关于箭头函数的对比使用</span></a></li></ol>
+    </div>
+
+        <div id="content_views" class="markdown_views">
+                    <!-- flowchart 箭头图标 勿删 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"/>
+                    </svg>
+                                            <h1 id="箭头函数感性认识"><a name="t0"></a>箭头函数感性认识</h1>
+
+<p>箭头函数 是在es6 中添加的一种规范</p>
+
+<p>x =&gt; x * x 相当于 function(x){return x*x}</p>
+
+<p>箭头函数相当于 匿名函数， 简化了函数的定义。 语言的发展都是倾向于简洁 对人类友好的， 减轻工作量的。 就相当于我最钟情的python, 有很多类似之处， 在 关于promise 文章中我会和Python 框架中的tornado 中的异步进行对比的， 很相似。</p>
+
+<p>箭头函数有两种格式， 一种只包含一个表达式，没有{…} 和 return 。 一种包含多条语句， 这个时候{} return  就不能省略</p>
+
+
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">x =&gt; {
+     <span class="hljs-keyword">if</span> (x&gt;<span class="hljs-number">0</span>){
+         <span class="hljs-keyword">return</span> x*x
+     }<span class="hljs-keyword">else</span>{
+        <span class="hljs-keyword">return</span> x
+     }
+}<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>如果有多个参数就要用（）：</p>
+
+
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">// 两个参数返回后面的值
+(x, y) =&gt;x*y + y*y
+//没有参数
+() =&gt; <span class="hljs-number">999</span>
+// 可变参数
+(x, y, ...rest) =&gt;{
+    var i,sum = x+y;
+    <span class="hljs-keyword">for</span> (i=<span class="hljs-number">0</span>;i&lt;rest.length;i++){
+        sum += rest[i];
+    }
+    <span class="hljs-keyword">return</span> sum;
+}<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+
+<h2 id="箭头函数中this-指向"><a name="t1"></a>箭头函数中this 指向</h2>
+
+<p>箭头函数 看起来是匿名函数的简写。但是还是有不一样的地方。 箭头函数中的this是词法作用域， 由上写文确定</p>
+
+
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">var obj = {
+    birth: <span class="hljs-number">1990</span>,
+    getAge: function () {
+        var b = this.birth; // <span class="hljs-number">1990</span>
+        var fn = function () {
+            <span class="hljs-keyword">return</span> new Date().getFullYear() - this.birth; // this指向window或undefined
+        };
+        <span class="hljs-keyword">return</span> fn();
+    }
+};<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>箭头函数修复了this的指向， this 总是指向词法作用域， 也就是外层调用者obj:</p>
+
+
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">var obj = {
+    birth: <span class="hljs-number">1990</span>,
+    getAge: function () {
+        var b = this.birth; // <span class="hljs-number">1990</span>
+        var fn = () =&gt; new Date().getFullYear() - this.birth; // this指向obj对象
+        <span class="hljs-keyword">return</span> fn();
+    }
+};
+obj.getAge(); // <span class="hljs-number">25</span><div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>如果使用箭头函数，以前的那种hack写法 就不需要了： <br>
+var that = this;</p>
+
+<p>由于this 在箭头函数中已经按照词法作用域绑定了， 所以施一公call  或者apply() 调用函数的时候， 无法对this 进行绑定， 即 传入的第一个参数被忽略：</p>
+
+
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">var obj={
+    birth:<span class="hljs-number">2018</span>,
+    getAge:function(year){
+    var b =this.birth;//<span class="hljs-number">2018</span>
+    var fn = (y)=&gt;y-this.birth //this.birth 仍然是<span class="hljs-number">2018</span>
+    <span class="hljs-keyword">return</span> fn.call({birth:<span class="hljs-number">200</span>},year)
+}
+}
+obj.getAge(<span class="hljs-number">2020</span>)<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<h1 id="下面对比写es5-es6-直接关于箭头函数的对比使用"><a name="t2"></a>下面对比写es5 es6 直接关于箭头函数的对比使用</h1>
+
+
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">//es5
+var fn = function(a, b){<span class="hljs-keyword">return</span> a+b}
+//es6   直接被<span class="hljs-keyword">return</span>时候可以省略函数体的括号
+const fn=(a,b) =&gt; a+b;
+
+//es5
+var foo = function(){
+    var a=<span class="hljs-number">20</span>;
+    var b= <span class="hljs-number">30</span>;
+    <span class="hljs-keyword">return</span> a+b;
+}
+//es6
+const foo=()=&gt;{
+    const a= <span class="hljs-number">20</span>;
+    const b=<span class="hljs-number">30</span>;
+    <span class="hljs-keyword">return</span> a+b  
+}
+
+// 注意这里   箭头函数可以替代函数表达式但是不能替代函数声明<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>再回到this 上面来，箭头函数样意义上面来说没有this.  如果使用了this 那么就一定是外层this .不会自动指向window对象。所以也就不能使用call/apply/bind来改变this指向</p>
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">var person = {
+    name: <span class="hljs-string">'tom'</span>,
+    getName: function() {
+        <span class="hljs-keyword">return</span> this.name;
+    }
+}
+
+使用es6 来重构上面的对象
+const person = {
+    name:<span class="hljs-string">'tom'</span>,
+    getName:()=&gt;this.name
+}
+这样编译的结果就是
+var person ={
+    name:<span class="hljs-string">'tom'</span>,
+    getName:function getName(){<span class="hljs-keyword">return</span> undefined.name}
+}<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>在ES6中，会默认采用严格模式，因此this也不会自动指向window对象了，而箭头函数本身并没有this，因此this就只能是undefined，这一点，在使用的时候，一定要慎重慎重再慎重，不然踩了坑你都不知道自己错在哪！这种情况，如果你还想用this，就不要用使用箭头函数的写法。</p>
+
+
+
+<pre class="prettyprint" name="code"><code class="language-python hljs  has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">// 可以稍做改动
+const person = {
+    name: <span class="hljs-string">'tom'</span>,
+    getName: function() {
+        <span class="hljs-keyword">return</span> setTimeout(() =&gt; this.name, <span class="hljs-number">1000</span>);
+    }
+}
+
+// 编译之后变成
+var person = {
+    name: <span class="hljs-string">'tom'</span>,
+    getName: function getName() {
+        var _this = this;  // 使用了我们在es5时常用的方式保存this引用
+
+        <span class="hljs-keyword">return</span> setTimeout(function () {
+            <span class="hljs-keyword">return</span> _this.name;
+        }, <span class="hljs-number">1000</span>);
+    }
+};<div class="hljs-button {2}" data-title="复制"></div></code></pre></div>
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/编程语言/">编程语言</a>, <a href="/categories/编程语言/javascript/">javascript</a>
+  </div>
+
+        
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div></div></div>
+      <aside id="sidebar" class="alignright">
+        
+           <div class="search">
+  <form action="/search/index.html" method="get" accept-charset="utf-8">
+<!--     <input type="search" name="wd"results="0" placeholder="搜索">
+    <input type="hidden" name="wd" value="site:yoursite.com"> -->
+     <input type="text" id="search" class="st-default-search-input" placeholder="搜索" style="height: 100%" />
+  </form>
+</div> 
+        
+          
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Data-Science/">Data Science</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">15</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/IPC/">IPC</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多线程/">多线程</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多路I-O复用/">多路I/O复用</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/网络编程/">网络编程</a><span class="category-list-count">6</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/blockchain/">blockchain</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/machine-learning/">machine learning</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/math/linear-algebra/">linear algebra</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/web/">web</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a><span class="category-list-count">6</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/安全/BIN/">BIN</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/PROTOCOL/">PROTOCOL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/WEB/">WEB</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/恶意代码分析/">恶意代码分析</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/javascript/">javascript</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/solidity/">solidity</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
+</div>
+ 
+
+        
+          <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/qrcode.jpg" alt="欢迎关注个人公众账号" style= "width: 100%">
+    </ul>
+</div>
+        
+          <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">友情链接</h3>
+      <ul class="entry">
+        
+          <li class='link'><a href=''>(tool)</a></li>
+        
+          <li class='link'><a href='https://www.mathsisfun.com/'>MathIsFun</a></li>
+        
+          <li class='link'><a href='https://www.shuxuele.com/index.html'>数学乐</a></li>
+        
+          <li class='link'><a href=''>(blog)</a></li>
+        
+          <li class='link'><a href='https://hpasserby.me/'>一个bin菜鸡</a></li>
+        
+          <li class='link'><a href='https://blog.csdn.net/ljianhui'>初学Linux</a></li>
+        
+          <li class='link'><a href='https://zzqcn.github.io/opensource/dpdk/index.html#'>赵子清(dpdk)</a></li>
+        
+          <li class='link'><a href='https://www.laojiyou.com/books/sdnwlzn/reference.html'>SDN网络指南</a></li>
+        
+          <li class='link'><a href='https://www.cnblogs.com/zengzy'>曾志优(数据结构与算法)</a></li>
+        
+          <li class='link'><a href='https://www.cnblogs.com/bonelee/tag/安全分析/'>安全分析</a></li>
+        
+          <li class='link'><a href='https://blog.csdn.net/houyanhua1'>WEB</a></li>
+        
+          <li class='link'><a href='https://learnblockchain.cn/'>深入浅出区块链</a></li>
+        
+          <li class='link'><a href=''>(empty)</a></li>
+        
+          <li class='link'><a href='https://www.sdnlab.com/'>SDNLAB</a></li>
+        
+          <li class='link'><a href='https://medium.com/'>Medium</a></li>
+        
+          <li class='link'><a href='https://mooc.study.163.com/smartSpec/detail/1001319001.htm?from=study'>深度学习微专业</a></li>
+        
+          <li class='link'><a href=''>(book)</a></li>
+        
+          <li class='link'><a href='https://wizardforcel.gitbooks.io/q-buffer-overflow-tutorial/content/57.html'>Q版缓冲区溢出教程</a></li>
+        
+          <li class='link'><a href='chrome-extension://cdonnmffkdaoajfknoeeecmchibpmkmg/static/pdf/web/viewer.html?file=http%3A%2F%2Fpdf.ebook23.com%2Febook%2F19_%25E7%25A8%258B%25E5%25BA%258F%25E5%2591%2598%25E4%25B8%25AA%25E4%25BA%25BA%25E4%25BF%25AE%25E5%2585%25BB%2F%255B%25E4%25BB%25A3%25E7%25A0%2581%25E5%25A4%25A7%25E5%2585%25A82%25E4%25B8%25AD%25E6%2596%2587%25E7%2589%2588%2528%25E5%25AE%258C%25E6%2595%25B4%25E6%25B8%2585%25E6%2599%25B0%25E7%2589%2588%2529%255D.pdf'>代码大全</a></li>
+        
+      </ul>
+  </div>
+
+
+        
+          
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">109</span></li></ul>
+  </div>
+
+        
+      </aside>
+      <div class="clearfix"></div>
+    </div>
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2019 cendeavor
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+
+  <div>
+    Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a>
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="/js/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 百度统计 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','HcqxzAQHLZzGwtjJSqw3','2.0.0');
+</script>
+</body>
+</html>

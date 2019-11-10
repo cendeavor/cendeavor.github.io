@@ -80,10 +80,48 @@
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-10-10T01:22:38.247Z"><a href="/2019/10/10/0xMP-numpy.cov()和numpy.var()/">2019-10-10</a></time>
+        <time datetime="2019-10-15T02:12:41.422Z"><a href="/2019/10/15/0xZ-Linux C 网络编程：send recv read write/">2019-10-15</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/10/0xMP-numpy.cov()和numpy.var()/">numpy.cov()和numpy.var()的用法</a></h1>
+    <h1 class="title"><a href="/2019/10/15/0xZ-Linux C 网络编程：send recv read write/">recv read send write</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        <p>默认情况下，send recv是阻塞模式的，read write是非阻塞的。所谓阻塞是保证发送方内核缓冲区中的数据发送到接收方，而非阻塞则不能保证，如果内核缓冲区有数据没有被发送完套接字就被关闭，那么内核缓冲区会自动清空，将数据输入到终端（标准输出）</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2019/10/15/0xZ-Linux C 网络编程：send recv read write/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2019-10-12T15:49:19.093Z"><a href="/2019/10/12/0xZ-Linux C 网络编程：字符串IP和二进制IP转换/">2019-10-12</a></time>
+        
+  
+    <h1 class="title"><a href="/2019/10/12/0xZ-Linux C 网络编程：字符串IP和二进制IP转换/">Linux C 网络编程：字符串IP和二进制IP转换</a></h1>
   
 
     </header>
@@ -92,218 +130,175 @@
       
         
     <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-求协方差"><span class="toc-text">1. 求协方差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2由协方差矩阵求其相关的矩阵"><span class="toc-text">2.由协方差矩阵求其相关的矩阵：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-计算矩阵的方差"><span class="toc-text">3. 计算矩阵的方差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-在matlab中的使用"><span class="toc-text">4. 在matlab中的使用</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一不安全的不可重入性inetxxx函数族"><span class="toc-text">一：不安全的（不可重入性）inet_xxx()函数族</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二安全的地址转换函数inetptoninetntop"><span class="toc-text">二.安全的地址转换函数inet_pton(),inet_ntop()</span></a></li></ol>
     </div>
 
-        <div id="content_views" class="markdown_views">
+        <p>转自<br><a href="https://blog.csdn.net/hnlyyk/article/details/47976161?tdsourcetag=s_pcqq_aiomsg" target="_blank" rel="noopener">https://blog.csdn.net/hnlyyk/article/details/47976161?tdsourcetag=s_pcqq_aiomsg</a></p>
+<div id="content_views" class="markdown_views">
                     <!-- flowchart 箭头图标 勿删 -->
                     <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
                         <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"/>
                     </svg>
-                                            <p>在PCA中涉及到了方差var和协方差cov，这里简单总结下。 <br>
-首先：均值，样本方差，样本协方差的公式为</p>
+                                            <h2 id="一不安全的不可重入性inetxxx函数族"><a name="t0"></a>一：不安全的（不可重入性）inet_xxx()函数族</h2>
 
-<p>均值：<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-261-Frame" tabindex="0" style="position: relative;" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mover><mi>X</mi><mo stretchy=&quot;false&quot;>&amp;#x00AF;</mo></mover></mrow><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><munderover><mo>&amp;#x2211;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>N</mi></mrow></munderover><msub><mi>X</mi><mi>i</mi></msub></math>" role="presentation"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-1" style="width: 8.703em; display: inline-block;"><span style="display: inline-block; position: relative; width: 6.953em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.203em, 1006.95em, 2.853em, -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-2"><span class="texatom" id="MathJax-Span-3"><span class="mrow" id="MathJax-Span-4"><span class="munderover" id="MathJax-Span-5"><span style="display: inline-block; position: relative; width: 0.853em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-6" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.252em, 1000.45em, 3.603em, -999.998em); top: -4.248em; left: 0.302em;"><span class="mo" id="MathJax-Span-7" style="font-family: MathJax_Main;">¯</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span></span><span class="mo" id="MathJax-Span-8" style="font-family: MathJax_Main; padding-left: 0.302em;">=</span><span class="mfrac" id="MathJax-Span-9" style="padding-left: 0.302em;"><span style="display: inline-block; position: relative; width: 0.753em; height: 0px; margin-right: 0.102em; margin-left: 0.102em;"><span style="position: absolute; clip: rect(3.402em, 1000.3em, 4.152em, -999.998em); top: -4.397em; left: 50%; margin-left: -0.198em;"><span class="mn" id="MathJax-Span-10" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1000.65em, 4.152em, -999.998em); top: -3.598em; left: 50%; margin-left: -0.297em;"><span class="mi" id="MathJax-Span-11" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(0.853em, 1000.75em, 1.203em, -999.998em); top: -1.248em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 0.753em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.052em;"></span></span></span></span><span class="munderover" id="MathJax-Span-12" style="padding-left: 0.152em;"><span style="display: inline-block; position: relative; width: 2.302em; height: 0px;"><span style="position: absolute; clip: rect(3.103em, 1001em, 4.402em, -999.998em); top: -3.998em; left: 0em;"><span class="mo" id="MathJax-Span-13" style="font-family: MathJax_Size1; vertical-align: 0em;">∑</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1000.7em, 4.152em, -999.998em); top: -4.498em; left: 1.052em;"><span class="texatom" id="MathJax-Span-14"><span class="mrow" id="MathJax-Span-15"><span class="mi" id="MathJax-Span-16" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.402em, 1001.2em, 4.152em, -999.998em); top: -3.698em; left: 1.052em;"><span class="texatom" id="MathJax-Span-17"><span class="mrow" id="MathJax-Span-18"><span class="mi" id="MathJax-Span-19" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span class="mo" id="MathJax-Span-20" style="font-size: 70.7%; font-family: MathJax_Main;">=</span><span class="mn" id="MathJax-Span-21" style="font-size: 70.7%; font-family: MathJax_Main;">1</span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="msubsup" id="MathJax-Span-22" style="padding-left: 0.152em;"><span style="display: inline-block; position: relative; width: 1.153em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-23" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.848em; left: 0.853em;"><span class="mi" id="MathJax-Span-24" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.559em; border-left: 0px solid; width: 0px; height: 1.816em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mrow class="MJX-TeXAtom-ORD"><mover><mi>X</mi><mo stretchy="false">¯</mo></mover></mrow><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><munderover><mo>∑</mo><mrow class="MJX-TeXAtom-ORD"><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class="MJX-TeXAtom-ORD"><mi>N</mi></mrow></munderover><msub><mi>X</mi><mi>i</mi></msub></math></span></span><script id="MathJax-Element-261" type="math/tex">\bar{X}=\frac{1}{N} \sum_{i=1}^{N}X_i</script></p>
-
-<p>方差：<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-262-Frame" tabindex="0" style="position: relative;" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mi>v</mi><mi>a</mi><mi>r</mi><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><munderover><mo>&amp;#x2211;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>N</mi></mrow></munderover><mo stretchy=&quot;false&quot;>(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>&amp;#x2212;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mover><mi>X</mi><mo stretchy=&quot;false&quot;>&amp;#x00AF;</mo></mover></mrow><msup><mo stretchy=&quot;false&quot;>)</mo><mn>2</mn></msup></math>" role="presentation"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-25" style="width: 13.253em; display: inline-block;"><span style="display: inline-block; position: relative; width: 10.603em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.203em, 1010.6em, 2.853em, -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-26"><span class="mi" id="MathJax-Span-27" style="font-family: MathJax_Math-italic;">v</span><span class="mi" id="MathJax-Span-28" style="font-family: MathJax_Math-italic;">a</span><span class="mi" id="MathJax-Span-29" style="font-family: MathJax_Math-italic;">r</span><span class="mo" id="MathJax-Span-30" style="font-family: MathJax_Main; padding-left: 0.302em;">=</span><span class="mfrac" id="MathJax-Span-31" style="padding-left: 0.302em;"><span style="display: inline-block; position: relative; width: 0.753em; height: 0px; margin-right: 0.102em; margin-left: 0.102em;"><span style="position: absolute; clip: rect(3.402em, 1000.3em, 4.152em, -999.998em); top: -4.397em; left: 50%; margin-left: -0.198em;"><span class="mn" id="MathJax-Span-32" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1000.65em, 4.152em, -999.998em); top: -3.598em; left: 50%; margin-left: -0.297em;"><span class="mi" id="MathJax-Span-33" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(0.853em, 1000.75em, 1.203em, -999.998em); top: -1.248em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 0.753em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.052em;"></span></span></span></span><span class="munderover" id="MathJax-Span-34" style="padding-left: 0.152em;"><span style="display: inline-block; position: relative; width: 2.302em; height: 0px;"><span style="position: absolute; clip: rect(3.103em, 1001em, 4.402em, -999.998em); top: -3.998em; left: 0em;"><span class="mo" id="MathJax-Span-35" style="font-family: MathJax_Size1; vertical-align: 0em;">∑</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1000.7em, 4.152em, -999.998em); top: -4.498em; left: 1.052em;"><span class="texatom" id="MathJax-Span-36"><span class="mrow" id="MathJax-Span-37"><span class="mi" id="MathJax-Span-38" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.402em, 1001.2em, 4.152em, -999.998em); top: -3.698em; left: 1.052em;"><span class="texatom" id="MathJax-Span-39"><span class="mrow" id="MathJax-Span-40"><span class="mi" id="MathJax-Span-41" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span class="mo" id="MathJax-Span-42" style="font-size: 70.7%; font-family: MathJax_Main;">=</span><span class="mn" id="MathJax-Span-43" style="font-size: 70.7%; font-family: MathJax_Main;">1</span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-44" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-45"><span style="display: inline-block; position: relative; width: 1.153em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-46" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.848em; left: 0.853em;"><span class="mi" id="MathJax-Span-47" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-48" style="font-family: MathJax_Main; padding-left: 0.202em;">−</span><span class="texatom" id="MathJax-Span-49" style="padding-left: 0.202em;"><span class="mrow" id="MathJax-Span-50"><span class="munderover" id="MathJax-Span-51"><span style="display: inline-block; position: relative; width: 0.853em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-52" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.252em, 1000.45em, 3.603em, -999.998em); top: -4.248em; left: 0.302em;"><span class="mo" id="MathJax-Span-53" style="font-family: MathJax_Main;">¯</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span></span><span class="msubsup" id="MathJax-Span-54"><span style="display: inline-block; position: relative; width: 0.802em; height: 0px;"><span style="position: absolute; clip: rect(3.103em, 1000.3em, 4.402em, -999.998em); top: -3.998em; left: 0em;"><span class="mo" id="MathJax-Span-55" style="font-family: MathJax_Main;">)</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -4.348em; left: 0.403em;"><span class="mn" id="MathJax-Span-56" style="font-size: 70.7%; font-family: MathJax_Main;">2</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.559em; border-left: 0px solid; width: 0px; height: 1.816em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>v</mi><mi>a</mi><mi>r</mi><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><munderover><mo>∑</mo><mrow class="MJX-TeXAtom-ORD"><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class="MJX-TeXAtom-ORD"><mi>N</mi></mrow></munderover><mo stretchy="false">(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>−</mo><mrow class="MJX-TeXAtom-ORD"><mover><mi>X</mi><mo stretchy="false">¯</mo></mover></mrow><msup><mo stretchy="false">)</mo><mn>2</mn></msup></math></span></span><script id="MathJax-Element-262" type="math/tex">var=\frac{1}{N} \sum_{i=1}^{N}(X_i-\bar{X})^2</script></p>
-
-<p>样本方差：<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-263-Frame" tabindex="0" style="position: relative;" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mi>S</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mo>&amp;#x2212;</mo><mn>1</mn></mrow></mfrac><munderover><mo>&amp;#x2211;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>N</mi></mrow></munderover><mo stretchy=&quot;false&quot;>(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>&amp;#x2212;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mover><mi>X</mi><mo stretchy=&quot;false&quot;>&amp;#x00AF;</mo></mover></mrow><msup><mo stretchy=&quot;false&quot;>)</mo><mn>2</mn></msup></math>" role="presentation"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-57" style="width: 13.453em; display: inline-block;"><span style="display: inline-block; position: relative; width: 10.753em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.203em, 1010.75em, 2.902em, -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-58"><span class="mi" id="MathJax-Span-59" style="font-family: MathJax_Math-italic;">S<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span class="mo" id="MathJax-Span-60" style="font-family: MathJax_Main; padding-left: 0.302em;">=</span><span class="mfrac" id="MathJax-Span-61" style="padding-left: 0.302em;"><span style="display: inline-block; position: relative; width: 1.652em; height: 0px; margin-right: 0.102em; margin-left: 0.102em;"><span style="position: absolute; clip: rect(3.402em, 1000.3em, 4.152em, -999.998em); top: -4.397em; left: 50%; margin-left: -0.198em;"><span class="mn" id="MathJax-Span-62" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1001.5em, 4.202em, -999.998em); top: -3.598em; left: 50%; margin-left: -0.747em;"><span class="mrow" id="MathJax-Span-63"><span class="mi" id="MathJax-Span-64" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span class="mo" id="MathJax-Span-65" style="font-size: 70.7%; font-family: MathJax_Main;">−</span><span class="mn" id="MathJax-Span-66" style="font-size: 70.7%; font-family: MathJax_Main;">1</span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(0.853em, 1001.65em, 1.203em, -999.998em); top: -1.248em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 1.652em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.052em;"></span></span></span></span><span class="munderover" id="MathJax-Span-67" style="padding-left: 0.152em;"><span style="display: inline-block; position: relative; width: 2.302em; height: 0px;"><span style="position: absolute; clip: rect(3.103em, 1001em, 4.402em, -999.998em); top: -3.998em; left: 0em;"><span class="mo" id="MathJax-Span-68" style="font-family: MathJax_Size1; vertical-align: 0em;">∑</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1000.7em, 4.152em, -999.998em); top: -4.498em; left: 1.052em;"><span class="texatom" id="MathJax-Span-69"><span class="mrow" id="MathJax-Span-70"><span class="mi" id="MathJax-Span-71" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.402em, 1001.2em, 4.152em, -999.998em); top: -3.698em; left: 1.052em;"><span class="texatom" id="MathJax-Span-72"><span class="mrow" id="MathJax-Span-73"><span class="mi" id="MathJax-Span-74" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span class="mo" id="MathJax-Span-75" style="font-size: 70.7%; font-family: MathJax_Main;">=</span><span class="mn" id="MathJax-Span-76" style="font-size: 70.7%; font-family: MathJax_Main;">1</span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-77" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-78"><span style="display: inline-block; position: relative; width: 1.153em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-79" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.848em; left: 0.853em;"><span class="mi" id="MathJax-Span-80" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-81" style="font-family: MathJax_Main; padding-left: 0.202em;">−</span><span class="texatom" id="MathJax-Span-82" style="padding-left: 0.202em;"><span class="mrow" id="MathJax-Span-83"><span class="munderover" id="MathJax-Span-84"><span style="display: inline-block; position: relative; width: 0.853em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-85" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.252em, 1000.45em, 3.603em, -999.998em); top: -4.248em; left: 0.302em;"><span class="mo" id="MathJax-Span-86" style="font-family: MathJax_Main;">¯</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span></span><span class="msubsup" id="MathJax-Span-87"><span style="display: inline-block; position: relative; width: 0.802em; height: 0px;"><span style="position: absolute; clip: rect(3.103em, 1000.3em, 4.402em, -999.998em); top: -3.998em; left: 0em;"><span class="mo" id="MathJax-Span-88" style="font-family: MathJax_Main;">)</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -4.348em; left: 0.403em;"><span class="mn" id="MathJax-Span-89" style="font-size: 70.7%; font-family: MathJax_Main;">2</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.622em; border-left: 0px solid; width: 0px; height: 1.878em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>S</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></mfrac><munderover><mo>∑</mo><mrow class="MJX-TeXAtom-ORD"><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class="MJX-TeXAtom-ORD"><mi>N</mi></mrow></munderover><mo stretchy="false">(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>−</mo><mrow class="MJX-TeXAtom-ORD"><mover><mi>X</mi><mo stretchy="false">¯</mo></mover></mrow><msup><mo stretchy="false">)</mo><mn>2</mn></msup></math></span></span><script id="MathJax-Element-263" type="math/tex">S=\frac{1}{N-1} \sum_{i=1}^{N}(X_i-\bar{X})^2</script></p>
-
-<p>样本协方差：<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-264-Frame" tabindex="0" style="position: relative;" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mi>c</mi><mi>o</mi><mi>v</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mo>&amp;#x2212;</mo><mn>1</mn></mrow></mfrac><munderover><mo>&amp;#x2211;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mi>N</mi></mrow></munderover><mo stretchy=&quot;false&quot;>(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>&amp;#x2212;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mover><mi>X</mi><mo stretchy=&quot;false&quot;>&amp;#x00AF;</mo></mover></mrow><mo stretchy=&quot;false&quot;>)</mo><mo stretchy=&quot;false&quot;>(</mo><msub><mi>Y</mi><mi>i</mi></msub><mo>&amp;#x2212;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mover><mi>Y</mi><mo stretchy=&quot;false&quot;>&amp;#x00AF;</mo></mover></mrow><mo stretchy=&quot;false&quot;>)</mo></math>" role="presentation"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-90" style="width: 18.402em; display: inline-block;"><span style="display: inline-block; position: relative; width: 14.703em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.203em, 1014.6em, 2.902em, -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-91"><span class="mi" id="MathJax-Span-92" style="font-family: MathJax_Math-italic;">c</span><span class="mi" id="MathJax-Span-93" style="font-family: MathJax_Math-italic;">o</span><span class="mi" id="MathJax-Span-94" style="font-family: MathJax_Math-italic;">v</span><span class="mo" id="MathJax-Span-95" style="font-family: MathJax_Main; padding-left: 0.302em;">=</span><span class="mfrac" id="MathJax-Span-96" style="padding-left: 0.302em;"><span style="display: inline-block; position: relative; width: 1.652em; height: 0px; margin-right: 0.102em; margin-left: 0.102em;"><span style="position: absolute; clip: rect(3.402em, 1000.3em, 4.152em, -999.998em); top: -4.397em; left: 50%; margin-left: -0.198em;"><span class="mn" id="MathJax-Span-97" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1001.5em, 4.202em, -999.998em); top: -3.598em; left: 50%; margin-left: -0.747em;"><span class="mrow" id="MathJax-Span-98"><span class="mi" id="MathJax-Span-99" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span class="mo" id="MathJax-Span-100" style="font-size: 70.7%; font-family: MathJax_Main;">−</span><span class="mn" id="MathJax-Span-101" style="font-size: 70.7%; font-family: MathJax_Main;">1</span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(0.853em, 1001.65em, 1.203em, -999.998em); top: -1.248em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 1.652em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.052em;"></span></span></span></span><span class="munderover" id="MathJax-Span-102" style="padding-left: 0.152em;"><span style="display: inline-block; position: relative; width: 2.302em; height: 0px;"><span style="position: absolute; clip: rect(3.103em, 1001em, 4.402em, -999.998em); top: -3.998em; left: 0em;"><span class="mo" id="MathJax-Span-103" style="font-family: MathJax_Size1; vertical-align: 0em;">∑</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.353em, 1000.7em, 4.152em, -999.998em); top: -4.498em; left: 1.052em;"><span class="texatom" id="MathJax-Span-104"><span class="mrow" id="MathJax-Span-105"><span class="mi" id="MathJax-Span-106" style="font-size: 70.7%; font-family: MathJax_Math-italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.402em, 1001.2em, 4.152em, -999.998em); top: -3.698em; left: 1.052em;"><span class="texatom" id="MathJax-Span-107"><span class="mrow" id="MathJax-Span-108"><span class="mi" id="MathJax-Span-109" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span class="mo" id="MathJax-Span-110" style="font-size: 70.7%; font-family: MathJax_Main;">=</span><span class="mn" id="MathJax-Span-111" style="font-size: 70.7%; font-family: MathJax_Main;">1</span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-112" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-113"><span style="display: inline-block; position: relative; width: 1.153em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-114" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.848em; left: 0.853em;"><span class="mi" id="MathJax-Span-115" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-116" style="font-family: MathJax_Main; padding-left: 0.202em;">−</span><span class="texatom" id="MathJax-Span-117" style="padding-left: 0.202em;"><span class="mrow" id="MathJax-Span-118"><span class="munderover" id="MathJax-Span-119"><span style="display: inline-block; position: relative; width: 0.853em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.85em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-120" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.252em, 1000.45em, 3.603em, -999.998em); top: -4.248em; left: 0.302em;"><span class="mo" id="MathJax-Span-121" style="font-family: MathJax_Main;">¯</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span></span><span class="mo" id="MathJax-Span-122" style="font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-123" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-124"><span style="display: inline-block; position: relative; width: 0.903em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.75em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-125" style="font-family: MathJax_Math-italic;">Y<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.202em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.848em; left: 0.603em;"><span class="mi" id="MathJax-Span-126" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-127" style="font-family: MathJax_Main; padding-left: 0.202em;">−</span><span class="texatom" id="MathJax-Span-128" style="padding-left: 0.202em;"><span class="mrow" id="MathJax-Span-129"><span class="munderover" id="MathJax-Span-130"><span style="display: inline-block; position: relative; width: 0.753em; height: 0px;"><span style="position: absolute; clip: rect(3.152em, 1000.75em, 4.152em, -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-131" style="font-family: MathJax_Math-italic;">Y<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.202em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.252em, 1000.45em, 3.603em, -999.998em); top: -4.248em; left: 0.253em;"><span class="mo" id="MathJax-Span-132" style="font-family: MathJax_Main;">¯</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span></span><span class="mo" id="MathJax-Span-133" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.622em; border-left: 0px solid; width: 0px; height: 1.878em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>c</mi><mi>o</mi><mi>v</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></mfrac><munderover><mo>∑</mo><mrow class="MJX-TeXAtom-ORD"><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mrow class="MJX-TeXAtom-ORD"><mi>N</mi></mrow></munderover><mo stretchy="false">(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>−</mo><mrow class="MJX-TeXAtom-ORD"><mover><mi>X</mi><mo stretchy="false">¯</mo></mover></mrow><mo stretchy="false">)</mo><mo stretchy="false">(</mo><msub><mi>Y</mi><mi>i</mi></msub><mo>−</mo><mrow class="MJX-TeXAtom-ORD"><mover><mi>Y</mi><mo stretchy="false">¯</mo></mover></mrow><mo stretchy="false">)</mo></math></span></span><script id="MathJax-Element-264" type="math/tex">cov=\frac{1}{N-1} \sum_{i=1}^{N}(X_i-\bar{X})(Y_i-\bar{Y})</script></p>
-
-<p>首先我们应该清楚的区分两个概念，即方差和样本方差的无偏估计： <br>
-方差公式中分母上是N；样本方差无偏估计公式中分母上是N-1 （N为样本个数）。</p>
-
-<p>其中样本方差公式中为什么除的n-1而不是n？样本协方差同样除的是n-1而不是n？如果除的是n，那么求的方差就不是随机抽取变量组成样本的方差，而是整个空间的方差。</p>
-
-<h3 id="1-求协方差"><a name="t0"></a>1. 求协方差</h3>
-
-<p>协方差矩阵计算的是不同维度之间的协方差，而不是不同样本之间的。理解协方差矩阵的关键就在于牢记它计算的是不同维度之间的协方差，而不是不同样本之间，拿到一个样本矩阵，我们最先要明确的就是一行是一个样本还是一个维度。</p>
-
-<p>例1.1</p>
-
-<pre class="prettyprint" name="code"><code class="hljs lua has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt;&gt; X=np.array(<span class="hljs-string">[[1 ,5 ,6] ,[4 ,3 ,9 ],[ 4 ,2 ,9],[ 4 ,7 ,2]]</span>)
-&gt;&gt;&gt; np.cov(X)
-array(<span class="hljs-string">[[  7.  ,   4.5    ,       4.   ,   -0.5     ],
-       [  4.5 ,  10.33333333,   11.5  ,  -7.16666667],
-       [  4.  ,  11.5     ,      13.  ,   -8.5      ],
-       [ -0.5 ,  -7.16666667,   -8.5  ,  6.33333333]]</span>)<div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>在numpy中，将x的每一列视作一个独立的变量，因此这里一共有3个4维的变量，因此将会输出一个4*4的协方差矩阵 ,其中对角线元素是每个维度的方差，非对角线上的元素则是不同维度间的协方差。</p>
-
-<p>例1.2 下面是一个协方差实现的另一个简单例子：</p>
-
-<pre class="prettyprint" name="code"><code class="hljs lua has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt;&gt; import numpy as np
-&gt;&gt;&gt; x = np.array(<span class="hljs-string">[[0, 2], [1, 1], [2, 0]]</span>).T 
-&gt;&gt;&gt; x
-array(<span class="hljs-string">[[0, 1, 2],
-       [2, 1, 0]]</span>)
-&gt;&gt;&gt; np.cov(x)  # 两个变量x0和x1，有很大的相关性，但是相反的方向
-array(<span class="hljs-string">[[ 1., -1.],
-       [-1.,  1.]]</span>)
-&gt;&gt;&gt; x = [-<span class="hljs-number">2.1</span>, -<span class="hljs-number">1</span>,  <span class="hljs-number">4.3</span>]
-&gt;&gt;&gt; y = [<span class="hljs-number">3</span>,  <span class="hljs-number">1.1</span>,  <span class="hljs-number">0.12</span>]
-&gt;&gt;&gt; X = np.vstack((x,y))
-&gt;&gt;&gt; X
-array(<span class="hljs-string">[[-2.1 , -1.  ,  4.3 ],
-       [ 3.  ,  1.1 ,  0.12]]</span>)
-&gt;&gt;&gt; np.cov(X)
-array(<span class="hljs-string">[[ 11.71      ,  -4.286     ],
-       [ -4.286     ,   2.14413333]]</span>)
-&gt;&gt;&gt; np.cov(x, y)
-array(<span class="hljs-string">[[ 11.71      ,  -4.286     ],
-       [ -4.286     ,   2.14413333]]</span>)
-&gt;&gt;&gt; np.cov(x)
-array(<span class="hljs-number">11.709999999999999</span>)<div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>1.3  numpy中cov(x)与cover(x,y)的区别</p>
-
-<p>示例：</p>
-
-<pre class="prettyprint" name="code"><code class="hljs lua has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt;&gt; X=np.array(<span class="hljs-string">[[1 ,5 ,6] ,[4 ,3 ,9 ],[ 4 ,2 ,9],[ 4 ,7 ,2]]</span>)
-&gt;&gt;&gt; X
-array(<span class="hljs-string">[[1, 5, 6],
-       [4, 3, 9],
-       [4, 2, 9],
-       [4, 7, 2]]</span>)
-&gt;&gt;&gt; x=X[<span class="hljs-number">0</span>:<span class="hljs-number">2</span>]
-&gt;&gt;&gt; y=X[<span class="hljs-number">2</span>:<span class="hljs-number">4</span>]
-&gt;&gt;&gt; np.cov(X)
-array(<span class="hljs-string">[[  7. ,   4.5   ,       4.  ,    -0.5    ],
-       [  4.5,  10.33333333,  11.5 ,  -7.16666667],
-       [  4. ,  11.5       ,  13.  ,  -8.5       ],
-       [ -0.5,  -7.16666667,  -8.5 ,  6.33333333]]</span>)
-&gt;&gt;&gt; np.cov(x,y)
-array(<span class="hljs-string">[[  7.  ,   4.5     ,    4.  ,   -0.5      ],
-       [  4.5 ,  10.33333333,  11.5 ,  -7.16666667],
-       [  4.  ,  11.5       ,  13.  ,  -8.5       ],
-       [ -0.5 ,  -7.16666667,  -8.5 ,   6.33333333]]</span>)
-&gt;&gt;&gt; <div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>可以看出两者的输出是相同的。因此np.cov(X)其实就是把np.cov(x,y)中两个变量所有的维度纵向拼接在一起作为X参与运算。</p>
-
-<h3 id="2由协方差矩阵求其相关的矩阵"><a name="t1"></a>2.由协方差矩阵求其相关的矩阵：</h3>
-
-<p>假设协方差矩阵sigma</p>
-
-<pre class="prettyprint" name="code"><code class="hljs lua has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">&gt;&gt;&gt; sigma=np.array(<span class="hljs-string">[[4,1,2],[2,3,4],[2,3,5]]</span>)  
-&gt;&gt;&gt; sigma
-array(<span class="hljs-string">[[4, 1, 2],
-       [2, 3, 4],
-       [2, 3, 5]]</span>)
-&gt;&gt;&gt; p=len(sigma)  # 得出协方差的长度 
-&gt;&gt;&gt; p
-<span class="hljs-number">3</span>
-&gt;&gt;&gt; e=np.eye(p) 
-&gt;&gt;&gt; e
-array(<span class="hljs-string">[[ 1.,  0.,  0.],
-       [ 0.,  1.,  0.],
-       [ 0.,  0.,  1.]]</span>)
-&gt;&gt;&gt; variance=e*sigma  # 得出协方差矩阵的对角线元素，即方差矩阵
-&gt;&gt;&gt; variance
-array(<span class="hljs-string">[[ 4.,  0.,  0.],
-       [ 0.,  3.,  0.],
-       [ 0.,  0.,  5.]]</span>)
-&gt;&gt;&gt; v=np.power(variance,<span class="hljs-number">0.5</span>) # 得出标准差矩阵
-&gt;&gt;&gt; v
-array(<span class="hljs-string">[[ 2.        ,  0.        ,  0.        ],
-       [ 0.        ,  1.73205081,  0.        ],
-       [ 0.        ,  0.        ,  2.23606798]]</span>)
-&gt;&gt;&gt; I=np.linalg.inv(v)  # 得出标准差的逆矩阵 
-&gt;&gt;&gt; I
-array(<span class="hljs-string">[[ 0.5       ,  0.        ,  0.        ],
-       [ 0.        ,  0.57735027,  0.        ],
-       [ 0.        ,  0.        ,  0.4472136 ]]</span>)
-&gt;&gt;&gt; cov=I.dot(sigma).dot(I) # 得出相关系数矩阵
-&gt;&gt;&gt; cov
-array(<span class="hljs-string">[[ 1.        ,  0.28867513,  0.4472136 ],
-       [ 0.57735027,  1.        ,  1.03279556],
-       [ 0.4472136 ,  0.77459667,  1.        ]]</span>)
-&gt;&gt;&gt; <div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>其中对角线元素是每个维度的方差，非对角线上的元素则是不同维度间的协方差</p>
-
-<h3 id="3-计算矩阵的方差"><a name="t2"></a>3. 计算矩阵的方差</h3>
-
-<p>在数学中，每一维度指的是列，例如：[1,2,3]维度是三维的，但是在array中，每一维度指的是一个array,也就是一个样本。 <br>
-计算方差的公式为：</p>
-
-<pre class="prettyprint" name="code"><code class="hljs python has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"><span class="hljs-prompt">&gt;&gt;&gt; </span>a=np.array([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">7</span>])
-<span class="hljs-prompt">&gt;&gt;&gt; </span>a
-array([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">7</span>])
-<span class="hljs-prompt">&gt;&gt;&gt; </span>a.var()
-<span class="hljs-number">6.8888888888888884</span>
-<span class="hljs-prompt">&gt;&gt;&gt; </span><div class="hljs-button {2}" data-title="复制"></div></code></pre>
-
-<p>这里计算的方差不是如方差公式<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-286-Frame" tabindex="0" style="position: relative;" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mi>s</mi></math>" role="presentation"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-134" style="width: 0.603em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.453em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.702em, 1000.4em, 2.452em, -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-135"><span class="mi" id="MathJax-Span-136" style="font-family: MathJax_Math-italic;">s</span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.059em; border-left: 0px solid; width: 0px; height: 0.691em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>s</mi></math></span></span><script id="MathJax-Element-286" type="math/tex">s</script>那样除以N-1,在numpy里是上述的var。</p>
+<p>由于计算机理解的IP都是以二进制形式保存的，那么在网络程序设计中经常会需要字符串IP和二进制IP的转换，linux系统有一组要用于网络地址转换的函数，如下：</p>
 
 
 
-<h3 id="4-在matlab中的使用"><a name="t3"></a>4. 在matlab中的使用</h3>
+<pre class="prettyprint" name="code"><code class="hljs cs has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">       <span class="hljs-preprocessor">#include &lt;sys/socket.h&gt;</span>
+       <span class="hljs-preprocessor">#include &lt;netinet/in.h&gt;</span>
+       <span class="hljs-preprocessor">#include &lt;arpa/inet.h&gt;</span>
 
-<p><strong>4.1 matlab 统计基本函数 var方差</strong> <br>
-参考:(<a target="_blank" href="http://blog.csdn.net/tong_huijiao/article/details/54018019" rel="nofollow" data-token="7efc24df17e851fb2905882fe875f8d8">http://blog.csdn.net/tong_huijiao/article/details/54018019</a>）</p>
+       <span class="hljs-keyword">int</span> inet_aton(<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> *cp, <span class="hljs-keyword">struct</span> in_addr *inp);
+       <span class="hljs-comment">//将点分4段式的IP地址转换为结构in_addr值</span>
+       in_addr_t inet_addr(<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> *cp);
+       <span class="hljs-comment">//将字符串转换为结构in_addr值</span>
+       in_addr_t inet_network(<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> *cp); 
+       <span class="hljs-comment">//将字符串地址的网络部分转换为结构in_addr值</span>
+       <span class="hljs-keyword">char</span> *inet_ntoa(<span class="hljs-keyword">struct</span> in_addr <span class="hljs-keyword">in</span>); 
+       <span class="hljs-comment">//将结构in_addr转为字符串</span>
+       <span class="hljs-keyword">struct</span> in_addr inet_makeaddr(<span class="hljs-keyword">int</span> net, <span class="hljs-keyword">int</span> host); 
+       <span class="hljs-comment">//将网络地址和主机地址合成为IP地址，返回值是in_addr值</span>
+       in_addr_t inet_lnaof(<span class="hljs-keyword">struct</span> in_addr <span class="hljs-keyword">in</span>); 
+       <span class="hljs-comment">//获得地址的主机部分</span>
+       in_addr_t inet_netof(<span class="hljs-keyword">struct</span> in_addr <span class="hljs-keyword">in</span>); 
+       <span class="hljs-comment">//获得地址的网络部分</span><div class="hljs-button {2}" data-title="复制"></div></code></pre>
 
-<p>函数名称： var  <br>
-函数功能：求解方差  <br>
-函数用法：</p>
+<p>以上部分函数存在缺陷，例如： <br>
+inet_ntoa函数返回值是一个指向字符串的指针，此内存会在每次调用inet_nota函数的时候被覆盖掉，如果不及时拿走数据就会出现不可预料的错误，因此函数是不安全的，存在某种隐患； <br>
+inet_addr,inet_network函数的返回值是-1时表示错误，占用了地址255.255.255.255的值，存在缺陷，埋下了隐患。 <br>
+下面用一段代码介绍使用方法和隐患的部分：</p>
 
-<ul>
-<li>var（X) 【与var(X,0)相同 】</li>
-<li>var(X,W) </li>
-<li>var(X,W,dim) </li>
-</ul>
 
-<p>注：var(X,W) </p>
 
-<ul>
-<li>W可以取0或1：取0求样本方差的无偏估计值（除以N-1），对应取1求得的是方差（除以N）</li>
-<li>W也可以是向量，但必须与X中的第一个维度数相同，即length(W)= size(X,1) </li>
-</ul>
+<pre class="prettyprint" name="code"><code class="hljs perl has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"><span class="hljs-comment">#include &lt;sys/socket.h&gt;</span>
+<span class="hljs-comment">#include &lt;netinet/in.h&gt;</span>
+<span class="hljs-comment">#include &lt;arpa/inet.h&gt;</span>
+<span class="hljs-comment">#include &lt;stdio.h&gt;</span>
+<span class="hljs-comment">#include &lt;string.h&gt;</span>
 
-<p>var(X ,0 ,dim) ：除以N-1 ；dim =1 对每列操作 dim = 2 对每行操作  <br>
-var(X ,1 ,dim) :   除以N    ；dim =1 对每列操作 dim = 2 对每行操作 <br>
-var(X,W,dim)  : 关于W取向量时，把Ｗ看做Ｘ中观察值发生的次数（或者说概率也行）</p>
+<span class="hljs-keyword">int</span> main(<span class="hljs-keyword">int</span> argc, char <span class="hljs-variable">*argv</span>[])
+{
+    struct in_addr ip,<span class="hljs-keyword">local</span>,network;
+    char addr1[]=<span class="hljs-string">"192.168.1.1"</span>;     <span class="hljs-regexp">/* 网络地址字符串 */</span>
+    char addr2[]=<span class="hljs-string">"255.255.255.255"</span>;
+    char addr3[]=<span class="hljs-string">"192.16.1"</span>;
+    char addr[<span class="hljs-number">16</span>];
+    char <span class="hljs-variable">*str</span>=NULL,<span class="hljs-variable">*str2</span>=NULL;
 
-<p><strong>1.对于X是向量时：把向量中每个元素看做一个样本</strong>  <br>
-var(X) 或者 var（x,0)函数输出这个向量中元素的样本方差的无偏估计值,var(x,1)输出的是样本方差 。</p>
 
-<p><strong>2. 对于X是矩阵时</strong>  <br>
-把每行看做一个观察值，每列看做一个变量，函数输出一个行向量，每个元素计算的是该列的方差</p>
+    <span class="hljs-keyword">int</span> err = <span class="hljs-number">0</span>;
 
-<p><strong>3. 对于var(X ,0 ,dim) 或者 var(X ,1 ,dim)</strong>  <br>
-   前面已说 0 对应 除以N-1； 1对应除以N <br>
-dim 指维度信息，默认为1，dim =1 就指对每列操作； dim =2 就指对每行操作。</p>
+    <span class="hljs-regexp">/* 测试函数inet_aton */</span> 
+    err = inet_aton(addr1, &amp;ip);
+    <span class="hljs-keyword">if</span>(err){
+        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_aton:string <span class="hljs-variable">%s</span> value is:0x<span class="hljs-variable">%x</span>\n"</span>,addr1, ip.s_addr); 
+    }<span class="hljs-keyword">else</span>{
+        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_aton:string <span class="hljs-variable">%s</span>  error\n"</span>,addr1);   
+    }
 
-<p><strong>4 . 对于 var(X,W)、var(X,W,dim) 中W为向量的情况：</strong>  <br>
-把Ｗ看做Ｘ中对应观察值发生的次数（或者说概率也行）处理</p>
+    /* inet_addr，先测试<span class="hljs-number">192.168</span>.<span class="hljs-number">1.1</span>，在测试<span class="hljs-number">255.255</span>.<span class="hljs-number">255.255</span> <span class="hljs-variable">*/</span>   
+    ip.s_addr = inet_addr(addr1);
+    <span class="hljs-keyword">if</span>(err != -<span class="hljs-number">1</span>){
+        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_addr:string <span class="hljs-variable">%s</span> value is:0x<span class="hljs-variable">%x</span>\n"</span>,addr1, ip.s_addr); 
+    }<span class="hljs-keyword">else</span>{
+        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_addr:string <span class="hljs-variable">%s</span>  error\n"</span>,addr1);
+    };
+    ip.s_addr = inet_addr(addr2);
+    <span class="hljs-keyword">if</span>(ip.s_addr != -<span class="hljs-number">1</span>){
+        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_addr:string <span class="hljs-variable">%s</span> value is:0x<span class="hljs-variable">%x</span>\n"</span>,addr2, ip.s_addr); 
+    }<span class="hljs-keyword">else</span>{
+        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_addr:string <span class="hljs-variable">%s</span>  error\n"</span>,addr2);
+    };
 
-<p><strong>4.2  MATLAB中cov函数的用法</strong> <br>
-参考:(<a target="_blank" href="http://blog.sina.com.cn/s/blog_9e67285801010twv.html" rel="nofollow" data-token="77990ac6895be06f58f29ff5d6bf9c64">http://blog.sina.com.cn/s/blog_9e67285801010twv.html</a>) <br>
-函数名称：cov <br>
-函数功能：求协方差矩阵 <br>
-函数用法：</p>
+    <span class="hljs-regexp">/* inet_ntoa，先测试192.168.1.1，在测试255.255.255.255
+    *   证明函数的不可重入性
+     */</span>
+    ip.s_addr = <span class="hljs-number">192</span>&lt;&lt;<span class="hljs-number">24</span>|<span class="hljs-number">168</span>&lt;&lt;<span class="hljs-number">16</span>|<span class="hljs-number">1</span>&lt;&lt;<span class="hljs-number">8</span>|<span class="hljs-number">1</span>;
+    str = inet_ntoa(ip);
+    ip.s_addr = <span class="hljs-number">255</span>&lt;&lt;<span class="hljs-number">24</span>|<span class="hljs-number">255</span>&lt;&lt;<span class="hljs-number">16</span>|<span class="hljs-number">255</span>&lt;&lt;<span class="hljs-number">8</span>|<span class="hljs-number">255</span>;
+    str2 = inet_ntoa(ip);   
+    <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_ntoa:ip:0x<span class="hljs-variable">%x</span> string1 <span class="hljs-variable">%s</span>,pre is:<span class="hljs-variable">%s</span> \n"</span>,ip.s_addr,str2,str);
 
-<ul>
-<li>cov(X)  ：cov(X,0) = cov(X)</li>
-<li>cov(X,Y) ：X,Y必须是各维数都相同的矩阵</li>
-<li>cov(X,1) ：除以N而不是N-1   </li>
-<li>cov(X,Y,1) ： 除以N而不是N-1 </li>
-</ul>
+    <span class="hljs-regexp">/* 测试函数inet_addr */</span> 
+    ip.s_addr = inet_addr(addr3);
+    <span class="hljs-keyword">if</span>(err != -<span class="hljs-number">1</span>){
+        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_addr:string <span class="hljs-variable">%s</span> value is:0x<span class="hljs-variable">%x</span>\n"</span>,addr3, ip.s_addr); 
+    }<span class="hljs-keyword">else</span>{
+        <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_addr:string <span class="hljs-variable">%s</span>  error\n"</span>,addr3);
+    };
+    str = inet_ntoa(ip);    
+    <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_ntoa:string <span class="hljs-variable">%s</span> ip:0x<span class="hljs-variable">%x</span> \n"</span>,str,ip.s_addr);
 
-<p><strong>1.如果X是向量</strong> <br>
-cov(X)输出的是这个向量的方差</p>
+    <span class="hljs-regexp">/* 测试函数inet_lnaof，获得本机地址 */</span> 
+    inet_aton(addr1, &amp;ip);
+    <span class="hljs-keyword">local</span>.s_addr = htonl(ip.s_addr);
+    <span class="hljs-keyword">local</span>.s_addr = inet_lnaof(ip);
+    str = inet_ntoa(<span class="hljs-keyword">local</span>); 
+    <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_lnaof:string <span class="hljs-variable">%s</span> ip:0x<span class="hljs-variable">%x</span> \n"</span>,str,<span class="hljs-keyword">local</span>.s_addr);
 
-<p><strong>2. X是一个矩阵来</strong> <br>
-matlab把每行看做一个观察值，把每列当做一个变量.也就是说对于一个4*3的矩阵求协方差矩阵，matlab会认为存在三个变量，即会求出一个3*3的协方差矩阵。其中，对角线元素为对应变量的方差无偏估计值，其他位置为对应变量间的协方差无偏估计值（即除的是N-1）</p>
+    <span class="hljs-regexp">/* 测试函数inet_netof，获得本机地址 */</span>
+    network.s_addr = inet_netof(ip);
+    <span class="hljs-keyword">printf</span>(<span class="hljs-string">"inet_netof:value:0x<span class="hljs-variable">%x</span> \n"</span>,network.s_addr);
 
-<p><strong>3.对于cov(X,Y)</strong> <br>
-X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看做一个变量的样本，Y中所有元素看做另外一个变量的样本,把矩阵中每个对应位置看做一个联合观察值,函数实现的是求出两个变量的协方差矩阵。</p>
 
-<p><strong>4. cov(X,1)  和  cov(X,Y,1)</strong>  <br>
- 与之前的求解过程一致。不同的是，其求出的是协方差，而不是样本的协方差无偏估计值，即其除以的是N 而不是N-1。</p>
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;   
+}
+<div class="hljs-button {2}" data-title="复制"></div></code></pre>
 
-<p>先到这里。。。</p>                                    </div>
+<p>运行结果： <br>
+<img src="https://img-blog.csdn.net/20150825135908122" alt="这里写图片描述" title></p>
+
+<hr>
+
+
+
+<h2 id="二安全的地址转换函数inetptoninetntop"><a name="t1"></a><strong>二.安全的地址转换函数inet_pton(),inet_ntop()</strong></h2>
+
+<p>函数inet_pton(),inet_ntop()都是可以重入的，同时支持多种地址类型，包含IPV4和IPV6。 <br>
+函数介绍： <br>
+<img src="https://img-blog.csdn.net/20150825140034515" alt="这里写图片描述" title> <br>
+<img src="https://img-blog.csdn.net/20150825140055493" alt="这里写图片描述" title> <br>
+下面用一段代码介绍使用方法：</p>
+
+
+
+<pre class="prettyprint" name="code"><code class="hljs cpp has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"><span class="hljs-preprocessor">#include &lt;sys/types.h&gt;</span>
+<span class="hljs-preprocessor">#include &lt;sys/socket.h&gt;</span>
+<span class="hljs-preprocessor">#include &lt;arpa/inet.h&gt;</span>
+<span class="hljs-preprocessor">#include &lt;stdio.h&gt;</span>
+<span class="hljs-preprocessor">#include &lt;string.h&gt;</span>
+
+<span class="hljs-preprocessor">#define ADDRLEN 16</span>
+<span class="hljs-keyword">int</span> main(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> *argv[])
+{
+    <span class="hljs-keyword">struct</span> in_addr ip;
+    <span class="hljs-keyword">char</span> IPSTR[]=<span class="hljs-string">"192.168.1.1"</span>;     <span class="hljs-comment">/* 网络地址字符串 */</span>
+    <span class="hljs-keyword">char</span> addr[ADDRLEN];             <span class="hljs-comment">/* 保存转换后的字符串IP地址，16个字节大小 */</span>
+    <span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span>*str=NULL;    
+    <span class="hljs-keyword">int</span> err = <span class="hljs-number">0</span>;                    <span class="hljs-comment">/* 返回值 */</span>
+
+    <span class="hljs-comment">/* 测试函数inet_pton转换192.168.1.1为二进制形式 */</span>  
+    err = inet_pton(AF_INET, IPSTR, &amp;ip);   <span class="hljs-comment">/* 将字符串转换为二进制 */</span>
+    <span class="hljs-keyword">if</span>(err &gt; <span class="hljs-number">0</span>){
+        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"inet_pton:ip,%s value is:0x%x\n"</span>,IPSTR,ip.s_addr);
+    }
+
+    <span class="hljs-comment">/* 测试函数inet_ntop转换192.168.1.1为字符串 */</span>
+    ip.s_addr = htonl(<span class="hljs-number">192</span>&lt;&lt;<span class="hljs-number">24</span>|<span class="hljs-number">168</span>&lt;&lt;<span class="hljs-number">16</span>|<span class="hljs-number">12</span>&lt;&lt;<span class="hljs-number">8</span>|<span class="hljs-number">255</span>);<span class="hljs-comment">/*192.168.12.255*/</span>
+    <span class="hljs-comment">/*将二进制网络字节序192.168.12.255转换为字符串*/</span>
+    str = (<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span>*)inet_ntop(AF_INET, (<span class="hljs-keyword">void</span>*)&amp;ip, (<span class="hljs-keyword">char</span>*)&amp;addr[<span class="hljs-number">0</span>], ADDRLEN);
+    <span class="hljs-keyword">if</span>(str){
+        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"inet_ntop:ip,0x%x is %s\n"</span>,ip.s_addr,str);  
+    }
+
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;   
+}
+<div class="hljs-button {2}" data-title="复制"></div></code></pre>
+
+<p>运行结果： <br>
+inet_pton:ip,192.168.1.1 value is:0x101a8c0 <br>
+inet_ntop:ip,0xff0ca8c0 is 192.168.12.255</p>                                    </div>
       
     </div>
     <footer>
@@ -327,10 +322,10 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-10-10T00:42:45.027Z"><a href="/2019/10/10/0xM-PCA数据降维/">2019-10-10</a></time>
+        <time datetime="2019-10-12T15:42:08.324Z"><a href="/2019/10/12/0xZ-markdown 锚点/">2019-10-12</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/10/0xM-PCA数据降维/">PCA数据降维</a></h1>
+    <h1 class="title"><a href="/2019/10/12/0xZ-markdown 锚点/">Markdown目录树、锚（anchor）和页内跳转</a></h1>
   
 
     </header>
@@ -339,16 +334,87 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
       
         
     <div id="toc">
-        
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#markdown目录树"><span class="toc-text">Markdown目录树</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#页内跳转链接"><span class="toc-text">页内跳转链接</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义锚"><span class="toc-text">自定义锚</span></a></li></ol>
     </div>
 
-        <blockquote>
-<p>数据基础：<br><a href="https://cendeavor.github.io/2019/10/10/0xP-Linear_Algebra%20特征值特征向量/" target="_blank" rel="noopener">特征值和特征向量</a><br><a href="https://cendeavor.github.io/2019/10/10/0xP-Linear_Algebra%20%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5/" target="_blank" rel="noopener">协方差矩阵</a></p>
+        <div id="content_views" class="markdown_views prism-atom-one-dark">
+                    <!-- flowchart 箭头图标 勿删 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"/>
+                    </svg>
+                                            <p></p><div class="toc">
+<ul>
+<li><a href="#前言" rel="nofollow" target="_self" data-token="80de3393992ef4c950c5d7111f20953d">前言</a></li>
+<li><a href="#markdown目录树" rel="nofollow" target="_self" data-token="a496cb34f90349c951b568093bd4bf5c">Markdown目录树</a></li>
+<li><a href="#页内跳转链接" rel="nofollow" target="_self" data-token="f95eb47a690445dfc2f215e667f65e4d">页内跳转链接</a></li>
+<li><a href="#自定义锚" rel="nofollow" target="_self" data-token="9550e1b21caf55d20979a620f1fad899">自定义锚</a></li>
+</ul>
+</div>
+<p></p>
+
+
+
+<h1 id="前言"><a name="t0"></a>前言</h1>
+
+<p>在使用Markdown写文档时，如果文档内容很多，我们很可能需要给文档生成目录树和使用页内跳转。本文提供了实现这些功能的方法，并且已经在有道云笔记中测试通过。</p>
+
+
+
+<h1 id="markdown目录树"><a name="t1"></a>Markdown目录树</h1>
+
+<p>想要给文档生成目录树，只需要在文档中增加<code>[TOC]</code>，目录树就会根据文档中的h1~h6标题自动生成了。</p>
+
+<blockquote>
+  <p>注：<code>[TOC]</code>需要独占一行才能生效。比如： <br data-filtered="filtered">
+  …… <br data-filtered="filtered">
+  <code>[TOC]</code> <br data-filtered="filtered">
+  ……</p>
 </blockquote>
-<div class="RichContent-inner"><span class="RichText ztext CopyrightRichText-richText" itemprop="text"><p>机器学习中的分类问题，给出178个葡萄酒样本，每个样本含有13个参数，比如酒精度、酸度、镁含量等，这些样本属于3个不同种类的葡萄酒。任务是提取3种葡萄酒的特征，以便下一次给出一个新的葡萄酒样本的时候，能根据已有数据判断出新样本是哪一种葡萄酒。<br>问题详细描述：<a href="https://link.zhihu.com/?target=http%3A//archive.ics.uci.edu/ml/datasets/Wine" class=" wrap external" target="_blank" rel="nofollow noreferrer" data-za-detail-view-id="1043">UCI Machine Learning Repository: Wine Data Set</a><br>训练样本数据：<a href="https://link.zhihu.com/?target=http%3A//archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data" class=" external" target="_blank" rel="nofollow noreferrer" data-za-detail-view-id="1043"><span class="invisible">http://</span><span class="visible">archive.ics.uci.edu/ml/</span><span class="invisible">machine-learning-databases/wine/wine.data</span><span class="ellipsis"></span></a></p><p><b>数据降维</b></p><p>原数据有13维，但这之中含有冗余，减少数据量最直接的方法就是降维。<br>做法：把数据集赋给一个178行13列的矩阵R，减掉均值并归一化，它的协方差矩阵<img src="https://www.zhihu.com/equation?tex=C%3DR%5E%7BT%7DR" alt="[公式]" eeimg="1" data-formula="C=R^{T}R">，C是13行13列的矩阵，对C进行特征分解，对角化<img src="https://www.zhihu.com/equation?tex=C%3DUDU%5E%7BT%7D+" alt="[公式]" eeimg="1" data-formula="C=UDU^{T} ">，其中U是特征向量组成的矩阵，D是特征值组成的对角矩阵，并按由大到小排列。然后，另<img src="https://www.zhihu.com/equation?tex=R%27+%3DRU" alt="[公式]" eeimg="1" data-formula="R' =RU">，就实现了数据集在特征向量这组正交基上的投影。嗯，重点来了，R’中的数据列是按照对应特征值的大小排列的，后面的列对应小特征值，去掉以后对整个数据集的影响比较小。比如，现在我们直接去掉后面的7列，只保留前6列，就完成了降维。这个降维方法叫PCA（Principal Component Analysis）。<br>下面看结果：<br></p><figure><noscript><img src="https://pic4.zhimg.com/50/1c59933649aa655b14d648300fd2c559_hd.jpg" data-rawwidth="562" data-rawheight="413" class="origin_image zh-lightbox-thumb" width="562" data-original="https://pic4.zhimg.com/1c59933649aa655b14d648300fd2c559_r.jpg"></noscript><img src="https://pic4.zhimg.com/80/1c59933649aa655b14d648300fd2c559_hd.jpg" data-rawwidth="562" data-rawheight="413" class="origin_image zh-lightbox-thumb lazy" width="562" data-original="https://pic4.zhimg.com/1c59933649aa655b14d648300fd2c559_r.jpg" data-actualsrc="https://pic4.zhimg.com/50/1c59933649aa655b14d648300fd2c559_hd.jpg" data-lazy-status="ok"></figure>这是不降维时候的分类错误率。<figure><noscript><img src="https://pic4.zhimg.com/50/30b87d38961b880fca2fea790bf5f515_hd.jpg" data-rawwidth="552" data-rawheight="408" class="origin_image zh-lightbox-thumb" width="552" data-original="https://pic4.zhimg.com/30b87d38961b880fca2fea790bf5f515_r.jpg"></noscript><img src="https://pic4.zhimg.com/80/30b87d38961b880fca2fea790bf5f515_hd.jpg" data-rawwidth="552" data-rawheight="408" class="origin_image zh-lightbox-thumb lazy" width="552" data-original="https://pic4.zhimg.com/30b87d38961b880fca2fea790bf5f515_r.jpg" data-actualsrc="https://pic4.zhimg.com/50/30b87d38961b880fca2fea790bf5f515_hd.jpg" data-lazy-status="ok"></figure><br>这是降维以后的分类错误率。<p></p>结论：降维以后分类错误率与不降维的方法相差无几，但需要处理的数据量减小了一半（不降维需要处理13维，降维后只需要处理6维）。</span></div>
 
 
 
+<h1 id="页内跳转链接"><a name="t2"></a>页内跳转链接</h1>
+
+<p>Markdown会自动给每一个h1~h6标题生成一个锚，其id就是标题内容。目录树中的每一项都是一个跳转链接，点击后就会跳转到其对应的锚点（即标题所在位置）。你可以点击本文档开始处的目录树尝试一下。</p>
+
+<p>如果需要在目录树之外还要增加跳转到某个标题的链接，则有两种办法可以做到： <br data-filtered="filtered">
+1. 使用Markdown的语法来增加跳转链接：“[名称](#id)”。 <br data-filtered="filtered">
+2. 使用HTML语法来增加跳转链接：“&lt;a href=”#id”&gt;名称
+
+</p><p>其中的“名称”可以随便填写，“id”需要填写跳转到的标题的内容。例如如果想要增加一个到本文档“前言”标题的跳转链接，则需要这么写：</p>
+
+<p>[使用Markdown语法增加的跳转到“前言”的链接](#前言) <br data-filtered="filtered">
+效果： <br data-filtered="filtered">
+<a href="#前言" rel="nofollow" target="_self" data-token="80de3393992ef4c950c5d7111f20953d">使用Markdown语法增加的跳转到“前言”的链接</a></p>
+
+<p>或者这么写：</p>
+
+<p>&lt;a href=”#前言”&gt;使用HTML语法增加的跳转到“前言”的链接
+效果： <br data-filtered="filtered">
+<a href="#前言" rel="nofollow" target="_self" data-token="80de3393992ef4c950c5d7111f20953d">使用HTML语法增加的跳转到“前言”的链接</a></p>
+
+
+
+<h1 id="自定义锚"><a name="t3"></a>自定义锚</h1>
+
+<p>假设我们想跳转到文档中的一个不是标题的位置（比如一张图表），则需要在该位置自定义一个锚。</p>
+
+<p>我们使用HTML语法来定义一个锚。可选的HTML标签很多，比如&lt;span&gt;、&lt;a&gt;等等。本文使用&lt;span&gt;示例。</p>
+
+<p>假设文档中有一个作息时间表，在文档的其他地方需要增加跳转到此表位置的链接，那么我们可以在此表的附近增加一行：</p>
+
+<p>&lt;span id=”表1”&gt;名称
+
+</p><blockquote>
+  <p>注：id为必填项；“名称”可以随便填写，也可以不填。另外，可以给span增加其他属性，比如颜色等等。</p>
+</blockquote>
+
+<p></p><p>效果： <br data-filtered="filtered">
+<span id="表1">作息时间表</span></p>
+
+<p>然后可以在文档其他位置增加一个跳转到它的链接了：</p>
+
+<p><a href="#表1" rel="nofollow" target="_self" data-token="152ed28c37a6b77c1c84dd8005f413bc">点我跳转到作息时间表</a></p>                                    </div>
       
     </div>
     <footer>
@@ -372,29 +438,24 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-10-10T00:34:18.885Z"><a href="/2019/10/10/0xMATH-Linear_Algebra 协方差矩阵/">2019-10-10</a></time>
+        <time datetime="2019-10-12T14:32:59.923Z"><a href="/2019/10/12/0xZ-Linux C 网络编程：地址转换函数总结/">2019-10-12</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/10/0xMATH-Linear_Algebra 协方差矩阵/">协方差矩阵</a></h1>
+    <h1 class="title"><a href="/2019/10/12/0xZ-Linux C 网络编程：地址转换函数总结/">Linux C 网络编程：地址转换函数总结</a></h1>
   
 
     </header>
 
     <div class="entry">
       
-        <p>协方差矩阵计算的是不同维度之间的协方差，而不是不同样本之间的。这是理解协方差矩阵的关键。</p>
-<p>拿到一个样本矩阵，首先要明确的是，<code>一行是一个样本还是一个维度</code></p>
-<p>eg. </p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>X=np.array([[<span class="number">1</span> ,<span class="number">5</span> ,<span class="number">6</span>] ,[<span class="number">4</span> ,<span class="number">3</span> ,<span class="number">9</span> ],[ <span class="number">4</span> ,<span class="number">2</span> ,<span class="number">9</span>],[ <span class="number">4</span> ,<span class="number">7</span> ,<span class="number">2</span>]])</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>np.cov(X)</span><br><span class="line">array([[  <span class="number">7.</span>  ,   <span class="number">4.5</span>    ,       <span class="number">4.</span>   ,   <span class="number">-0.5</span>     ],</span><br><span class="line">       [  <span class="number">4.5</span> ,  <span class="number">10.33333333</span>,   <span class="number">11.5</span>  ,  <span class="number">-7.16666667</span>],</span><br><span class="line">       [  <span class="number">4.</span>  ,  <span class="number">11.5</span>     ,      <span class="number">13.</span>  ,   <span class="number">-8.5</span>      ],</span><br><span class="line">       [ <span class="number">-0.5</span> ,  <span class="number">-7.16666667</span>,   <span class="number">-8.5</span>  ,  <span class="number">6.33333333</span>]])</span><br></pre></td></tr></table></figure>
-
-<p>在numpy中，将X的每一列看做一个独立的变量，因此这里一共有3个4维变量，因此会输出一个4*4的协方差矩阵，其中对角线元素是每个维度的方差，非对角线上的元素则是不同维度间的协方差。</p>
+        <p>每次Linux C网络编程时都要纠结地址转换的对不对，这次终于受不鸟了，总结一下。</p>
       
     </div>
     <footer>
       
         
           <div class="alignleft">
-            <a href="/2019/10/10/0xMATH-Linear_Algebra 协方差矩阵/#more" class="more-link">Read More</a>
+            <a href="/2019/10/12/0xZ-Linux C 网络编程：地址转换函数总结/#more" class="more-link">Read More</a>
           </div>
         
         
@@ -415,10 +476,10 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-10-10T00:11:52.516Z"><a href="/2019/10/10/0xMATH-Linear_Algebra 特征值特征向量/">2019-10-10</a></time>
+        <time datetime="2019-10-12T02:48:40.404Z"><a href="/2019/10/12/0xZ-Linux C 多线程：线程退出和资源释放/">2019-10-12</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/10/0xMATH-Linear_Algebra 特征值特征向量/">特征值与特征向量</a></h1>
+    <h1 class="title"><a href="/2019/10/12/0xZ-Linux C 多线程：线程退出和资源释放/">Linux C 多线程：线程退出和资源释放</a></h1>
   
 
     </header>
@@ -427,20 +488,18 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
       
         
     <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一、定义和计算"><span class="toc-text">一、定义和计算</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#content_views"><span class="toc-text">1.矩阵特征值和特征向量定义</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二、意义"><span class="toc-text">二、意义</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三、应用"><span class="toc-text">三、应用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#最优化"><span class="toc-text">最优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据挖掘"><span class="toc-text">数据挖掘</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#四、理解"><span class="toc-text">四、理解</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#pthread-join-vs-pthread-detach"><span class="toc-text">pthread_join vs. pthread_detach</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#理解"><span class="toc-text">理解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-阻塞和非阻塞"><span class="toc-text">1. 阻塞和非阻塞</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-为什么要将线程设置成分离状态"><span class="toc-text">2. 为什么要将线程设置成分离状态</span></a></li></ol></li></ol></li></ol>
     </div>
 
-        <h1 id="一、定义和计算"><a href="#一、定义和计算" class="headerlink" title="一、定义和计算"></a>一、定义和计算</h1><p>转自 <a href="https://blog.csdn.net/Junerror/article/details/80222540" target="_blank" rel="noopener">https://blog.csdn.net/Junerror/article/details/80222540</a></p>
-<div class="htmledit_views" id="content_views">
-                                            <h2>1.矩阵特征值和特征向量定义<br></h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A为n阶矩阵，若数λ和n维非0列向量x满足Ax=λx，那么数λ称为A的<strong>特征值</strong>，x称为A的对应于特征值λ的<strong>特征向量</strong>。式<em></em>Ax=λx也可写成( A-λE)x=0，并且|λE-A|叫做A 的<strong>特征多项式</strong>。当特征多项式等于0的时候，称为A的特征方程，特征方程是一个齐次线性方程组，求解特征值的过程其实就是求解特征方程的解。</p><p>&nbsp;<img src="https://img-blog.csdn.net/20180507111210925?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt></p><p><img src="https://img-blog.csdn.net/20180507115245945?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt></p><p>计算：A的特征值和特征向量。<img src="https://img-blog.csdn.net/2018050711151850?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt width="235" height="150"></p><p><img src="https://img-blog.csdn.net/20180507115331438?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt></p><p>计算行列式得<br></p><p><img src="https://img-blog.csdn.net/2018050711535934?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt></p><p>化简得：<br></p><p><img src="https://img-blog.csdn.net/20180507115420686?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt></p><p>得到特征值：<br></p><p><img src="https://img-blog.csdn.net/20180507115615880?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt></p><p><img src="https://img-blog.csdn.net/20180507115824817?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt></p><p><img src="https://img-blog.csdn.net/20180507120406434?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt></p><p><img src="https://img-blog.csdn.net/20180507120026676?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt>化简得：<img src="https://img-blog.csdn.net/20180507120236457?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt></p><p><img src="https://img-blog.csdn.net/20180507121017540?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt><img src="https://img-blog.csdn.net/20180507121033764?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt></p><p>&nbsp;<br></p><p>令<img src="https://img-blog.csdn.net/20180507121152840?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt>得到特征向量：</p><p><img src="https://img-blog.csdn.net/20180507121415868?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt></p><p>同理，当<img src="https://img-blog.csdn.net/2018050712180713?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt>得：</p><p><img src="https://img-blog.csdn.net/20180507121923977?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt>，<img src="https://img-blog.csdn.net/20180507122042797?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt></p><p>令<img src="https://img-blog.csdn.net/20180507121152840?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt>得到特征向量：<br></p><p><img src="https://img-blog.csdn.net/20180507121555731?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0p1bmVycm9y/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p>&nbsp;&nbsp;&nbsp; <br></p><p></p><p></p><p></p>                                    </div>
-
-<h1 id="二、意义"><a href="#二、意义" class="headerlink" title="二、意义"></a>二、意义</h1><p>从线性空间的角度看，在一个定义了內积的线性空间里，对一个N阶<code>对称</code>方阵进行特征分解，即产生了该空间的N个标准正交基，然后把矩阵投影到这N个基上。</p>
-<p>N个特征向量就是N个标准正交基，而特征值的模则代表矩阵在每个基上的投影长度。</p>
-<p>特征值越大，说明矩阵在对应的特征向量上的方差越大，功率越大，信息量越多。</p>
-<h1 id="三、应用"><a href="#三、应用" class="headerlink" title="三、应用"></a>三、应用</h1><h2 id="最优化"><a href="#最优化" class="headerlink" title="最优化"></a>最优化</h2><p>对于R的二次型，自变量在这个方向上的变化的时候，对函数值的影响最大，即方向导数最大。</p>
-<h2 id="数据挖掘"><a href="#数据挖掘" class="headerlink" title="数据挖掘"></a>数据挖掘</h2><p>最大特征值对应的特征向量上包含的信息量最多，如果某几个特征值很小，说明这几个方向信息量很小，可以用来降维，即删除小特征值对应方向的数据，只保留大特征值方向对应的数据，这样做以后数据量减小，但有用信息量变化不大。</p>
-<h1 id="四、理解"><a href="#四、理解" class="headerlink" title="四、理解"></a>四、<a href="https://www.matongxue.com/madocs/228.html" target="_blank" rel="noopener">理解</a></h1><p>如果把矩阵看成是运动，那么特征值就是运动的速度，特征向量就是运动的方向。</p>
-<p><code>注：这里的运动、速度、方向都是广义的，在显示不同应用中有不同的指代</code></p>
+        <p><a href="https://blog.csdn.net/weibo1230123/article/details/81410241" target="_blank" rel="noopener">pthread_join()与pthread_detach()详解</a></p>
+<p><a href="https://www.cnblogs.com/zhangxuan/p/6430034.html" target="_blank" rel="noopener">pthread_exit,pthread_join，pthread_kill，pthread_cancel，sigwait，sigaddset</a></p>
+<p><a href="http://blog.chinaunix.net/uid-29134536-id-4754692.html" target="_blank" rel="noopener">关于线程资源的释放: pthread_join, pthread_exit, pthread_detach</a></p>
+<p><a href="https://blog.csdn.net/drdairen/article/details/52517820" target="_blank" rel="noopener">线程状态：分离状态（detached）与可结合状态（joinable）</a></p>
+<h2 id="pthread-join-vs-pthread-detach"><a href="#pthread-join-vs-pthread-detach" class="headerlink" title="pthread_join vs. pthread_detach"></a>pthread_join vs. pthread_detach</h2><p>Linux中线程可分为joinable和unjoinable两种状态。</p>
+<p>pthread_detach()写在线程函数头部，使得创建后的thread处于unjoinable<code>分离</code>状态，这样主线程<code>不必等待</code>子线程运行结束再回收，子线程结束后自行回收释放资源；</p>
+<p>而pthread_join()函数是针对joinable线程的，它将子线程<code>“合并”</code>入主线程，使得主线程<code>阻塞</code>等待回收子线程。</p>
+<h3 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h3><h4 id="1-阻塞和非阻塞"><a href="#1-阻塞和非阻塞" class="headerlink" title="1. 阻塞和非阻塞"></a>1. 阻塞和非阻塞</h4><p>上面的“合并”和“分离”让我对阻塞和非阻塞有了更加直观的认识，且通过这次编写多线程扫描程序的经历，思索之下，我恍然大悟。<br>不管是阻塞还是非阻塞其实都可以理解为“事件驱动”，虽然公认的理解是：非阻塞才是事件驱动，因为通过捕获事件信号从而出发回调函数。但是仔细想一想，<code>阻塞解除的条件</code>不也是如“线程结束”这样的事件嘛，否则如果条件一直不满足就一直阻塞下去。</p>
+<h4 id="2-为什么要将线程设置成分离状态"><a href="#2-为什么要将线程设置成分离状态" class="headerlink" title="2. 为什么要将线程设置成分离状态"></a>2. 为什么要将线程设置成分离状态</h4><p>为了在使用线程的时候，避免线程的资源得不到正确的释放，从而导致了内存泄漏的问题。所以要确保进程为可分离的的状态，否则要进行线程等待已回收他的资源。</p>
 
       
     </div>
@@ -465,10 +524,12 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-10-09T16:05:31.597Z"><a href="/2019/10/10/0xW-windows注册表/">2019-10-10</a></time>
+          <div id="top">置顶</div>
+        
+        <time datetime="2019-10-11T11:50:07.330Z"><a href="/2019/10/11/0xS-Ubuntu/">2019-10-11</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/10/0xW-windows注册表/">windows注册表</a></h1>
+    <h1 class="title"><a href="/2019/10/11/0xS-Ubuntu/">Ubuntu</a></h1>
   
 
     </header>
@@ -477,12 +538,56 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
       
         
     <div id="toc">
-        
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Shell命令"><span class="toc-text">Shell命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#文件系统"><span class="toc-text">文件系统</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装下载"><span class="toc-text">安装下载</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-apt-install安装的软件的相关位置"><span class="toc-text">1. apt install安装的软件的相关位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-查看软件安装位置"><span class="toc-text">2. 查看软件安装位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Ubuntu-下几种软件安装的方法小结"><span class="toc-text">3. Ubuntu 下几种软件安装的方法小结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装"><span class="toc-text">安装</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#配置"><span class="toc-text">配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#硬件"><span class="toc-text">硬件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#环境"><span class="toc-text">环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#切换版本"><span class="toc-text">切换版本</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BUG"><span class="toc-text">BUG</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-vmware-ubuntu-16-04-共享文件夹重启失效"><span class="toc-text">1. vmware ubuntu 16.04 共享文件夹重启失效</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-执行npm-，再不用sudo"><span class="toc-text">2. 执行npm ，再不用sudo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-更改文件夹权限-opt-免除sudo"><span class="toc-text">3. 更改文件夹权限(/opt)免除sudo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-sqli-lab无法setup"><span class="toc-text">4. sqli-lab无法setup</span></a></li></ol></li></ol></li></ol>
     </div>
 
-        <div class="htmledit_views" id="content_views">
-
-<p><span style="font-family:'Courier New';"><span style="font-size:24px;"><strong>什么是注册表？</strong></span><br><span style="font-size:18px;">注册表（registry）是Microsoft Windows 中的一个重要数据库。</span><br><span style="font-size:18px;">如何打开注册表？</span><br><span style="font-size:18px;">用快捷键Windows+R打开运行窗口，输入regedit、regedit.exe或者regedt32、regedt32.exe四个名称均可。</span><br><strong><span style="font-size:24px;">注册表的作用？</span></strong><br><span style="font-size:18px;">用于存储系统和应用程序的设置信息。</span><br><strong><span style="font-size:24px;">注册表的结构？</span></strong><br><span style="font-size:18px;">注册表是层次结构的数据库，由以下嵌套容器和数据组成：</span><br><span style="font-size:18px;">子树（根目录或者层次结构的主要部分）、</span><br><span style="font-size:18px;">项（子树下的主要子容器。项可以包含子项或键值）</span><br><span style="font-size:18px;">项值（影响系统的实际数据。项值在注册表编辑器右边的面板中显示）</span><br><span style="font-size:18px;">HKEY（子树符号，设计者认为根目录是“到项的句柄”。HandleTo key的简写）</span><br><span style="font-size:18px;">接下来从五个子树介绍整个注册表；</span><br><span style="font-size:18px;"><strong>1、HKEY_CLASSES_ROOT</strong></span><br><span style="font-size:18px;">这个子树包含了所有应用程序运行时必需的信息；在文件和应用程序之间所有的扩展名和关联所有的驱动程序名称。类的ID数字（所要存取项的名字用数字来代替）用于应用程序和文件的图标；</span><br><span style="font-size:18px;">在Windows用户图形界面下每件事、每个文件、每个目录、每个小程序、每个连接、每个驱动都被看做一个对象，每个对象都有确定的属性和它联系。HKCR包含着对象类型和他们属性的列表。</span><br><span style="font-size:18px;">HKCR主要功能设置为；</span><br><span style="font-size:18px;">一个对象类型和一个扩展名关联；</span><br><span style="font-size:18px;">一个对象类型和一种图标关联；</span><br><span style="font-size:18px;">一个对象类型和一个命令行动的关联。</span><br><span style="font-size:18px;">定义对象类型相关菜单选项和没一个对象类型属性选项。</span><br><span style="font-size:18px;"><strong>2、HKEY_CURRENT_USER</strong></span><br><span style="font-size:18px;">此根键（子树）中记录的是当前用户的配置数据信息，用户可以利用此根键下的子键修改Windows的许多环境配置。</span><br><span style="font-size:18px;">HKEY_CURRENT_USER根键中的主键</span><br><span style="font-size:18px;">（1）AppEvents主键，包含了已注册了的各种应用事件。</span><br><span style="font-size:18px;">（2）Console主键Windows2003控制台子系统存储设置，控制台子系统运行所有基于字符的应用程序。</span><br><span style="font-size:18px;">（3）Control Panel主键，包含了与控制面板有关的内容。</span><br><span style="font-size:18px;">（4）Environment主键，已登录用户表示环境变量的设置的数据项值。</span><br><span style="font-size:18px;">（5）Identities它是当前用户的ID，但不是主要的ID。在HKEY_USERS中，每个用户都有唯一的ID。这与之相匹配。</span><br><span style="font-size:18px;">（6）Keyboaed Layout储存安装键盘的布局信息，包含硬件和驱动器设置。</span><br><span style="font-size:18px;">（7）Network仅当当前用户具有映像的网络磁盘时才存在。是父项，不保留重要数据。</span><br><span style="font-size:18px;">（8）Printers在计算机打印机上的相关信息，包括用户设置的配置选项。</span><br><span style="font-size:18px;">（9）Session Information包含当前会话中使用的与应用程序相关的信息。</span><br><span style="font-size:18px;">（10）Software存储登录用户的特定应用程序用户设置和程序变量、</span><br><span style="font-size:18px;">（11）Volatile Environment 当前用户会话设置。</span><br><span style="font-size:18px;"><strong>3、HKEY_LOCAL_MACHINE</strong></span><br><span style="font-size:18px;">此根键保存与计算机、硬件、所安装的设备驱动器，以及影响所有计算机用户的配置选项（安全和软件设置）等相关信息。它包含了5个项。</span><br><span style="font-size:18px;">（1）HARDWARE Ntdetect.com（Windows 2003硬件识别程序）在启动过程中，从头开始建立这个项的内容。该信息保存在RAM中，子项的层次结构保存计算机所有的硬件组件信息。</span><br><span style="font-size:18px;">（2）SAM 安全账户管理器，存储用户和数据组的地方，SAM数据由所有本地用户和组组成包括用户访问文件夹，文件以及外设的权限。</span><br><span style="font-size:18px;">（3）SECURITY 有安全有关的数据项，保存安全策略和用户组策略的配置信息。</span><br><span style="font-size:18px;">（4）SOFTWARE 操作系统在这里保存计算机设置，包括组策略配置生效的设置，所安装的软件、版本等等。</span><br><span style="font-size:18px;">（5）SYSTEM 控制操作系统的启动。几乎控制操作系统所做的每一件事（特别是内核服务），这是对计算机配置的正确性的方法。</span><br><span style="font-size:18px;"><strong>4、HKEY_USER</strong></span><br><span style="font-size:18px;">包含计算机默认用户的配置文件和已知用户的配置文件的子项。</span><br><span style="font-size:18px;"><strong>5、HKEY_CURRENT_CONFIG</strong></span><br><span style="font-size:18px;">保存计算机启动时所使用的与硬件配置文件相关信息。它是HKEY_LOCAL_MACHINESYSTEMCurrentControlSetHardware Profilescurrent的别名。</span><br><span style="font-size:18px;">如何导入与导出注册表</span><br><span style="font-size:18px;">进入注册表编辑器，选择“文件”“导出”命令，打开“导出注册表文件”对话框。选择保存位置并为其取名，单击保存即可完成注册表的备份。</span><br><span style="font-size:18px;">打开注册表编辑器，选择“文件”“导入”命令，打开“导入注册表”文件对话框，选择要导入的注册表文件，然后单击“打开”按钮，这是系统开始导入注册表文件，中间最好不要做其它操作。如果中途弹出对话框，提示无法导入部分数据，则可重启一下电脑，然后在执行导入操作。</span><br><span style="font-size:18px;">注册表文件的扩张名为.reg</span><br><span style="font-size:18px;">如何查询注册表中IE历史记录？</span><br><span style="font-size:18px;">IE浏览网站的历史记录：依次是HKEY_CURRENT_USERSoftwareMicrosoftInternet ExplorerTyped URLs</span><br><span style="font-size:18px;">如何查寻注册表中计算机盘符记录？</span><br><span style="font-size:18px;">HEKY_LOCAL_MACHINESYSTEMMounted Devices键值下</span><br><span style="font-size:18px;">如何查询注册表中U盘挂载记录？</span><br><span style="font-size:18px;">HKEY_LOCAL_MACHINESYSTEMCurrentControlSetControlDeviceClasses{a5dcbf10-6530-11d2-901f-00c04fb951ed}</span><br><span style="font-size:18px;">如何查询远程桌面登录记录？</span><br><span style="font-size:18px;">HKEY_CURRENT_USERSoftwareMicrosoftTerminalServerClientDefault</span><br><span style="font-size:18px;">如何查询注册表中操作系统型号记录？</span><br><span style="font-size:18px;">HKEY_CURRENT_USERSoftwareMicrosoftWindowns NTCurrent Version</span></span><br>                                    </p></div><p></p>
+        <h1 id="Shell命令"><a href="#Shell命令" class="headerlink" title="Shell命令"></a>Shell命令</h1><p><a href="http://www.mamicode.com/info-detail-1144825.html" target="_blank" rel="noopener">软链接版本管理 update-alternatives</a></p>
+<p><a href="https://www.cnblogs.com/soyo/p/7908430.html" target="_blank" rel="noopener">查看系统可用内存 free -m</a></p>
+<h1 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h1><h2 id="安装下载"><a href="#安装下载" class="headerlink" title="安装下载"></a>安装下载</h2><h3 id="1-apt-install安装的软件的相关位置"><a href="#1-apt-install安装的软件的相关位置" class="headerlink" title="1. apt install安装的软件的相关位置"></a>1. apt install安装的软件的相关位置</h3><p>A、下载的软件的存放位置：/var/cache/apt/archives</p>
+<p>B、安装后软件的默认位置：/usr/share</p>
+<p>C、可执行文件位置：/usr/bin</p>
+<p>D、配置文件位置：/etc</p>
+<p>E、lib文件位置：/usr/lib</p>
+<h3 id="2-查看软件安装位置"><a href="#2-查看软件安装位置" class="headerlink" title="2. 查看软件安装位置"></a>2. <a href="https://blog.csdn.net/baidu_38172402/article/details/80795553" target="_blank" rel="noopener">查看软件安装位置</a></h3><h3 id="3-Ubuntu-下几种软件安装的方法小结"><a href="#3-Ubuntu-下几种软件安装的方法小结" class="headerlink" title="3. Ubuntu 下几种软件安装的方法小结"></a>3. <a href="https://www.cnblogs.com/sablier/p/10915171.html" target="_blank" rel="noopener">Ubuntu 下几种软件安装的方法小结</a></h3><h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a><a href="https://cloud.tencent.com/developer/article/1392294" target="_blank" rel="noopener">安装</a></h1><p><a href="https://www.jianshu.com/p/a9a3885efe5a" target="_blank" rel="noopener">DPDK安装配置（附脚本）及示例程序运行</a></p>
+<p><a href="https://www.sdnlab.com/19189.html" target="_blank" rel="noopener">mininet+floodlight</a></p>
+<p><a href="https://blog.csdn.net/qq_24091555/article/details/76039475" target="_blank" rel="noopener">maven</a></p>
+<p><a href="https://www.cnblogs.com/lidonghao/p/8497145.html" target="_blank" rel="noopener">以太坊环境搭建</a></p>
+<p><a href="https://mshk.top/2017/11/truffle-4-0-geth-1-7-2-testrpc/" target="_blank" rel="noopener">truffle安装</a></p>
+<p><a href="https://blog.csdn.net/xuecuilan/article/details/95481199" target="_blank" rel="noopener">设置Truffle中solc到指定版本</a></p>
+<p><a href="https://blog.csdn.net/JohnnyMartin/article/details/81737910" target="_blank" rel="noopener">truffle与nodejs的版本问题</a></p>
+<p><a href="https://blog.csdn.net/u014454538/article/details/88649963" target="_blank" rel="noopener">go</a></p>
+<p><a href="https://www.moerats.com/archives/387/" target="_blank" rel="noopener">？？？？？BBR+BBR魔改+Lotsever(锐速)一键脚本 for Centos/Debian/Ubuntu</a></p>
+<p><a href="https://clearsky.me/ubuntu-1804-bbr.html" target="_blank" rel="noopener">https://clearsky.me/ubuntu-1804-bbr.html</a></p>
+<p><a href="https://blog.csdn.net/shay_lau/article/details/80205088" target="_blank" rel="noopener">phpstudy wrong!!!!</a></p>
+<p>floodlight 采用0.91版本； java 采用 jdk8版本</p>
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><blockquote>
+<p>自从换到 Oh-my-zsh terminal后，对配置文件的修改变为了 .zshrc 而不是 .bashrc</p>
+</blockquote>
+<h2 id="硬件"><a href="#硬件" class="headerlink" title="硬件"></a>硬件</h2><p><a href="https://jingyan.baidu.com/article/86fae34604bdd53c49121a26.html" target="_blank" rel="noopener">磁盘扩容</a></p>
+<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p><a href="https://www.cnblogs.com/butterfly-clover/p/5756688.html" target="_blank" rel="noopener">ubuntu系统jdk安装及环境变量配置</a></p>
+<p><a href="https://blog.csdn.net/qq_21187515/article/details/84850814" target="_blank" rel="noopener">Linux64位 jdk1.8 jdk-8u161下载</a></p>
+<p><a href="https://blog.csdn.net/shebao3333/article/details/79792715" target="_blank" rel="noopener">以太坊环境搭建</a></p>
+<p><a href="https://www.jianshu.com/p/f09e474e9c39" target="_blank" rel="noopener">ubuntu16.04 如何将node命令设置到全局</a></p>
+<p><a href="https://blog.csdn.net/lu_embedded/article/details/79604380" target="_blank" rel="noopener">ubuntu LAMP环境</a></p>
+<p><a href="https://blog.csdn.net/teddy_dewei_lu/article/details/79659013" target="_blank" rel="noopener">ubuntu16.04 phpmyadmin使用root登录提示#1698 - Access denied for user ‘root’@’localhost’</a></p>
+<h3 id="切换版本"><a href="#切换版本" class="headerlink" title="切换版本"></a>切换版本</h3><p><a href="https://blog.csdn.net/qq_43329934/article/details/83098597" target="_blank" rel="noopener">Ubuntu16.04 多切换JDK版本</a></p>
+<p><a href="https://blog.csdn.net/jiangjiang_jian/article/details/80694799" target="_blank" rel="noopener">Ubuntu16.04 GCC多版本切换</a></p>
+<p><a href="https://blog.csdn.net/zhousmq/article/details/77765451" target="_blank" rel="noopener">Ubuntu16.04 PHP多版本切换</a></p>
+<p>PHP切换也可见：Ubuntu 16.04 部署sqli-labs踩坑记录</p>
+<p>总结：</p>
+<ol>
+<li><h1 id="BUG"><a href="#BUG" class="headerlink" title="BUG"></a>BUG</h1><h3 id="1-vmware-ubuntu-16-04-共享文件夹重启失效"><a href="#1-vmware-ubuntu-16-04-共享文件夹重启失效" class="headerlink" title="1. vmware ubuntu 16.04 共享文件夹重启失效"></a>1. vmware ubuntu 16.04 共享文件夹重启失效</h3><p>在 ~/.bashrc 添加 “sudo vmhgfs-fuse .host:/ /mnt/hgfs<br>”</p>
+<h3 id="2-执行npm-，再不用sudo"><a href="#2-执行npm-，再不用sudo" class="headerlink" title="2. 执行npm ，再不用sudo"></a>2. 执行npm ，再不用sudo</h3><p>sudo chown -R $(whoami) $(npm config get prefix)/{lib/node_modules,bin,share}</p>
+</li>
+</ol>
+<p><a href="https://askubuntu.com/questions/955434/sudo-node-command-not-found" target="_blank" rel="noopener">https://askubuntu.com/questions/955434/sudo-node-command-not-found</a></p>
+<h3 id="3-更改文件夹权限-opt-免除sudo"><a href="#3-更改文件夹权限-opt-免除sudo" class="headerlink" title="3. 更改文件夹权限(/opt)免除sudo"></a>3. <a href="http://blog.chinaunix.net/uid-21880738-id-1813031.html" target="_blank" rel="noopener">更改文件夹权限(/opt)免除sudo</a></h3><p>chmod -R a+r * 将目前目录下的所有档案与子目录皆设为任何人可读取</p>
+<h3 id="4-sqli-lab无法setup"><a href="#4-sqli-lab无法setup" class="headerlink" title="4. sqli-lab无法setup"></a>4. sqli-lab无法setup</h3><p><a href="https://blog.csdn.net/zhoucheng05_13/article/details/75082722" target="_blank" rel="noopener">PHP连接mysql数据库报错：Call to undefined function mysql_connect()</a></p>
+<p>PHP7.0开始启用mysql_connect()函数改用mysqli_connect()</p>
+<p><a href="https://segmentfault.com/a/1190000011986836" target="_blank" rel="noopener">Ubuntu 16.04 切换 PHP 版本</a></p>
+<p><a href="https://www.cnblogs.com/baby123/p/6611169.html" target="_blank" rel="noopener">Ubuntu 下解压tar.xz方法</a></p>
+<p><a href="https://www.cnblogs.com/EasonJim/p/7114676.html" target="_blank" rel="noopener">Ubuntu 16.04添加启动图标到Dash Home中</a></p>
+<p><a href="https://blog.csdn.net/u012965373/article/details/74010965" target="_blank" rel="noopener">将Intellij图标固定到工具栏</a></p>
 
       
     </div>
@@ -507,10 +612,10 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-10-09T07:32:24.313Z"><a href="/2019/10/09/0xD-XSS Attack Detection/">2019-10-09</a></time>
+        <time datetime="2019-10-11T10:16:50.095Z"><a href="/2019/10/11/0xY-ubuntu16.04安装dpdk/">2019-10-11</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/09/0xD-XSS Attack Detection/">XSS Attack Detection</a></h1>
+    <h1 class="title"><a href="/2019/10/11/0xY-ubuntu16.04安装dpdk/">ubuntu 16.04 安装dpdk</a></h1>
   
 
     </header>
@@ -522,7 +627,8 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
         
     </div>
 
-        <p><a href="https://segmentfault.com/a/1190000009052376" target="_blank" rel="noopener">基础特征</a><br><a href="https://www.cnblogs.com/bonelee/p/7978729.html" target="_blank" rel="noopener"></a><br><a href="https://www.cdxy.me/?p=773" target="_blank" rel="noopener">机器学习识别XSS实践</a><br><a href="http://www.webber.tech/posts/%E4%BD%BF%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A3%80%E6%B5%8BXSS/" target="_blank" rel="noopener">使用深度学习检测XSS</a></p>
+        <p><a href="https://www.jianshu.com/p/a9a3885efe5a" target="_blank" rel="noopener">DPDK安装配置（附脚本）及示例程序运行</a></p>
+<p><a href="https://blog.csdn.net/shhchen/article/details/88554777" target="_blank" rel="noopener">Ubuntu16.04 虚拟机环境下搭建DPDK教程</a></p>
 
       
     </div>
@@ -547,48 +653,10 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
     <header>
         <div class="icon"></div>
         
-        <time datetime="2019-10-09T03:07:26.321Z"><a href="/2019/10/09/0xMP-sklearn之数据预处理——StandardScaler/">2019-10-09</a></time>
+        <time datetime="2019-10-10T04:00:45.053Z"><a href="/2019/10/10/0xS-numpy.ndarray/">2019-10-10</a></time>
         
   
-    <h1 class="title"><a href="/2019/10/09/0xMP-sklearn之数据预处理——StandardScaler/">Sklearn之数据预处理——StandardScaler</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        <p>转自 <a href="https://blog.csdn.net/wzyaiwl/article/details/90549391" target="_blank" rel="noopener">https://blog.csdn.net/wzyaiwl/article/details/90549391</a></p>
-      
-    </div>
-    <footer>
-      
-        
-          <div class="alignleft">
-            <a href="/2019/10/09/0xMP-sklearn之数据预处理——StandardScaler/#more" class="more-link">Read More</a>
-          </div>
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-<!-- 返回顶部 -->
-<div id="toTop">
-	<a href="#">▲</a>
-	<a href="#footer">▼</a>
-</div>
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2019-10-08T13:07:29.008Z"><a href="/2019/10/08/0x1-SupplyChain/">2019-10-08</a></time>
-        
-  
-    <h1 class="title"><a href="/2019/10/08/0x1-SupplyChain/">SupplyChain</a></h1>
+    <h1 class="title"><a href="/2019/10/10/0xS-numpy.ndarray/">numpy.ndarray总结</a></h1>
   
 
     </header>
@@ -597,22 +665,11 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
       
         
     <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#代币定义"><span class="toc-text">代币定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实体定义"><span class="toc-text">实体定义</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Propagation-Contract"><span class="toc-text">Propagation Contract</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#上链"><span class="toc-text">上链</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#应收账款产生代币"><span class="toc-text">应收账款产生代币</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#监察"><span class="toc-text">监察</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ndarray-value"><span class="toc-text">ndarray == value</span></a></li></ol>
     </div>
 
-        <p>飞洛项目<br>App key：LCzE7OaszB6SgXQFCqYa<br>App secret：pQP4ZTHyvfN3tZ8cWBCJFXHCuVSMCn</p>
-<p><a href="https://github.com/hyperchaincn/Contract-SupplyChain" target="_blank" rel="noopener">https://github.com/hyperchaincn/Contract-SupplyChain</a></p>
-<h3 id="代币定义"><a href="#代币定义" class="headerlink" title="代币定义"></a>代币定义</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">struct Commodity&#123;</span><br><span class="line">	bytes32 commodityID;</span><br><span class="line">	bytes32 commodityName;</span><br><span class="line">	uint produceTime;</span><br><span class="line">	bytes32 producerName;</span><br><span class="line">	uint[] timestamps;</span><br><span class="line">	bytes32[] retailerNames;</span><br><span class="line">	uint sellTime;</span><br><span class="line">	bytes32 customerName;</span><br><span class="line">	bool isBinding;</span><br><span class="line">	address owner;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">mapping(bytes32 =&gt; Commodity) commodityMap;</span><br></pre></td></tr></table></figure>
-
-<h3 id="实体定义"><a href="#实体定义" class="headerlink" title="实体定义"></a>实体定义</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">enum Actor&#123; Others, Producer, Retailer, Customer&#125;</span><br><span class="line"></span><br><span class="line">struct User&#123;</span><br><span class="line">    bytes32 ID;</span><br><span class="line">    bytes32 name;</span><br><span class="line">    Actor actor;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">mapping(address =&gt; User) producerMap;</span><br><span class="line">mapping(address =&gt; User) retailerMap;</span><br><span class="line">mapping(address =&gt; User) customerMap;</span><br></pre></td></tr></table></figure>
-
-<h2 id="Propagation-Contract"><a href="#Propagation-Contract" class="headerlink" title="Propagation Contract"></a>Propagation Contract</h2><h3 id="上链"><a href="#上链" class="headerlink" title="上链"></a>上链</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">function retailerInnerTransfer(bytes32 commodityID,uint timestamp) returns(bool, string)&#123;</span><br><span class="line"></span><br><span class="line">    Commodity commodity = commodityMap[commodityID];</span><br><span class="line"></span><br><span class="line">    if(commodity.commodityID == 0x0) &#123;</span><br><span class="line">        return (false,&quot;The commodityID don&apos;t exist!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    User user = retailerMap[msg.sender];</span><br><span class="line"></span><br><span class="line">    if(user.ID == 0x0) &#123;</span><br><span class="line">        return (false,&quot;The retailer don&apos;t exist!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    commodity.timestamps.push(timestamp);</span><br><span class="line">    commodity.retailerNames.push( user.name );</span><br><span class="line"></span><br><span class="line">    return (true,&quot;Success&quot;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="应收账款产生代币"><a href="#应收账款产生代币" class="headerlink" title="应收账款产生代币"></a>应收账款产生代币</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function newProduct(bytes32 commodityID, bytes32 commodityName,</span><br><span class="line">    uint timestamp) returns(bool,bytes32)&#123;</span><br><span class="line">    Commodity commodity = commodityMap[commodityID];</span><br><span class="line">    if(commodity.commodityID != 0x0) &#123;</span><br><span class="line">        return (false,&quot;The commodityID already exist!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    User user = producerMap[msg.sender];</span><br><span class="line">    if(user.ID == 0x0) &#123;</span><br><span class="line">        return (false,&quot;The producer don&apos;t exist!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    commodity.commodityID = commodityID;</span><br><span class="line">    commodity.commodityName = commodityName;</span><br><span class="line">    commodity.produceTime = timestamp;</span><br><span class="line">    commodity.producerName = user.name;</span><br><span class="line">    return (true,&quot;Success,produce a new product&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="监察"><a href="#监察" class="headerlink" title="监察"></a>监察</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">function getCommodityRecordsByWhiteList(bytes32 commodityID) returns(bool,string,</span><br><span class="line">bytes32 producerName,uint produceTime, bytes32[] retailerNames,uint[] retailerTimes</span><br><span class="line">, bytes32 customerName,uint sellTime)&#123;</span><br><span class="line"></span><br><span class="line">	if(!whiteList[msg.sender])&#123;</span><br><span class="line">		return (false,&quot;you has no access&quot;,producerName, produceTime, retailerNames, retailerTimes, customerName,commodity.sellTime);</span><br><span class="line">	&#125;</span><br><span class="line">	Commodity commodity = commodityMap[commodityID];</span><br><span class="line">	if(commodity.commodityID == 0x0)&#123;</span><br><span class="line">		return (false,&quot;The commodityID is not exist&quot;,producerName, produceTime, retailerNames, retailerTimes,customerName,commodity.sellTime);</span><br><span class="line">	&#125;</span><br><span class="line">	return (true,&quot;Success&quot;,commodity.producerName, commodity.produceTime, commodity.retailerNames, commodity.timestamps, commodity.customerName,commodity.sellTime);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
+        <h2 id="ndarray-value"><a href="#ndarray-value" class="headerlink" title="ndarray == value"></a>ndarray == value</h2><p>以下面的y_train==l为例，其返回结果是array中元素值为l的元素下标<code>切片</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">colors = [<span class="string">'r'</span>, <span class="string">'b'</span>, <span class="string">'g'</span>]</span><br><span class="line">markers = [<span class="string">'s'</span>, <span class="string">'x'</span>, <span class="string">'o'</span>]</span><br><span class="line"><span class="keyword">for</span> l, c, m <span class="keyword">in</span> zip(np.unique(y_train), colors, markers):</span><br><span class="line">    plt.scatter(X_train_pca[y_train==l, <span class="number">0</span>],</span><br><span class="line">               X_train_pca[y_train==l, <span class="number">1</span>],</span><br><span class="line">               c=c, label=<span class="number">1</span>, marker=m)</span><br></pre></td></tr></table></figure>
       
     </div>
     <footer>
@@ -653,7 +710,7 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
           
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">15</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/IPC/">IPC</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多线程/">多线程</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多路I-O复用/">多路I/O复用</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/网络编程/">网络编程</a><span class="category-list-count">6</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/PWN/">PWN</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/blockchain/">blockchain</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/data-mining/">data mining</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/machine-learning/">machine learning</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/math/linear-algebra/">linear algebra</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/安全/web/">web</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/恶意代码分析/">恶意代码分析</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cyber-Security/">Cyber Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Data-Science/">Data Science</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/">Linux C</a><span class="category-list-count">15</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/IPC/">IPC</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多线程/">多线程</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/多路I-O复用/">多路I/O复用</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux-C/网络编程/">网络编程</a><span class="category-list-count">6</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/blockchain/">blockchain</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dairy/">dairy</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/machine-learning/">machine learning</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/math/linear-algebra/">linear algebra</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/summary/">summary</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/web/">web</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/“各种”系列/">“各种”系列</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a><span class="category-list-count">6</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/安全/BIN/">BIN</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/PROTOCOL/">PROTOCOL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/WEB/">WEB</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发日志/">开发日志</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/恶意代码分析/">恶意代码分析</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序员的自我修养/">程序员的自我修养</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/javascript/">javascript</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/solidity/">solidity</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">1</span></li></ul> 
 </div>
  
 
@@ -698,6 +755,8 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
         
           <li class='link'><a href='https://blog.csdn.net/houyanhua1'>WEB</a></li>
         
+          <li class='link'><a href='https://learnblockchain.cn/'>深入浅出区块链</a></li>
+        
           <li class='link'><a href=''>(empty)</a></li>
         
           <li class='link'><a href='https://www.sdnlab.com/'>SDNLAB</a></li>
@@ -707,6 +766,8 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
           <li class='link'><a href='https://mooc.study.163.com/smartSpec/detail/1001319001.htm?from=study'>深度学习微专业</a></li>
         
           <li class='link'><a href=''>(book)</a></li>
+        
+          <li class='link'><a href='https://wizardforcel.gitbooks.io/q-buffer-overflow-tutorial/content/57.html'>Q版缓冲区溢出教程</a></li>
         
           <li class='link'><a href='chrome-extension://cdonnmffkdaoajfknoeeecmchibpmkmg/static/pdf/web/viewer.html?file=http%3A%2F%2Fpdf.ebook23.com%2Febook%2F19_%25E7%25A8%258B%25E5%25BA%258F%25E5%2591%2598%25E4%25B8%25AA%25E4%25BA%25BA%25E4%25BF%25AE%25E5%2585%25BB%2F%255B%25E4%25BB%25A3%25E7%25A0%2581%25E5%25A4%25A7%25E5%2585%25A82%25E4%25B8%25AD%25E6%2596%2587%25E7%2589%2588%2528%25E5%25AE%258C%25E6%2595%25B4%25E6%25B8%2585%25E6%2599%25B0%25E7%2589%2588%2529%255D.pdf'>代码大全</a></li>
         
@@ -718,7 +779,7 @@ X、Y必须是各维数都相等的矩阵，其功能是把X中所有元素看�
           
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">99</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">公元 2019 年</a><span class="archive-list-count">109</span></li></ul>
   </div>
 
         
