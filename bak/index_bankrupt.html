@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BREAKING: Nvidia teeters on the brink — bankruptcy looms after AI boom goes bust</title>
+  <meta name="description" content="An eye‑catching, single‑page news layout for a breaking report on Nvidia’s abrupt fall from AI supremacy to Chapter 11 bankruptcy." />
+  <meta property="og:title" content="BREAKING: Nvidia teeters on the brink — bankruptcy looms after AI boom goes bust" />
+  <meta property="og:description" content="A high‑stakes collapse driven by export restrictions, competitor disruption, and leverage risk." />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Silicon Street Journal" />
+  <meta name="theme-color" content="#0b1220" />
+  <style>
+    :root {
+      --bg: #0b1220;
+      --bg-soft: #111a2e;
+      --card: #0f172a;
+      --text: #e5e7eb;
+      --muted: #a5b4fc;
+      --accent: #60a5fa;
+      --accent-2: #22d3ee;
+      --danger: #f87171;
+      --success: #34d399;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    @media (prefers-color-scheme: light) {
+      :root { --bg: #f8fafc; --bg-soft: #eef2ff; --card: #ffffff; --text: #0f172a; --muted: #4338ca; --accent: #2563eb; --accent-2: #0891b2; --danger: #dc2626; --success: #059669; }
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 80% -10%, rgba(96,165,250,.15), transparent),
+                  radial-gradient(800px 500px at -10% 20%, rgba(34,211,238,.12), transparent), var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 16px; }
+    header.sticky {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(10px);
+      background: color-mix(in oklab, var(--bg) 80%, transparent);
+      border-bottom: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .4px; }
+    .brand svg { width: 28px; height: 28px; }
+    .actions { display: flex; align-items: center; gap: 10px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px; border: 1px solid color-mix(in oklab, var(--text) 12%, transparent); background: color-mix(in oklab, var(--card) 70%, transparent); color: var(--text); cursor: pointer; box-shadow: var(--shadow); }
+    .btn:active { transform: translateY(1px); }
+    .pill { padding: 6px 10px; border-radius: 999px; font-size: 12px; letter-spacing:.3px; background: linear-gradient(90deg, var(--danger), var(--accent)); color: white; font-weight: 700; text-transform: uppercase; }
+    .hero { position: relative; overflow: hidden; border-radius: 18px; background: linear-gradient(135deg, color-mix(in oklab, var(--card) 85%, transparent), color-mix(in oklab, var(--bg-soft) 70%, transparent)); box-shadow: var(--shadow); }
+    .hero__media { aspect-ratio: 21/9; width: 100%; background: radial-gradient(600px 220px at 20% 10%, rgba(96,165,250,.25), transparent), radial-gradient(800px 300px at 80% 90%, rgba(34,211,238,.2), transparent), linear-gradient(180deg, #0b1220, #111a2e); display: grid; place-items: center; }
+    .chiprow { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 6px; }
+    .chip { border: 1px solid color-mix(in oklab, var(--text) 12%, transparent); padding: 6px 10px; border-radius: 999px; font-size: 12px; color: color-mix(in oklab, var(--text) 80%, transparent); }
+    .title { font-size: clamp(28px, 6vw, 46px); line-height: 1.1; margin: 6px 0 10px; font-weight: 900; letter-spacing: .2px; }
+    .dek { font-size: clamp(16px, 2.2vw, 20px); color: color-mix(in oklab, var(--text) 85%, transparent); max-width: 70ch; }
+    .meta { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top: 14px; color: color-mix(in oklab, var(--text) 70%, transparent); }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 22px; margin-top: 24px; }
+    @media (min-width: 920px) { .grid { grid-template-columns: 2fr 1fr; } }
+    .card { background: color-mix(in oklab, var(--card) 92%, transparent); border: 1px solid color-mix(in oklab, var(--text) 10%, transparent); border-radius: 16px; padding: 20px; box-shadow: var(--shadow); }
+    .lead::first-letter { float: left; font-size: 72px; line-height: 60px; padding: 8px 10px 0 0; font-weight: 900; background: linear-gradient(180deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .pull { border-left: 4px solid var(--accent); padding-left: 14px; font-size: 18px; color: color-mix(in oklab, var(--text) 85%, transparent); font-weight: 600; margin: 18px 0; }
+    .fact { display:flex; align-items:flex-start; gap:12px; padding: 12px 0; border-bottom: 1px dashed color-mix(in oklab, var(--text) 12%, transparent); }
+    .fact:last-child { border-bottom: 0; }
+    .badge { font-weight: 700; color: var(--muted); }
+    .kicker { font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .2em; font-size: 12px; }
+    .timeline { display:grid; gap: 14px; }
+    .tl-item { position: relative; padding-left: 26px; }
+    .tl-item::before { content:""; position:absolute; left:8px; top: 4px; width: 8px; height: 8px; border-radius:999px; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 20%, transparent); }
+    .tl-item::after { content:""; position:absolute; left:11px; top: 18px; bottom: -14px; width:2px; background: color-mix(in oklab, var(--text) 10%, transparent); }
+    .tl-item:last-child::after { display:none; }
+    .footer { color: color-mix(in oklab, var(--text) 70%, transparent); font-size: 14px; }
+    .share { display:flex; gap:10px; flex-wrap:wrap; }
+    .tag-cloud { display:flex; flex-wrap: wrap; gap: 8px; }
+    .tag-cloud a { font-size: 12px; padding: 6px 10px; border-radius: 999px; background: color-mix(in oklab, var(--bg-soft) 60%, transparent); border:1px solid color-mix(in oklab, var(--text) 12%, transparent); }
+    .byline { display:flex; align-items:center; gap:10px; }
+    .avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(180deg, var(--accent), var(--accent-2)); display:grid; place-items:center; font-weight:800; color:#0b1220; }
+    .ticker { display:flex; gap:12px; overflow:auto; padding:12px; border-radius: 12px; background: color-mix(in oklab, var(--bg-soft) 70%, transparent); }
+    .tick { white-space:nowrap; font-variant-numeric: tabular-nums; background: color-mix(in oklab, var(--card) 80%, transparent); padding: 8px 10px; border-radius: 8px; border: 1px solid color-mix(in oklab, var(--text) 10%, transparent); }
+    .vis { height: 120px; border-radius: 10px; background: linear-gradient(90deg, color-mix(in oklab, var(--danger) 50%, transparent), color-mix(in oklab, var(--accent) 40%, transparent)); opacity: .7; }
+    .disclaimer { margin-top: 18px; font-size: 13px; color: color-mix(in oklab, var(--text) 70%, transparent); }
+  </style>
+</head>
+<body>
+  <header class="sticky">
+    <div class="container" style="display:flex; align-items:center; justify-content:space-between; padding-block:10px;">
+      <div class="brand" aria-label="Site brand">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 12c0-4.97 4.03-9 9-9s9 4.03 9 9-4.03 9-9 9" stroke="currentColor" stroke-width="2"/><path d="M3 12h9V3" stroke="currentColor" stroke-width="2"/></svg>
+        <span>Silicon Street Journal</span>
+        <span class="pill" style="margin-left:10px">Breaking</span>
+      </div>
+      <div class="actions">
+        <button class="btn" id="toggleTheme" title="Toggle theme" aria-label="Toggle theme">🌓 <span>Theme</span></button>
+        <a class="btn" href="#share" aria-label="Share">↗ Share</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="margin-top:16px;">
+    <section class="hero">
+      <div class="hero__media">
+        <svg width="100%" height="100%" viewBox="0 0 1200 450" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#22d3ee" stop-opacity="0.25"/>
+            </linearGradient>
+          </defs>
+          <rect width="1200" height="450" fill="url(#g1)"/>
+          <g fill="#0b1220" opacity="0.25">
+            <circle cx="100" cy="70" r="40"/>
+            <circle cx="260" cy="160" r="70"/>
+            <circle cx="520" cy="90" r="60"/>
+            <circle cx="900" cy="200" r="80"/>
+            <circle cx="1100" cy="120" r="50"/>
+          </g>
+          <g stroke="#ffffff" opacity="0.3">
+            <path d="M0,230 C200,320 400,50 600,210 800,370 1000,130 1200,280" fill="none" stroke-width="3"/>
+          </g>
+          <text x="40" y="70" fill="white" font-size="22" font-weight="700">Silicon Valley / Wall Street</text>
+          <text x="40" y="110" fill="white" font-size="56" font-weight="900">BREAKING: Nvidia teeters on the brink</text>
+          <text x="40" y="155" fill="white" font-size="24" font-weight="600">Bankruptcy looms after AI boom goes bust</text>
+        </svg>
+      </div>
+      <div style="padding: 18px 18px 8px 18px;">
+        <div class="chiprow">
+          <span class="chip">Published: <strong>September 8, 2025</strong></span>
+          <span class="chip">Locations: <strong>Silicon Valley · Wall Street</strong></span>
+          <span class="chip">Category: <strong>Markets · AI · Semiconductors</strong></span>
+        </div>
+        <h1 class="title">Nvidia teeters on the brink — bankruptcy looms after AI boom goes bust</h1>
+        <p class="dek">What was once the crown jewel of the artificial‑intelligence and data‑center boom has spun into a high‑stakes catastrophe: Nvidia faces the real possibility of Chapter 11 after a perfect storm of geopolitical shocks, technological disruption, and financial overreach.</p>
+        <div class="meta">
+          <div class="byline"><div class="avatar" aria-hidden="true">SS</div><div>
+            <strong>Staff Desk</strong> · Silicon Street Journal<br/>
+            <span>Updated 12:00 ET</span>
+          </div></div>
+          <div class="share" id="share">
+            <button class="btn" onclick="shareArticle()">Share</button>
+            <button class="btn" onclick="window.print()">Print</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <p class="lead">Five years ago, Nvidia rode the AI frenzy to unmatched heights, powering the vast majority of global AI‑model training and inference workloads. Its “Blackwell” GPU architecture seemed to entrench the company as a permanent fixture in every cloud data center. Investor confidence soared, valuations stretched into the stratosphere, and Nvidia’s brand became synonymous with “machine‑learning compute.”</p>
+
+        <p>But beneath the surface: deep exposure to just a handful of hyperscale customers, a supply‑chain built around high‑end export‑controlled silicon, and an aggressive bet on continuing infinite demand.</p>
+
+        <p>In mid‑2025, cracks began to show. A Chinese competitor, <strong>HelixCompute</strong>, quietly launched a next‑generation AI accelerator with similar inference performance but far less reliance on sensitive export‑controlled components. Meanwhile, the U.S. government imposed sweeping new export restrictions on several high‑end GPUs, particularly disrupting Nvidia’s ability to sell its H20 chips in China — severing a revenue stream that accounted for billions in annual sales.</p>
+
+        <h3 class="kicker">Panic spreads, revenue collapses</h3>
+        <p>Within weeks of the export freeze, major cloud providers began canceling or renegotiating orders, citing “force majeure” and shifting toward non‑U.S. accelerator vendors. Nvidia, caught flat‑footed, issued an urgent earnings warning: projected full‑year data center revenue would fall <strong>40%</strong> short of previous guidance, with negative operating cash flow expected for at least two quarters. Margins, once north of <strong>70%</strong>, began narrowing dangerously.</p>
+
+        <div class="pull">Investors reacted brutally. Nvidia stock tumbled more than <strong>60%</strong>, wiping out trillions in market capitalization. Analyst downgrades piled up, citing “severe customer concentration risk” and “lack of viable fallback options in a geopolitically fractured market.”</div>
+
+        <h3 class="kicker">Leverage becomes a noose</h3>
+        <p>Compounding the crisis: Nvidia had leaned heavily on debt and stock‑backed financing to fuel its R&amp;D pipeline, Blackwell GPU expansions, and ambitious stock buybacks during the boom years. As the share price collapsed, so did the value of collateral. Margin calls triggered asset sales at fire‑sale prices. Debt covenants began to break.</p>
+        <p>Internal whispers suggested cash reserves dropped to dangerously low levels. Attempts to raise emergency capital fell flat — institutional investors balked at underwriting a company facing cascading geopolitical risk, shrinking product demand, and a collapsing valuation. Credit rating agencies downgraded Nvidia to “junk,” triggering further contractual leverage penalties.</p>
+
+        <h3 class="kicker">Bankruptcy filing, delisting, and teardown</h3>
+        <p>By late August 2025, Nvidia’s board quietly initiated contingency planning. Legal teams were reportedly assessing Chapter 11 options, while senior management prepared statements to reassure customers and creditors. In early September, Nvidia filed for Chapter 11 bankruptcy.</p>
+        <p>Once the filing became public, trading in Nvidia stock was immediately suspended. The company’s GPUs and AI software stack — once valued at trillions — were auctioned off in parts. A number of smaller compute‑focused firms and private equity groups bid for isolated assets: a GPU design team here, a data‑center software stack there.</p>
+        <p>The Nvidia brand survives, but only as a fragmented remnant. The “Nvidia of AI compute ubiquity” disappears into history. Competing firms like HelixCompute and a revived AMD walk into the void left behind and reclaim large swaths of market share.</p>
+
+        <h3 class="kicker">If this story teaches anything…</h3>
+        <ul>
+          <li>Even massive winners are vulnerable if they over‑invest in the continuity of infinite demand, especially when demand depends on geopolitics and export licensing.</li>
+          <li>Customer or geographic concentration can rapidly turn a strategic strength into a systemic vulnerability.</li>
+          <li>Financial engineering and leverage amplify boom cycles — but can turn a downturn into an existential crisis.</li>
+          <li>Technological disruption (even quietly launched) can destabilize dominant firms when paired with geopolitical or regulatory shocks.</li>
+        </ul>
+
+        <div class="disclaimer"><strong>Editor’s note:</strong> This page is a design/demo rendering using provided copy. Verify facts independently before citing.</div>
+      </article>
+
+      <aside class="card">
+        <h4 style="margin:0 0 10px 0">At a glance</h4>
+        <div class="fact"><span class="badge">Ticker</span> <span>NVDA — Trading <em>Suspended</em></span></div>
+        <div class="fact"><span class="badge">Market Cap</span> <span>Down ~60% from peak</span></div>
+        <div class="fact"><span class="badge">Revenue Guide</span> <span>Data center −40% vs prior guide</span></div>
+        <div class="fact"><span class="badge">Credit</span> <span>Downgraded to junk</span></div>
+        <div class="fact"><span class="badge">Competitors</span> <span>HelixCompute, AMD</span></div>
+
+        <div style="margin-top:16px;">
+          <h4 style="margin:0 0 8px 0">Timeline</h4>
+          <div class="timeline">
+            <div class="tl-item"><strong>Mid‑2025:</strong> HelixCompute launches next‑gen accelerator; U.S. imposes broader export restrictions.</div>
+            <div class="tl-item"><strong>Late‑July:</strong> Cloud orders canceled/renegotiated; Nvidia issues urgent warning.</div>
+            <div class="tl-item"><strong>August:</strong> Stock down &gt;60%; debt covenants strained.</div>
+            <div class="tl-item"><strong>Early September:</strong> Chapter 11 filing; trading suspended; assets prepared for auction.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;">
+          <h4 style="margin:0 0 8px 0">Market pulse (mock)</h4>
+          <div class="ticker" aria-label="Market ticker (illustrative)">
+            <span class="tick">NVDA −60.8%</span>
+            <span class="tick">AMD +7.4%</span>
+            <span class="tick">HLCX +22.1%</span>
+            <span class="tick">SOX −12.5%</span>
+          </div>
+          <div class="vis" aria-hidden="true"></div>
+        </div>
+
+        <div style="margin-top:18px;">
+          <h4 style="margin:0 0 8px 0">Tags</h4>
+          <div class="tag-cloud">
+            <a href="#">#Nvidia</a>
+            <a href="#">#Bankruptcy</a>
+            <a href="#">#AI</a>
+            <a href="#">#Semiconductors</a>
+            <a href="#">#Markets</a>
+            <a href="#">#Geopolitics</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="card" style="margin-top:22px;">
+      <h3 style="margin:0 0 12px 0">Editor’s picks</h3>
+      <div style="display:grid; grid-template-columns: 1fr; gap:14px;" class="picks">
+        <article style="border:1px solid color-mix(in oklab, var(--text) 10%, transparent); border-radius:12px; padding:12px;">
+          <div class="kicker">Analysis</div>
+          <a href="#"><h4 style="margin:.2em 0">How export controls reshaped the AI silicon map</h4></a>
+          <p style="margin:0; color: color-mix(in oklab, var(--text) 80%, transparent);">The cascade effects that started long before the latest restrictions.</p>
+        </article>
+        <article style="border:1px solid color-mix(in oklab, var(--text) 10%, transparent); border-radius:12px; padding:12px;">
+          <div class="kicker">Markets</div>
+          <a href="#"><h4 style="margin:.2em 0">Who buys the pieces? Inside distressed AI‑hardware auctions</h4></a>
+          <p style="margin:0; color: color-mix(in oklab, var(--text) 80%, transparent);">What PE wants (and what they’ll leave behind).</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="footer container" style="padding: 20px 0 40px 0;">
+      <p>© 2025 Silicon Street Journal · All rights reserved</p>
+    </section>
+  </main>
+
+  <script>
+    const toggleTheme = document.getElementById('toggleTheme');
+    toggleTheme?.addEventListener('click', () => {
+      const light = document.documentElement.dataset.theme === 'light';
+      document.documentElement.dataset.theme = light ? 'dark' : 'light';
+      if (!light) {
+        // Switch to light palette by overriding CSS variables
+        document.documentElement.style.setProperty('--bg', '#f8fafc');
+        document.documentElement.style.setProperty('--bg-soft', '#eef2ff');
+        document.documentElement.style.setProperty('--card', '#ffffff');
+        document.documentElement.style.setProperty('--text', '#0f172a');
+        document.documentElement.style.setProperty('--muted', '#4338ca');
+        document.documentElement.style.setProperty('--accent', '#2563eb');
+        document.documentElement.style.setProperty('--accent-2', '#0891b2');
+        document.documentElement.style.setProperty('--danger', '#dc2626');
+        document.documentElement.style.setProperty('--success', '#059669');
+      } else {
+        // Back to dark (defaults)
+        document.documentElement.style.removeProperty('--bg');
+        document.documentElement.style.removeProperty('--bg-soft');
+        document.documentElement.style.removeProperty('--card');
+        document.documentElement.style.removeProperty('--text');
+        document.documentElement.style.removeProperty('--muted');
+        document.documentElement.style.removeProperty('--accent');
+        document.documentElement.style.removeProperty('--accent-2');
+        document.documentElement.style.removeProperty('--danger');
+        document.documentElement.style.removeProperty('--success');
+      }
+    });
+
+    function shareArticle() {
+      const data = {
+        title: document.title,
+        text: 'BREAKING: Nvidia teeters on the brink — bankruptcy looms after AI boom goes bust',
+        url: location.href
+      };
+      if (navigator.share) navigator.share(data).catch(()=>{});
+      else {
+        navigator.clipboard?.writeText(location.href);
+        alert('Link copied to clipboard.');
+      }
+    }
+  </script>
+</body>
+</html>
