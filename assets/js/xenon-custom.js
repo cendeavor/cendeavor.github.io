@@ -1691,7 +1691,7 @@ function date(format, timestamp) {
 	var txt_words = [
 	'Sun', 'Mon', 'Tues', 'Wednes', 'Thurs', 'Fri', 'Satur',
 	'January', 'February', 'March', 'April', 'May', 'June',
-	'July', 'August', 'September', 'October', 'November', 'December'
+	'July', 'August', 'September', 'August', 'November', 'December'
 	];
 	// trailing backslash -> (dropped)
 	// a backslash followed by any character (including backslash) -> the character
